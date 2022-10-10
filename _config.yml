@@ -13,7 +13,7 @@ motto: 世上无难事，只要肯登攀
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://pingao777.github.io
+url: https://naosense.github.io
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -79,7 +79,7 @@ theme: polk
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: git@github.com:pingao777/pingao777.github.io.git
+  repo: git@github.com:naosense/naosense.github.io.git
 
 sitemap:
   path: sitemap.xml

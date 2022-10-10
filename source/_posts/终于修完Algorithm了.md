@@ -10,16 +10,16 @@ tags: [算法, Coursera]
 
 下面是本次课程的10次作业，
 
-- [Percolation](https://github.com/pingao777/Algorithms/tree/master/src/main/java/com/pingao/assignment/week1)
-- [Deques and Randomized Queues](https://github.com/pingao777/Algorithms/tree/master/src/main/java/com/pingao/assignment/week2)
-- [Collinear Points](https://github.com/pingao777/Algorithms/tree/master/src/main/java/com/pingao/assignment/week3)
-- [8 Puzzle](https://github.com/pingao777/Algorithms/tree/master/src/main/java/com/pingao/assignment/week4)
-- [Kd-Trees](https://github.com/pingao777/Algorithms/tree/master/src/main/java/com/pingao/assignment/week5)
-- [WordNet](https://github.com/pingao777/Algorithms/tree/master/src/main/java/com/pingao/assignment/week6)
-- [Seam Carving](https://github.com/pingao777/Algorithms/tree/master/src/main/java/com/pingao/assignment/week7)
-- [Baseball Elimination](https://github.com/pingao777/Algorithms/tree/master/src/main/java/com/pingao/assignment/week8)
-- [Boggle](https://github.com/pingao777/Algorithms/tree/master/src/main/java/com/pingao/assignment/week9)
-- [Burrows–Wheeler](https://github.com/pingao777/Algorithms/tree/master/src/main/java/com/pingao/assignment/week10)
+- [Percolation](https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week1)
+- [Deques and Randomized Queues](https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week2)
+- [Collinear Points](https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week3)
+- [8 Puzzle](https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week4)
+- [Kd-Trees](https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week5)
+- [WordNet](https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week6)
+- [Seam Carving](https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week7)
+- [Baseball Elimination](https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week8)
+- [Boggle](https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week9)
+- [Burrows–Wheeler](https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week10)
 
 给我印象最深刻的是第八周的Baseball Elimination，这个作业的大概意思是根据棒球联赛积分表找出哪些球队已经被淘汰，说实话看过体育比赛的对这一点都是有感触的，有时候找出这样的球队不是那么容易，没想到在这里可以使用这么巧妙的一种方法解决，具体方法我就不剧透了。
 

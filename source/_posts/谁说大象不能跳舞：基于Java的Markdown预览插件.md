@@ -272,7 +272,7 @@ private static void transformLocalImgSrc(Element element) {
 
 ## 阳光总在风雨后
 
-尽管经过了一些风雨，最后还是看到胜利的曙光了。这个项目够小，涵盖的语言和知识并不少，作为一个练手的项目还是不错的，如果碰巧还能给生活提供点便利，何乐而不为呢？想了解大象跳舞的更多细节请戳[github](https://github.com/pingao777/markdown-preview-sync)。
+尽管经过了一些风雨，最后还是看到胜利的曙光了。这个项目够小，涵盖的语言和知识并不少，作为一个练手的项目还是不错的，如果碰巧还能给生活提供点便利，何乐而不为呢？想了解大象跳舞的更多细节请戳[github](https://github.com/naosense/markdown-preview-sync)。
 
 参考资料：
 

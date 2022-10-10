@@ -188,7 +188,7 @@ public List<Integer> search(String txt) {
 }
 ```
 
-每次匹配成功，需要重置delta数组，即上面`resetDelta()`。将这段代码与上面那一版进行对比，看看有哪些区别。完整代码在[这里](https://github.com/pingao777/Algorithms/blob/master/src/main/java/com/pingao/string/BoyerMoore.java)，用这一段代码再运行上面的例子，
+每次匹配成功，需要重置delta数组，即上面`resetDelta()`。将这段代码与上面那一版进行对比，看看有哪些区别。完整代码在[这里](https://github.com/naosense/Algorithms/blob/master/src/main/java/com/pingao/string/BoyerMoore.java)，用这一段代码再运行上面的例子，
 
 ```python
 txt length: 20
