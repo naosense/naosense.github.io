@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Javascript中的this - 扯淡有理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=Javascript>
+  
+    <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.initHighlightingOnLoad();
+  </script>
+  <script type='text/x-mathjax-config'>
+        MathJax.Hub.Config({
+            extensions: ["tex2jax.js"],
+            jax: ["input/TeX", "output/SVG"],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+            },
+            messageStyle: "none"
+        });
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-44085500-1');
+    </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Javascript中的this</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-03-27</span>
+  </div>
+  <div class="post-content">
+    <p>对于js的函数有两个特殊的关键字，this和arguments，后者存储的是函数的参数，类似于一个数组。例如如下的函数，</p>
+<pre><code class="javascript">var testArgus = function() &#123;console.log(arguments);&#125;
+// [1, 2]
+testArgus(1,2)
+</code></pre>
+<span id="more"></span>
+<p>arguments的含义比较明确，而this就不那么直白了，<strong>this指代的是函数运行时所处的上下文</strong>。这句话有两点需要注意：一是this是在运行时决定的，也就是函数在调用之前this的值是不确定的，二是函数所处的上下文，也就是函数运行时所处的环境。</p>
+<p>首先看看什么是上下文，对比下面的代码，注意它们的差别。</p>
+<pre><code class="javascript">var o = &#123;testThis: function() &#123;return this;&#125;&#125;;
+var b = &#123;testThis: function() &#123;return this;&#125;()&#125;;
+o.testThis();
+b.testThis;
+</code></pre>
+<p>它们的分别会输出什么？事实上，前者会输出Object，也就是o本身；后者会输出window，也就是全局对象。如果感到疑惑，再看《JavaScript高级程序设计》中的一个例子，</p>
+<pre><code class="javascript">window.color = &quot;red&quot;;
+var o = &#123;color: &quot;blue&quot;&#125;;
+
+function sayColor() &#123;
+   alert(this.color);
+&#125;
+// &quot;red&quot;
+sayColor();
+o.sayColor = sayColor;
+// &quot;blue&quot;
+o.sayColor();
+</code></pre>
+<p>需要明确的是，函数的名字仅仅是一个包含指针的变量而已。即使是在不同的环境中执行，全局的sayColor()和o.sayColor()指向的仍然是同一个函数。前者在全局作用域调用，因此this指向的是window，因此输出”red”，当把这个函数赋给对象o并调用o.sayColor()时，this引用的是对象o，因此会输出”blue”。再回头看上面的代码，匿名函数在b中执行，并没有附加到任何对象，实际上相当于在window中执行，因此返回this，指向的是window。</p>
+<p>事实上this有那么一条规律，<strong>如果调用函数时是以构造函数的形式，即new函数的形式，this会指向创建的新变量，如果是以普通函数的形式调用，this指向的是全局变量</strong>。还是老样子，用代码说话。</p>
+<pre><code class="javascript">var Flower = function(name) &#123;this.name = name;&#125;
+// error
+alert(name);
+var f1 = Flower(&quot;f1&quot;);
+// &quot;f1&quot;
+alert(name);
+var f2 = new Flower(&quot;f2&quot;);
+// &quot;f1&quot;
+alert(name);
+// &quot;f2&quot;
+alert(f2.name);
+</code></pre>
+<p>根据这条规律，也可以解释为什么b.testThis为什么指向window，匿名函数在b中执行，是以普通函数的形式被调用，因此this指向的是全局变量，即window。</p>
+<p>既然说到了this，就不得不提call和apply，js中这两个函数用来改变函数所处的上下文，也就是this的指向。例如上面的代码，</p>
+<pre><code class="javascript">window.color = &quot;red&quot;;
+var o = &#123;color: &quot;blue&quot;&#125;;
+
+function sayColor() &#123;
+   alert(this.color);
+&#125;
+
+// &quot;blue&quot;
+sayColor.call(o);
+</code></pre>
+<p>call和apply用法一样，只是接受的参数不一样，二者第一个参数都代表新的上下文，call接受逗号分隔的各个参数，apply接受数组形式的参数。要注意到，sayColor并不是o的一个方法，但是通过call我们却可以像使用自身的方法一样来调用一个函数，这提供了极大的灵活性，在各大js库中十分常见。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Javascript/" rel="tag">Javascript</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2022
+    <span class="author">
+        nonsense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2016/03/27/Javascript中的this/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2016/03/27/Javascript中的this/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = 'Javascript中的this';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

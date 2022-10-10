@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Java“锁”记 - 扯淡有理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=Java,并发,分布式>
+  
+    <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.initHighlightingOnLoad();
+  </script>
+  <script type='text/x-mathjax-config'>
+        MathJax.Hub.Config({
+            extensions: ["tex2jax.js"],
+            jax: ["input/TeX", "output/SVG"],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+            },
+            messageStyle: "none"
+        });
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-44085500-1');
+    </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Java“锁”记</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2019-03-07</span>
+  </div>
+  <div class="post-content">
+    <h2 id="内置锁和显示锁"><a href="#内置锁和显示锁" class="headerlink" title="内置锁和显示锁"></a>内置锁和显示锁</h2><p>内置锁其实是相对显示锁来说的，说白了内置锁就是<code>synchronized</code>所代表Java原生锁机制，Jdk5.0之后又引入了<code>Lock</code>及其子类<code>ReentrantLock</code>这样一种新的锁机制。从加锁和内存语义上二者一样，只不过后者添加了一些其他功能，可以实现诸如轮询锁、超时锁和中断锁的功能。<br><span id="more"></span></p>
+<pre><code class="java">public interface Lock &#123;
+    void lock();
+    void lockInterruptibly() throw InterruptedException;
+    boolean tryLock();
+    boolean tryLock(long timeout, TimeUnit unit)
+        throw InterruptedException;
+    void unlock();
+    Condition newCondition();
+&#125;
+</code></pre>
+<p>如果内置锁是一个<code>Lock</code>的话，它只有<code>lock()</code>和<code>unlock()</code>方法。从锁的基本属性上说，内置锁和显示锁都是可重入的，内置锁是非公平的，显示锁还可以设置为公平的。</p>
+<p><code>tryLock</code>和<code>lock</code>的区别是前者获得锁返回true，获取不到返回false，都是立马返回，而后者如果获取不到将会阻塞到那里。</p>
+<p>另外由于内置锁是自动释放，而显示锁必须手动释放，这就形成了显示锁的调用模式如下面这样：</p>
+<pre><code class="java">Lock lock = ...;
+lock.lock();
+try &#123;
+    // 逻辑
+&#125; finally &#123;
+    lock.unlock();
+&#125;
+</code></pre>
+<p>也就是锁的释放必须放在finally中，确保锁可以释放。</p>
+<p>从<code>ReentrantLock</code>衍生出来一个<code>ReentrantReadWriteLock</code>，为啥要有读写锁呢？其实是基于这样的原则，读写和写写是会引起线程安全问题的，所以都需要同步，前者是因为可见性，后者是因为一致性，但是读读是不需要同步的，所以讲读写拆分开来以提高性能。这就好比原来大家都排一个队，现在拆成两个队，自然排队等待的时间就短了。</p>
+<h2 id="闭锁"><a href="#闭锁" class="headerlink" title="闭锁"></a>闭锁</h2><p>闭锁就像一个门，等待一个“事件”开门（结束状态），在开门之前不允许任何人（线程）通过，在此之前大家只能在城门前面等待。只不过城门可以重复的开闭，闭锁只是一次性的。</p>
+<p>具体到Java中，闭锁的实现就是<code>CountDownLatch</code>，它可以用来实现等待某种条件满足后才把线程放行的功能，比如资源就绪、服务启动、某个操作执行等等。</p>
+<h2 id="信号量"><a href="#信号量" class="headerlink" title="信号量"></a>信号量</h2><p>信号量是用来控制同时访问某个资源的特定数量，或者同时执行某个操作的数量，有点像地铁中的限流。</p>
+<p>从某种程度上讲，锁有点像一个二值的信号量，也就是初始值为1的信号量，不同之处是锁是可重入的，信号量不可。</p>
+<h2 id="栅栏"><a href="#栅栏" class="headerlink" title="栅栏"></a>栅栏</h2><p>栅栏和闭锁类似，它也能阻塞一组线程直到某个事件发生。区别在于栅栏要求线程都到达栅栏位置，才能继续执行，即所谓的闭锁等待的是事件，栅栏等待的是线程。如果对比现实中的例子，闭锁犹如大家去登山，商议好早晨8点出发，无论人齐不齐，到8点大家就出发，而栅栏就类似于大家登一段就在一个歇息点等一等人，等人齐再往上登。</p>
+<h2 id="原子变量"><a href="#原子变量" class="headerlink" title="原子变量"></a>原子变量</h2><p>原子变量实际上是一种乐观锁技术，即利用冲突检测来判断是否有来自其他线程的干扰，当进行修改操作时，先把变量的当前值current取出来，然后用一个原子的比较交换操作（CAS）对变量进行修改。有两种情况：如果变量的当前值还等于current说明这中间没有线程修改变量，修改变量值为新值；如果当前值不等于current了，说明中间有线程修改变量，重试。</p>
+<p>以一个典型的count++为例，大家知道++这种操作实际上包括三步：</p>
+<ol>
+<li>获取count当前值current</li>
+<li>当前值加一newvalue</li>
+<li>将newvalue赋值给count</li>
+</ol>
+<p>如果两个线程同时修改count的值，假如两个线程的时序如下：</p>
+<blockquote>
+<p>=====1===========+1=================</p>
+<p>=========1===========+1=============</p>
+</blockquote>
+<p>假设count的当前值为1，两个线程分别进行了++的操作，最后的值为2，第一个++操作被“覆盖”了。如果把上面2、3步换成一个CAS操作就不会发生上面的情况了，因为执行第二次操作时会拿count的旧值1和新值2对比，一对比发现不一样，说明其他线程修改了变量，这时候第二个线程会进入下一次的CAS操作，重新获取count值2，比较当前值2等于原来的值，修改为新值3。</p>
+<p>原子变量作为一种非阻塞的锁技术，适用在读操作比较多、竞争不那么激烈的场景，这适用于大部分的业务场景。但同时原子变量也有其局限，原子锁只能保证单一变量的线程安全。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2022
+    <span class="author">
+        nonsense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2019/03/07/Java“锁”记/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2019/03/07/Java“锁”记/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = 'Java“锁”记';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>
