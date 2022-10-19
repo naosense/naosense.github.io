@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>数字签名是什么 - 扯淡有理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=Http,加密,解密>
+  
+    <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.initHighlightingOnLoad();
+  </script>
+  <script type='text/x-mathjax-config'>
+        MathJax.Hub.Config({
+            extensions: ["tex2jax.js"],
+            jax: ["input/TeX", "output/SVG"],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+            },
+            messageStyle: "none"
+        });
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-44085500-1');
+    </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">数字签名是什么</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2016-08-20</span>
+  </div>
+  <div class="post-content">
+    <p>随着现在网银、电子商务的普及，“数字签名”屡屡被提到，我也曾一度迷惑，直到看到Mozilla MDN上的一篇文章<em><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Archive/Security/Digital_Signatures">Digital Signatures</a></em>，下面我将翻译一下这篇文章。</p>
+<p>加密和解密解决了三大互联网安全隐患（窃听、篡改、伪装）之窃听的问题，但是却没法避免信息被篡改。</p>
+<p>本篇文章将向你介绍<strong>公共秘钥加密</strong>如何解决这个问题。</p>
+<p>信息篡改及相关的认证技术依赖于一个数学函数<strong>单向哈希函数</strong>（<strong>one-way hash</strong>，也称作<strong>信息摘要</strong>）。单项散列函数可以根据原始数据生成一个定长的数据摘要，并且具有如下特性：</p>
+<ul>
+<li>原始数据不同，摘要不同（注：严格说来这句话不对，当数据大到一定程度，会发生碰撞的可能，但是概率实在太小了，可以忽略不计）。只要修改或者删除原始数据中哪怕一个字符，摘要都会发生显著的改变。</li>
+<li>原始数据不可能由摘要推出，这也是单向哈希的名字由来。</li>
+</ul>
+<p>同样地，在公共密钥加密中为了进行数字签名，要产生一对秘钥（key），一个称为<strong>私有签名秘钥</strong>（<strong>private signing key </strong>），一个称为<strong>公开验证秘钥</strong>（<strong>public verification key</strong>）。后者是公开的，前者是保密的，只有所有者知道。二者在数学上有一定的联系，想从公开验证秘钥推出私有签名秘钥几乎是不可能的或者要付出高昂的代价（注：比如时间、金钱）。<strong>摘要及其他相关信息，连同哈希算法，一并被称为数字签名。</strong></p>
+<p>下图简单展示了数字签名如何验证数据的合法性。</p>
+<p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%E6%98%AF%E4%BB%80%E4%B9%88/1-digital_signatures.png" alt="数字签名"></p>
+<p>上图显示发送者将两份数据发送给接受者：一份原始数据，一份加密过的摘要数据，即用私钥和相关的单向哈希算法加密过的数据摘要（注：这里有两个过程，第一步求数据摘要：原始数据-&gt;摘要，第二步加密：摘要-&gt;加密过的摘要）。为了验证数据的合法性，接受者首先使用签名者的公钥对加密摘要进行解密得到摘要，然后对原始数据应用同样的单向哈希算法得到一份新的摘要（单项哈希算法会和数据一并发送给接受者，图中未标出），最后，接受者对比这两份摘要。如果二者一致，那么说明数据没有篡改，否则数据可能被篡改或者发送过来的公钥和签名者的私钥不匹配。</p>
+<p>如果两份摘要一致，接受者就能确定解密签名的公钥和生成签名的私钥是匹配的，然后进一步确认签名者的身份，尽管要确认签名者的身份还需要其他一些步骤来确定这个公钥确实属于某个人或实体，详见<em><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Introduction_to_Public-Key_Cryptography">Introduction to Public-Key Cryptography</a></em>.</p>
+<p>数字签名的意义堪比手写签名。如果秘钥没有失去所有者的控制，一旦签名，过后很难进行否认。数字签名的这个特性提供了高度的不可否认性，签名者签名后就无法抵赖。以致在一些情形中，数字签名具有手写签名的同等法律效力。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Http/" rel="tag">Http</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%8A%A0%E5%AF%86/" rel="tag">加密</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E8%A7%A3%E5%AF%86/" rel="tag">解密</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2022
+    <span class="author">
+        nonsense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2016/08/20/数字签名是什么/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2016/08/20/数字签名是什么/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '数字签名是什么';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

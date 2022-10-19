@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>VIM中的正则表达式 - 扯淡有理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=Vim>
+  
+    <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.initHighlightingOnLoad();
+  </script>
+  <script type='text/x-mathjax-config'>
+        MathJax.Hub.Config({
+            extensions: ["tex2jax.js"],
+            jax: ["input/TeX", "output/SVG"],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+            },
+            messageStyle: "none"
+        });
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-44085500-1');
+    </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">VIM中的正则表达式</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2015-11-01</span>
+  </div>
+  <div class="post-content">
+    <p>VIM作为一款编辑软件有着强大的操作指令，灵活的配置方法，通过适当的组合能够实现令人眼花缭乱的功能，而正则表达式作为一门处理文本和数据的重要工具，和VIM异曲同工，通过元字符的简单组合就可以匹配千变万化的文本和数据，它是如此的强大以至于有些任务如果没有正则表达式几乎没有其他好的方法实现。下面看看这两个强大的武器是如何结合在一起的。</p>
+<span id="more"></span>
+<p>本文翻译自<a target="_blank" rel="noopener" href="http://www.vimregex.com/">http://www.vimregex.com/</a>，算是一篇比较全面的VIM正则表达式介绍。</p>
+<h2 id="2-介绍"><a href="#2-介绍" class="headerlink" title="2.介绍"></a>2.介绍</h2><h3 id="2-1什么是VIM？"><a href="#2-1什么是VIM？" class="headerlink" title="2.1什么是VIM？"></a>2.1什么是VIM？</h3><p>VIM（VI Improve）是VI编辑器的改进版，它在UNIX中无处不在。VIM由Bram Moolenaar发明，是一款免费的编辑器，当然如果你愿意，可以捐助一部分钱。</p>
+<p>VIM有自己的网站为<a target="_blank" rel="noopener" href="http://www.vim.org">www.vim.org</a>和<a target="_blank" rel="noopener" href="http://www.vim.org/mail.html">邮件列表</a>，上面的资料涵盖VIM的方方面面。目前，VIM能够运行在各大操作系统上，甚至是一些linux发型版本（redhat）的默认编辑器。</p>
+<p>VIM拥有现代编辑的许多特点：语法高亮、可以定制化的用户界面、可以方便的与多种IDE集成在一起，从而具有一些更加吸引人的特色，比如故障恢复、自动命令补全、会话管理等。</p>
+<p>VIM拥有庞大的用户群，仅linux用户就超过1000万，这个数字还在进一步增加。</p>
+<h3 id="2-2关于本教程"><a href="#2-2关于本教程" class="headerlink" title="2.2关于本教程"></a>2.2关于本教程</h3><p>之所以写这个教程，只是因为我爱正则表达式，没有什么能比写出一个精心设计满足需要的正则表达式更让人兴奋的了，我希望这能作为一个引言。</p>
+<p>不过说真的，正则表达式作为一个处理文本和数据的工具不是独立存在，而是嵌入在其他的程序语言或工具中，比如UNIX中的著名的grep程序，它根据一定的模式查找文件中的内容。你可以把正则表达式看做一种模式匹配语言，用它来处理一些棘手的文本问题会有意想不到的效果。</p>
+<h3 id="2-3致谢"><a href="#2-3致谢" class="headerlink" title="2.3致谢"></a>2.3致谢</h3><p>感谢Benji Fisher, Zdenek Sekera, Preben “Peppe” Guldberg, Steve Kirkendall, Shaul Karl（排名不分先后）以及所有给我建议的人。</p>
+<p>如果你有好的建议或者想法，随时发信给我（olontir at yahoo dot com）。</p>
+<h2 id="3-替换命令"><a href="#3-替换命令" class="headerlink" title="3.替换命令"></a>3.替换命令</h2><h3 id="3-1查找-替换"><a href="#3-1查找-替换" class="headerlink" title="3.1查找/替换"></a>3.1查找/替换</h3><blockquote>
+<p>:range s[ubstitute]/pattern/string/cgiI<br>c 每次替换都要确认<br>g 替换一行当中所有的匹配项（没有g只替换第一个匹配值，pingao注：注意与%区别）<br>i 忽略大小写<br>I 不忽略大小写</p>
+</blockquote>
+<p>[]中表示可选项</p>
+<h3 id="3-2范围操作、行地址及标记"><a href="#3-2范围操作、行地址及标记" class="headerlink" title="3.2范围操作、行地址及标记"></a>3.2范围操作、行地址及标记</h3><p>在讲匹配模式之前，先来了解下行地址。一些命令可以接受行范围，这样命令就会限定在这个范围内执行。行范围通常由逗号（，）或者分号（；）分隔的标示符组成，你也可以使用命令<code>mI</code>在当前位置作一个标记，以方便后面使用，”I”可以是任何字母。</p>
+<table>
+<thead>
+<tr>
+<th>标示符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数字</td>
+<td>行号</td>
+</tr>
+<tr>
+<td>.</td>
+<td>当前行</td>
+</tr>
+<tr>
+<td>$</td>
+<td>文件的最后一行</td>
+</tr>
+<tr>
+<td>%</td>
+<td>整个文件，与1,$相同</td>
+</tr>
+<tr>
+<td>‘t</td>
+<td>标记t</td>
+</tr>
+<tr>
+<td>/pattern[/]</td>
+<td>pattern的下一个匹配行</td>
+</tr>
+<tr>
+<td>?pattern[?]</td>
+<td>pattern的上一个匹配行</td>
+</tr>
+<tr>
+<td>\/</td>
+<td>最近一个搜索pattern的下一个匹配行</td>
+</tr>
+<tr>
+<td>\?</td>
+<td>最近一个搜索pattern的上一个匹配行</td>
+</tr>
+<tr>
+<td>\&amp;</td>
+<td>最近一个替换pattern的下一个匹配行</td>
+</tr>
+</tbody>
+</table>
+<p>如果没有指定行，操作只针对当前行。</p>
+<p>这里有一些例子，</p>
+<p>10, 20</p>
+<p>-10到20行</p>
+<p>/Section 1/+,/Section 2/-</p>
+<p>-所有Section 1和Section 2之间的行，不包括它们所在行，+标示加一，-标示减一，可以重复多个</p>
+<p>:/Section/+ y</p>
+<p>-复制Section的下一个匹配行</p>
+<p>:// normal p</p>
+<p>-粘贴到Section下一个匹配行的下一行</p>
+<blockquote>
+<p>Tip1:如果你在pattern里使用<code>/</code>，一定要使用<code>\</code>进行转义，比如，<br><code>s/\/dir1\/dir2\/dir3\/file/dir4\/dir5\/file2/g</code></p>
+</blockquote>
+<p>为了避免这种令人迷惑的转义灾难，VIM中可以自定义分隔符，我喜欢用冒号（:）</p>
+<blockquote>
+<p>Tip2：将下面两个快捷键映射放在你的vimrc文件中，<br><code>noremap ;; :%s:::g&lt;Left&gt;&lt;Left&gt;&lt;Left&gt;</code><br><code>noremap ;&#39; :%s:::cg&lt;Left&gt;&lt;Left&gt;&lt;Left&gt;&lt;Left&gt;</code></p>
+</blockquote>
+<p>有了这两个快捷键，你会省去不少敲击键盘的时间，它会直接定位到搜索模式那里，输入搜索部分后再输入替换部分然后按回车键。第二个快捷键增加了确认标志。</p>
+<h2 id="4-模式说明"><a href="#4-模式说明" class="headerlink" title="4.模式说明"></a>4.模式说明</h2><h3 id="4-1锚"><a href="#4-1锚" class="headerlink" title="4.1锚"></a>4.1锚</h3><p>假设你想把所有的vi替换为VIM，很容易会想到下面的命令，</p>
+<p><code>s/vi/VIM/g</code></p>
+<p>但是如果你真的这么做了，你会发现，它会把所有vi替换为VIM，甚至vi只是某个单词的一部分，这可能不是你想要的。</p>
+<p>你可能还会想到，在vi两边添加空格来达到想要的效果，</p>
+<p><code>s: vi : VIM :g</code></p>
+<p>你会发现结果并没有变化，正确的方法是使用单词边界标志<code>\&lt;\&gt;</code>，</p>
+<p><code>s:\&lt;vi\&gt;:VIM:g</code></p>
+<p>行开始和结束有自己的标识符<code>^和$</code>，替换所有在行开始出现的vi，</p>
+<p><code>s:^vi\&gt;:VIM:</code></p>
+<p>如果一行之中只有vi则进行替换，</p>
+<p><code>s:^vi$:VIM:</code></p>
+<p>现在假设你不仅要替换vi还要替换Vi、VI，有几种方法可以实现，</p>
+<ul>
+<li>最简单的方法是使用<code>i</code>标志， <code>%s:vi:VIM:gi</code></li>
+<li>定义字符类（character class），<code>:%s:[Vv]i:VIM:</code>将会替换所有的Vi和vi</li>
+</ul>
+<h3 id="4-2转义字符或元字符"><a href="#4-2转义字符或元字符" class="headerlink" title="4.2转义字符或元字符"></a>4.2转义字符或元字符</h3><p>到目前为止，所有的匹配模式（pattern）都是由一些正常字符组成的，而正则表达式的真正强大之处就在于元字符（metacharacter），元字符是是指一些具有特殊含义的字符，从外观上它们的前面常有一个反斜杠，如下表所示，</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>匹配</th>
+<th>#</th>
+<th>匹配</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.</td>
+<td>除换行符之外的任意字符</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>\s</td>
+<td>空白字符</td>
+<td>\S</td>
+<td>非空白字符</td>
+</tr>
+<tr>
+<td>\d</td>
+<td>数字</td>
+<td>\D</td>
+<td>非数字</td>
+</tr>
+<tr>
+<td>\x</td>
+<td>十六进制</td>
+<td>\X</td>
+<td>非十六进制</td>
+</tr>
+<tr>
+<td>\o</td>
+<td>八进制</td>
+<td>\O</td>
+<td>非八进制</td>
+</tr>
+<tr>
+<td>\h</td>
+<td>单词头（a-zA-Z_）</td>
+<td>\H</td>
+<td>非单词头</td>
+</tr>
+<tr>
+<td>\p</td>
+<td>可打印字符</td>
+<td>\P</td>
+<td>非打印字符</td>
+</tr>
+<tr>
+<td>\w</td>
+<td>单词字母</td>
+<td>\W</td>
+<td>非单词字母</td>
+</tr>
+<tr>
+<td>\a</td>
+<td>字母</td>
+<td>\A</td>
+<td>非字母</td>
+</tr>
+<tr>
+<td>\l</td>
+<td>小写字母</td>
+<td>\L</td>
+<td>非小写字母</td>
+</tr>
+<tr>
+<td>\u</td>
+<td>大写字母</td>
+<td>\U</td>
+<td>非大写字母</td>
+</tr>
+</tbody>
+</table>
+<p>比如，你想匹配 09/01/2000，可以使用下面的正则表达式，</p>
+<p><code>\d\d/\d\d/\d\d\d\d</code></p>
+<p>匹配一个首字母大写的六字母单词，</p>
+<p><code>\u\w\w\w\w\w</code></p>
+<p>如果你想匹配一个不知道长度的单词或者一个长单词，写出每个<code>\w</code>不是很方便，这就要用到下面介绍的<strong>量词（quantifiers）</strong>概念了。</p>
+<h3 id="4-3量词、贪婪匹配与惰性匹配"><a href="#4-3量词、贪婪匹配与惰性匹配" class="headerlink" title="4.3量词、贪婪匹配与惰性匹配"></a>4.3量词、贪婪匹配与惰性匹配</h3><p>将一个量词（quantifiers）放置在模式（pattern）一部分后面，就可以限制这部分的重复次数。</p>
+<table>
+<thead>
+<tr>
+<th>量词</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>*</td>
+<td>0个或多个，.*匹配任何东西，甚至一个空行</td>
+</tr>
+<tr>
+<td>\+</td>
+<td>1个或多个</td>
+</tr>
+<tr>
+<td>\=</td>
+<td>0个或1个（pingao注：相当于?）</td>
+</tr>
+<tr>
+<td>\{n, m}</td>
+<td>匹配n到m次</td>
+</tr>
+<tr>
+<td>\{n}</td>
+<td>匹配n次</td>
+</tr>
+<tr>
+<td>\{, m}</td>
+<td>匹配0到m次</td>
+</tr>
+<tr>
+<td>\{n, }</td>
+<td>至少匹配n次</td>
+</tr>
+</tbody>
+</table>
+<p><em>n和m都必须是正整数</em></p>
+<p>现在很容易就能写出一个匹配任意长度单词的表达式：<code>\u\w\+</code>。</p>
+<p>上面这些量词都是工作在贪婪模式下的，它们会尽可能多的匹配字符。有时候这会带来意想不到的问题，考虑一个典型的例子，假如你想匹配一个含有某种限定符的文本，比如被引号或者括号包围的文本，因为你不知道这些限定符里有什么，我们可以使用<code>/&quot;.*&quot;/</code>。</p>
+<p>但是这个表达式将会匹配任何处于第一个引号和最后一个引号中间的文本，如粗体标注的部分</p>
+<blockquote>
+<p>this file is normally <strong>“$VIM/.gvimrc”. You can check this with “:version”</strong>.</p>
+</blockquote>
+<p>这种问题可以使用惰性（non-greedy）量词来解决，</p>
+<table>
+<thead>
+<tr>
+<th>量词</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>\{-}</td>
+<td>0个或多个，尽可能少的匹配</td>
+</tr>
+<tr>
+<td>\{-n,m}</td>
+<td>n个或多个，尽可能少的匹配</td>
+</tr>
+<tr>
+<td>\{-n, }</td>
+<td>至少匹配n次，尽可能少的匹配</td>
+</tr>
+<tr>
+<td>\{-, m}</td>
+<td>至多匹配m次，尽可能少的匹配</td>
+</tr>
+</tbody>
+</table>
+<p>让我们用<code>\&#123;-&#125;</code>替换上面的<code>*</code>，所以<code>.\&#123;-&#125;</code>将会匹配第一个引号的内容。</p>
+<blockquote>
+<p>this file is normally <strong>“$VIM/gvimrc”</strong>. You can check this with “:version”.</p>
+</blockquote>
+<p><code>\&#123;-&#125;</code>确实没有让我们失望，下面看看执行下面的命令将会发生什么，</p>
+<p><code>:s:.\&#123;-&#125;:_:g</code></p>
+<p>执行前：</p>
+<blockquote>
+<p>n and m are decimal numbers between</p>
+</blockquote>
+<p>执行后：</p>
+<blockquote>
+<p>_n_ _a_n_d_ _m_ _a_r_e_ _d_e_c_i_m_a_l_ _n_u_m_b_e_r_s_ _b_e_t_w_e_e_n_</p>
+</blockquote>
+<p>“尽可能的少的匹配”在这里的意思是匹配0个字符，然而匹配竟然发生在了字符之间，下面我引用Bram自己的话来解释这种行为，</p>
+<blockquote>
+<p>匹配到0个字符也是一种匹配，因此它会将0字符替换为一个”_”，然后走到下一个位置，继续匹配到0个字符。</p>
+</blockquote>
+<blockquote>
+<p>大部分情况下，<code>\&#123;-&#125;</code>没有多大的用处，它的这种运行方式主要是为了和<code>*</code>保持一致，后者也会匹配0个字符，相比之下，<code>x\&#123;-1,&#125;</code>是一种更加没用的写法，它只会匹配一个x，和<code>x</code>功能一样，比较有用的一种写法为<code>x\&#123;70&#125;</code>，至于<code>x\&#123;-3,&#125;&quot;, &quot;x\&#123;-2,&#125;&quot;, &quot;x\&#123;-1,&#125;</code>用处也不大，只是为了和贪婪模式的量词保持一致。</p>
+</blockquote>
+<p>　　　　　　　　　　　　　　　　　　　　　　　　　　　　　         -Bram</p>
+<p>但是如果你只想匹配第二个引号的内容呢？或者我们只想改变引号中的一部分内容呢？我们将会用到分组（grouping）和反向引用（backreference），在这之前我们先来看下字符区间的概念（character range）。</p>
+<h3 id="4-4字符区间"><a href="#4-4字符区间" class="headerlink" title="4.4字符区间"></a>4.4字符区间</h3><p>典型的字符区间：</p>
+<p><code>[012345]</code>将会匹配括号中的任意一个，<code>[0-5]</code>与之等价，类似地，我们可以定义全部小写字母的字符区间<code>[a-z]</code>，所有的字母<code>[a-zA-Z]</code>，数字加字母<code>[0-9a-zA-Z]</code>，根据你所在的区域，你可以在字符区间添加à, Ö, ß这样的非ASCII字符。</p>
+<p>注意字符区间仅仅匹配其中的一个字符，<code>[0123]</code>和<code>0123</code>不同，顺序对于一个字符区间不重要，<code>[0123]</code>和<code>[0231]</code>一样，而<code>0123</code>和<code>0231</code>是两个截然不同的模式。看看执行下面的句子会发生什么，</p>
+<p><code>s:[65]:Dig:g</code></p>
+<p>执行前：</p>
+<blockquote>
+<p>High 65 to 70. Southeast wind around 10</p>
+</blockquote>
+<p>执行后：</p>
+<blockquote>
+<p>High DigDig to 70. Southeast wind around 10</p>
+</blockquote>
+<p>然后执行</p>
+<p><code>s:65:Dig:g</code></p>
+<p>执行前：</p>
+<blockquote>
+<p>High 65 to 70. Southeast wind around 10</p>
+</blockquote>
+<p>执行后：</p>
+<blockquote>
+<p>High Dig to 70. Southeast wind around 10</p>
+</blockquote>
+<p>通过放置一个反选符号（^）在字符区间的最前面可以很容易的去除不愿匹配的字符，下面将会匹配除大写字母外的任意字符，</p>
+<p><code>/[^A-Z]/</code></p>
+<p>我们可以使用字符区间重写匹配引号内的文本，</p>
+<p><code>/&quot;[^&quot;]\+&quot;/</code></p>
+<p>注意[]内部的元字符会失去其特殊的意义，所以如果你想要一个包含<code>-</code>的字符区间，把<code>-</code>放在最前面，如下表达式将会匹配所有的数字和<code>-</code>，</p>
+<p><code>/[-0-9]/</code></p>
+<p>同时<code>^</code>如果不在最前面，也会失去其特殊意义。</p>
+<p>现在考虑一个现实的例子，假设有一个语法检测器想找出所有不以大写字母开头的句子，下面的表达式可以实现这一点，</p>
+<p><code>\.\s\+[a-z]</code></p>
+<p>这将会匹配一个句号、一个或多个空格然后是一个小写字母，我们现在知道如何找到错误，下面来看看如何修复它。这里就需要我们记住前面的匹配值以便后面可以重新调用它，这就是反向引用大显身手的地方了。</p>
+<h3 id="4-5分组和反向引用"><a href="#4-5分组和反向引用" class="headerlink" title="4.5分组和反向引用"></a>4.5分组和反向引用</h3><p>你可以使用<code>\(\)</code>对模式匹配项进行分组，然后通过<code>\1, \2 ... \9</code>来引用。一个典型的例子为交换每一行的头两个单词，</p>
+<p><code>s:\(\w\+\)\(\s\+\)\(\w\+\):\3\2\1:</code></p>
+<p><code>\1</code>代表第一个单词，<code>\2</code>代表一个或多个空白符，<code>\3</code>代表第二个单词。如何知道哪个数字代表哪个匹配项，从左往右数<code>\(</code>的个数。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>含义</th>
+<th>#</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&amp;</td>
+<td>模式匹配到的全部内容</td>
+<td>\L</td>
+<td>将后面的字符都转换为小写</td>
+</tr>
+<tr>
+<td>\0</td>
+<td>同上</td>
+<td>\U</td>
+<td>将后面的字符都转换为大写</td>
+</tr>
+<tr>
+<td>\1</td>
+<td>第一个括号中匹配的内容</td>
+<td>\E</td>
+<td>end of \U and \L</td>
+</tr>
+<tr>
+<td>\2</td>
+<td>第二个括号中匹配的内容</td>
+<td>\e</td>
+<td>end of \U and \L</td>
+</tr>
+<tr>
+<td>…</td>
+<td>…</td>
+<td>\r</td>
+<td>将一行分为两行</td>
+</tr>
+<tr>
+<td>\9</td>
+<td>第九个括号中匹配的内容</td>
+<td>\I</td>
+<td>将下一个字符转换为小写</td>
+</tr>
+<tr>
+<td>~</td>
+<td>前面替换的字符串</td>
+<td>\u</td>
+<td>将下一个字符转换为大写</td>
+</tr>
+</tbody>
+</table>
+<p>看下上面的语法检查问题完整的表达式，</p>
+<p><code>s:\([.!?]\)\s\+\([a-z]\):\1  \u\2:g</code></p>
+<p>我们将0个或多个空白符替换为两个空格。</p>
+<h3 id="4-6备选"><a href="#4-6备选" class="headerlink" title="4.6备选"></a>4.6备选</h3><p>备选（alternation）是指用<code>\|</code>将多个表达式结合在一起，这样一旦有一个表达式匹配到，则整个表达式匹配成功，返回这个表达式匹配内容。（pingao注：类似于逻辑操作符|）</p>
+<p><code>\(Date:\|Subject:\|From:\)\(\s.*\)</code></p>
+<p>上面的表达式将会把邮件的头部和内容放在<code>\1</code>和<code>\2</code>中，对于备选需要注意的是，它不是贪婪匹配的，一旦多个表达式有一个表达式匹配到，后面的表达式将不再匹配，这意味着对于一个备选，表达式的顺序十分重要。</p>
+<blockquote>
+<p>Tip3:将<code>\(\)</code>快速的放在表达式中，<br><code>cmap ;\ \(\)&lt;Left&gt;&lt;Left&gt;</code></p>
+</blockquote>
+<h3 id="4-7正则表达式操作符的优先级"><a href="#4-7正则表达式操作符的优先级" class="headerlink" title="4.7正则表达式操作符的优先级"></a>4.7正则表达式操作符的优先级</h3><p>和算数表达式一样，正则表达式的运算符也有一定的优先级，下表从高到低列出了各个操作的优先级，</p>
+<table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>操作符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>\(\)</code></td>
+<td>分组</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>\=,\+,*,\&#123;n&#125;</code></td>
+<td>量词</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>abc\t\.\w</code></td>
+<td>字符、元字符</td>
+</tr>
+<tr>
+<td>4</td>
+<td>“\</td>
+<td>”  备选</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-全局命令"><a href="#5-全局命令" class="headerlink" title="5.全局命令"></a>5.全局命令</h2><h3 id="5-1全局搜索及执行"><a href="#5-1全局搜索及执行" class="headerlink" title="5.1全局搜索及执行"></a>5.1全局搜索及执行</h3><p>我想介绍另一个用处广泛功能强大的命令，</p>
+<blockquote>
+<p>:range g[lobal][!]/pattern/cmd<br>在range的范围内，在pattern匹配行执行Ex cmd（默认为:p[rint]），如果pattern前面加上一个!，表示pattern没有匹配的行。</p>
+</blockquote>
+<p>全局命令的工作原理为，第一遍扫描range范围的每一行，并对pattern匹配行做一个标记；第二遍对每一个标记行执行cmd。range默认为整个文件。</p>
+<p>注意：Ex command包括所有你在VIM命令行输入的命令，比如</p>
+<p><code>:s[ubstitute], :co[py] , :d[elete], :w[rite]</code></p>
+<p>非Ex command（normal command）也可以执行，</p>
+<p><code>:norm[al]non-ex command</code></p>
+<h3 id="5-2例子"><a href="#5-2例子" class="headerlink" title="5.2例子"></a>5.2例子</h3><p><code>:g/^$/ d</code></p>
+<p>-删除文件中所以的空行</p>
+<p><code>:g/^$/,/./-j</code></p>
+<p>-将多个空行转换为一个空行</p>
+<p><code>:10,20g/^/ mo 10</code></p>
+<p>-颠倒10到20行的顺序</p>
+<p>下面是一个来自 Walter Zintz vi教程的例子，例子有改动</p>
+<p><code>:&#39;a,&#39;b g/^Error/ . w &gt;&gt; errors.txt</code></p>
+<p>-在标记’a和’b之间找到以Error开始的行，然后将这些行追加到errors.txt。注意：w前面的.（当前行）不要漏掉，否则将会把整个文件追加到errors.txt中。</p>
+<p>你可以使用<code>|</code>作为分隔符执行多个命令，如果你想在参数中使用<code>|</code>，要用<code>\</code>对其进行转义。 Zintz的另一个例子，</p>
+<p><code>:g/^Error:/ copy $ | s /Error/copy of the error/</code></p>
+<p>将所有Error行拷贝到文件的最后，然后将Error替换为copy of the error。s命令没有指定地址，默认为当前行。</p>
+<p><code>:g/^Error:/ s /Error/copy of the error/ | copy $</code></p>
+<p>将上面的操作顺序颠倒了一下，先替换后复制。</p>
+<h2 id="6-更多的例子"><a href="#6-更多的例子" class="headerlink" title="6.更多的例子"></a>6.更多的例子</h2><h3 id="6-1小贴士"><a href="#6-1小贴士" class="headerlink" title="6.1小贴士"></a>6.1小贴士</h3><p>(1)由Antonio Colombo提供</p>
+<p>去掉所有行尾部的空白符，</p>
+<p><code>s:\s*$::</code>或者<code>s:\s\+$::</code></p>
+<h3 id="6-2创建一个大纲"><a href="#6-2创建一个大纲" class="headerlink" title="6.2创建一个大纲"></a>6.2创建一个大纲</h3><p>这个例子需要你有点html的背景，我们需要将<code>&lt;h1&gt;</code>和<code>&lt;h2&gt;</code>标签中的标题和副标题分离出来，做一个表格。</p>
+<p>(1)首先我们给每个标签做一个标记，<code>&lt;h1&gt;&lt;a name=&quot;anchor&quot;&gt;Heading&lt;/a&gt;&lt;/h1&gt;</code>，anchor是标签的唯一标示，实现表达式如下，</p>
+<pre><code>:s:\(&lt;h[12]&gt;\)\(.*\s\+\([-a-zA-Z]\+\)\)\s*\(&lt;/h[12]&gt;\):\1&lt;a name=&quot;\3&quot;&gt;\2&lt;/a&gt;\4:
+</code></pre><p>说明：</p>
+<p>(2)接下来，将标题拷贝到一个地方，</p>
+<p><code>:%g/&lt;h[12]&gt;/ t$</code></p>
+<p>上面的命令将会把<code>&lt;h1&gt;</code>和<code>&lt;h2&gt;</code>标签所在行拷贝到文件的最后。现在文件的样子如下，</p>
+<pre><code class="html">&lt;h1&gt;&lt;a name=&quot;anchor1&quot;&gt;Heading1&gt;&lt;/a&gt;&lt;/h1&gt;
+&lt;h2&gt;&lt;a name=&quot;anchor2&quot;&gt;Heading2&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;h2&gt;&lt;a name=&quot;anchor3&quot;&gt;Heading3&gt;&lt;/a&gt;&lt;/h2&gt;
+..........................
+&lt;h1&gt;&lt;a name=&quot;anchorN&quot;&gt;HeadingN&gt;&lt;/a&gt;&lt;/h1&gt;
+</code></pre>
+<p>第一步，为了要把表格的元素链接到各自的位置，我们要把<code>name=&quot;</code>替换为<code>href=&quot;#</code>。</p>
+<p><code>s:name=&quot;:href=&quot;#:</code></p>
+<p>第二步，要让<code>h1</code>与<code>h2</code>看起来不同，我们定义”majorhead”和”minorhead”两个CSS类，</p>
+<pre><code class="regex">g/&lt;h1&gt;/ s:&lt;a:&amp; class=&quot;majorhead&quot;:
+g/&lt;h2&gt;/ s:&lt;a:&amp; class=&quot;minorhead&quot;:
+</code></pre>
+<p>现在文件看起来像这样，</p>
+<pre><code class="html">&lt;h1&gt;&lt;a class=&quot;majorhead&quot; name=&quot;anchor1&quot;&gt;Heading1&gt;&lt;/a&gt;&lt;/h1&gt;
+&lt;h2&gt;&lt;a class=&quot;minorhead&quot; name=&quot;anchor2&quot;&gt;Heading2&gt;&lt;/a&gt;&lt;/h2&gt;
+#（pingao注：我认为此时文件应该是这样的）
+&lt;h1&gt;&lt;a class=&quot;majorhead&quot; href=&quot;#&quot;&gt;Heading1&gt;&lt;/a&gt;&lt;/h1&gt;
+&lt;h2&gt;&lt;a class=&quot;minorhead&quot; href=&quot;#&quot;&gt;Heading2&gt;&lt;/a&gt;&lt;/h2&gt;
+</code></pre>
+<p>我们不再需要<code>&lt;h1&gt;</code>和<code>&lt;h2&gt;</code>标签，</p>
+<p><code>s:&lt;h[21]&gt;::</code></p>
+<p>替换<code>&lt;/h1&gt;</code>和<code>&lt;/h2&gt;</code>标签为<code>&lt;br&gt;</code>，</p>
+<p><code>s:/h[21]:br:</code></p>
+<p>现在文件的样子，</p>
+<pre><code class="html">&lt;a class=&quot;majorhead&quot; name=&quot;anchor1&quot;&gt;Heading1&gt;&lt;/a&gt;&lt;br&gt;
+&lt;a class=&quot;minorhead&quot; name=&quot;anchor2&quot;&gt;Heading2&gt;&lt;/a&gt;&lt;br&gt;
+#（pingao注：我认为此时文件应该是这样的）
+&lt;a class=&quot;majorhead&quot; href=&quot;#&quot;&gt;Heading1&gt;&lt;/a&gt;&lt;br&gt;
+&lt;a class=&quot;minorhead&quot; href=&quot;#&quot;&gt;Heading2&gt;&lt;/a&gt;&lt;br&gt;
+</code></pre>
+<h3 id="6-3处理表格"><a href="#6-3处理表格" class="headerlink" title="6.3处理表格"></a>6.3处理表格</h3><p>很多情况下，你需要处理表格形式的文本。例如，下面的文本，</p>
+<pre><code> Asia    America  Africa   Europe
+ Africa  Europe   Europe   Africa
+ Europe  Asia     Europe   Europe
+ Asia    America  Africa   Europe
+ Africa  Europe   Asia     Africa
+ Europe  Asia     Asia     Europe
+ Europe  America  Africa   Asia
+ Africa  Europe   Europe   Africa
+ Europe  Asia     Europe   Europe
+</code></pre><p>假设你想把第三列的”Europe”替换为 “Asia”，</p>
+<p><code>:%s:\(\(\w\+\s\+\)\&#123;2&#125;\)Europe:\1Asia:</code></p>
+<p>交换前两列，</p>
+<p><code>:%s:\(\w\+\)\(.*\s\+\)\(\w\+\)$:\3\2\1:</code></p>
+<p>未完待续…</p>
+<h2 id="7-其他语言正则表达式特点"><a href="#7-其他语言正则表达式特点" class="headerlink" title="7.其他语言正则表达式特点"></a>7.其他语言正则表达式特点</h2><p>现在我将VIM的正则表达式与其他语言的正则表达式做一个对比，特别是Perl。提起正则表达式，Perl肯定不得不提。</p>
+<p>（在Steve Kirkendall的帮助下整理）Perl和VIM的主要区别为，</p>
+<ul>
+<li>Perl的大多数元字符不需要反斜杠。个人认为，反斜杠越少越好，这样正则表达式会更加可读。</li>
+<li>Perl中你可以在量词后加上一个?将贪婪模式的量词转换为非贪婪模式， 比如*?为非贪婪模式的*。</li>
+<li>Perl的正则表达式支持各种奇怪的选项。</li>
+<li>Perl的正则表达式可以包含变量，变量将会替换为具体的值，这称作”变量替换”。</li>
+</ul>
+<h2 id="8-链接"><a href="#8-链接" class="headerlink" title="8.链接"></a>8.链接</h2><p>在正常模式下，输入”:help pattern”，阅读VIM帮助文档的正则表达式和搜索章节。</p>
+<p>市场上有两本不错的介绍VIM正则表达式的书，</p>
+<ul>
+<li>“Learning the vi Editor” by Linda Lamb and Arnold Robbins.</li>
+<li>“vi Improved - VIM” by Steve Oualline</li>
+</ul>
+<p>Jeffrey Friedl的”Mastering Regular Expressions”是一本正则表达式的权威指南，此书主要介绍Perl的正则表达式，由O’Reilly出版，官网上有一章免费。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Vim/" rel="tag">Vim</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2022
+    <span class="author">
+        nonsense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2015/11/01/VIM中的正则表达式/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2015/11/01/VIM中的正则表达式/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = 'VIM中的正则表达式';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

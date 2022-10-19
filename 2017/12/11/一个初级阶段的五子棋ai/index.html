@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>一个初级阶段的五子棋ai - 扯淡有理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=五子棋,minimax,alpha-beta>
+  
+    <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.initHighlightingOnLoad();
+  </script>
+  <script type='text/x-mathjax-config'>
+        MathJax.Hub.Config({
+            extensions: ["tex2jax.js"],
+            jax: ["input/TeX", "output/SVG"],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+            },
+            messageStyle: "none"
+        });
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-44085500-1');
+    </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">一个初级阶段的五子棋ai</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2017-12-11</span>
+  </div>
+  <div class="post-content">
+    <h2 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h2><p>16年alpha狗接连击败李世石和柯洁后，自己就有个想法，能不能利用机器学习也鼓捣一个类似的五子棋ai？最初的想法是训练一个机器学习模型，喂给它一些棋局，让它自己能够学会落子规则，能够积累优势，最终取得胜利，而且随着下棋盘数的增加，自身的能力可以进一步的提高。但是传统的机器学习需要输入和响应，对于一局棋输入和响应又是什么呢，搜肠刮肚的把自己知道的的几种算法想了一遍，也在网上查了半天，或者模型太复杂，短时间没法掌握相关的知识，或者模型计算代价太高，动辄训练个几天，所谓远水解不了近渴，最好的能一个周末能整出一个初级的ai，能打败我就行，以后有时间功能可以慢慢加，这也是标题的由来。</p>
+<span id="more"></span>
+<h2 id="二、Minimax算法"><a href="#二、Minimax算法" class="headerlink" title="二、Minimax算法"></a>二、Minimax算法</h2><p>对于这种回合制的游戏，传统的方法就是利用minimax算法，那么什么是minimax算法呢，说白了，就是和人在脑子里模拟往下走几步一样，minimax算法也是模拟往下走棋，轮到自己时选自己最有利的，即max，轮到对方时选自己最不利的，即min，直到某一条件终止，然后选择一条对自己最有利的路径。由此可以看到，如果计算资源足够，计算机是可以找到一条可以使己方胜利的路径，但是事实上这是不可能的，以15X15的五子棋为例，大约有225!种可能的走法，想穷举出这么多种可能性，以目前的计算能力是达不到的，所以一般的做法是往下模拟走一定的步数，然后选择一条最优的。</p>
+<h2 id="三、评估函数"><a href="#三、评估函数" class="headerlink" title="三、评估函数"></a>三、评估函数</h2><p>由算法描述，必须有一种方法对当前的局势进行衡量，通常的方法就是使用评估函数。评估函数可以根据当前局势给出一个分数，使局势成为可量化的数值。具体到五子棋就是统计棋局中的活三、活四等模式并给予一定的分数然后将总的分数相加，具体请参考代码。</p>
+<h2 id="四、优化"><a href="#四、优化" class="headerlink" title="四、优化"></a>四、优化</h2><h3 id="1、Alpha-beta剪枝"><a href="#1、Alpha-beta剪枝" class="headerlink" title="1、Alpha-beta剪枝"></a>1、Alpha-beta剪枝</h3><p>单纯的minimax算法复杂度是非常高的，从算法的描述，算法的复杂度应该是$O(b^d)$,d是往后走的步数，b是每一步棋可选的位置。以五子棋为例，模拟走5步大约是$225^5=576650390625$，显然这个数目还是太大，所以需要引进alpha-beta剪枝。这种算法就是用一个变量alpha保存着max一方可以得到的最优值，beta保存着min一方只允许max一方获得的最优值，当beta小于等于alpha时其他的情况就不用再看了，因为最优值的上限就是beta。</p>
+<h3 id="2、减少可选的落子位置"><a href="#2、减少可选的落子位置" class="headerlink" title="2、减少可选的落子位置"></a>2、减少可选的落子位置</h3><p>下过五子棋的可能都知道，如果落子的位置离己方和对方的棋子太远是没有意义的，因此我把这个距离限制为2，这样把原来b从225减少到了20~30，这个优化是很可观的。</p>
+<h3 id="3、历史启发"><a href="#3、历史启发" class="headerlink" title="3、历史启发"></a>3、历史启发</h3><p>alpha-beta剪枝的效率是和下一步棋的顺序密切相关，如果最合适的那一步棋总是先计算那么算法的效率可以达到$O(b^\sqrt{d})$，这就相当于同样的时间原来只能往后推算5步，现在可以推算10步，而如果顺序不当，效率和没剪枝的minimax没什么两样。历史启发的原理就是记录那些发生剪枝次数最多的位置，以及得分的极值，赋予它们一定的值，以此来排序。</p>
+<p>最终的核心代码如下，</p>
+<pre><code class="java">private int alphaBeta(Board board, int depth, int alpha, int beta, Player player) &#123;
+    if (board.status().isGameOver() || depth &lt;= 0) &#123;
+        return board.evaluate(this, this.depth - depth);
+    &#125;
+
+    Board.Pos bestPos = null;
+    int v = (this == player) ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+    List&lt;Board.Pos&gt; childPos = sortChildPos(board);
+    for (Board.Pos pos : childPos) &#123;
+        Board bd = new Board(board);
+        bd.mark(pos, player);
+        int w = alphaBeta(bd, depth - 1, alpha, beta, bd.getEnemy(player));
+        if (this == player) &#123;
+            if (v &lt; w) &#123;
+                v = w;
+                bestPos = pos;
+                if (depth == this.depth) &#123;
+                    this.best = new Move(v, pos);
+                &#125;
+            &#125;
+            alpha = Integer.max(alpha, w);
+        &#125; else &#123;
+            if (v &gt; w) &#123;
+                v = w;
+                bestPos = pos;
+            &#125;
+            beta = Integer.min(beta, w);
+        &#125;
+
+        if (beta &lt;= alpha) &#123;
+            this.history[pos.getRow()][pos.getCol()] += 2 &lt;&lt; depth;
+            break;
+        &#125;
+    &#125;
+    if (bestPos != null) &#123;
+        this.history[bestPos.getRow()][bestPos.getCol()] += 2 &lt;&lt; depth;
+    &#125;
+    return v;
+&#125;
+</code></pre>
+<h2 id="五、战力如何"><a href="#五、战力如何" class="headerlink" title="五、战力如何"></a>五、战力如何</h2><p>首先是人机对战，当推算的步数达到4步时，我是没赢过，但是这并不能说明它的战力有多强，只能说明我的水平很臭，但是我的初步目标达到了；其次我让两个同等级的电脑对战50局，战绩如下，</p>
+<table>
+<thead>
+<tr>
+<th>等级（步数）</th>
+<th>先手赢</th>
+<th>后手赢</th>
+<th>平局</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>40</td>
+<td>10</td>
+<td>0</td>
+</tr>
+<tr>
+<td>2</td>
+<td>16</td>
+<td>12</td>
+<td>22</td>
+</tr>
+<tr>
+<td>3</td>
+<td>27</td>
+<td>18</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<p>似乎印证了先手的胜率高一点。</p>
+<h2 id="六、下一步工作"><a href="#六、下一步工作" class="headerlink" title="六、下一步工作"></a>六、下一步工作</h2><ol>
+<li>可以看到ai的战力是和评估函数密切相关的，获取一个比较好的评估函数是一个优化的方向。</li>
+<li>目前ai不能自我学习，如何让ai自我学习，并逐步变强是另一个方向，这也是重点方向。</li>
+</ol>
+<p>如果想在我的代码上继续前进，请戳<a target="_blank" rel="noopener" href="https://github.com/naosense/NewBe">这里</a>，下图是一局电脑对战的动图。</p>
+<p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E4%B8%80%E4%B8%AA%E5%88%9D%E7%BA%A7%E9%98%B6%E6%AE%B5%E7%9A%84%E4%BA%94%E5%AD%90%E6%A3%8Bai/gomoku.gif" alt=""></p>
+<p>参考资料：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Minimax">Minimax</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning">Alpha-beta pruning</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Killer_heuristic">Killer_heuristic</a></li>
+</ol>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/alpha-beta/" rel="tag">alpha-beta</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/minimax/" rel="tag">minimax</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E4%BA%94%E5%AD%90%E6%A3%8B/" rel="tag">五子棋</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2022
+    <span class="author">
+        nonsense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2017/12/11/一个初级阶段的五子棋ai/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2017/12/11/一个初级阶段的五子棋ai/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '一个初级阶段的五子棋ai';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>大道至简：朴素贝叶斯分类器 - 扯淡有理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=机器学习,贝叶斯>
+  
+    <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.initHighlightingOnLoad();
+  </script>
+  <script type='text/x-mathjax-config'>
+        MathJax.Hub.Config({
+            extensions: ["tex2jax.js"],
+            jax: ["input/TeX", "output/SVG"],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+            },
+            messageStyle: "none"
+        });
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-44085500-1');
+    </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">大道至简：朴素贝叶斯分类器</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2015-10-11</span>
+  </div>
+  <div class="post-content">
+    <blockquote>
+<p>万物之始,大道至简,衍化至繁。</p>
+<p>　　　　　　　——ifelse(is.element(this, 道德经), 道德经, unknown)</p>
+</blockquote>
+<p>一、背景<br>提到贝叶斯分类，首先来看下贝叶斯其人，贝叶斯(Thomas Bayes,1701—1761)英国牧师、业余数学家。可别小看了欧洲的牧师，孟德尔，被誉为“遗传学之父”也曾为一名神父，假如你不记得孟德尔是谁，那么你肯定记得高中生物上那个著名的豌豆实验。</p>
+<span id="more"></span>
+<p>具有讽刺意味的是，当初贝叶斯发明概率统计理论是为了证明上帝的存在，而至死这个愿望都没有实现，不过感谢伟大的贝叶斯，因为他的无心插柳，才有了今天的贝叶斯公式。接下来，来一睹贝叶斯公式的风采，</p>
+<p>$$P(B|A)=\frac{P(B)P(A|B)}{P(A)}$$</p>
+<p>公式看起来是不是很简洁，看起来很有对称美。记得上学那会数学老师的一句话，假如你算出来的答案不够简洁，那么多半这道题你算错了。贝叶斯公式有什么意义呢？<strong>它解决了两个事件条件概率的转换问题</strong>。比如说，已知感冒导致流鼻涕的概率，那么流鼻涕有多大的概率感冒呢？贝叶斯可以解决这类问题。</p>
+<p>二、贝叶斯分类</p>
+<p>贝叶斯可以解决条件概率转换，可是它怎么与分类联系起来的呢？</p>
+<p>让我以一个例子加以说明，假设有这样一个数据集（本例来自<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2013/12/naive_bayes_classifier.html">朴素贝叶斯分类器的应用</a>），</p>
+<blockquote>
+<p>症状(A1) 职业(A2)　疾病(B)<br>打喷嚏　  护士　　　感冒<br>打喷嚏　  农夫　　　过敏<br>头痛　　  建筑工人　脑震荡<br>头痛　　  建筑工人　感冒<br>打喷嚏　  教师　　　感冒<br>头痛　　  教师　　　脑震荡</p>
+</blockquote>
+<p>那么一个打喷嚏的建筑工人是感冒还是没感冒呢？<br>根据贝叶斯定理，</p>
+<blockquote>
+<p>P(感冒|打喷嚏x建筑工人) = P(打喷嚏x建筑工人|感冒) x P(感冒) / P(打喷嚏x建筑工人)</p>
+</blockquote>
+<p>假定”打喷嚏”和”建筑工人”这两个特征是独立的，因此，上面的等式就变成了</p>
+<blockquote>
+<p>P(感冒|打喷嚏x建筑工人) = P(打喷嚏|感冒) x P(建筑工人|感冒) x P(感冒) / P(打喷嚏) x P(建筑工人) = 0.66 x 0.33 x 0.5 / 0.5 x 0.33 = 0.66<br>同理，<br>P(非感冒|打喷嚏x建筑工人) = P(打喷嚏|非感冒) x P(建筑工人|非感冒) x P(非感冒) / P(打喷嚏) x P(建筑工人) = 0.33 x 0.33 x 0.5 / 0.5 x 0.33 = 0.33</p>
+<p>因为P(感冒|打喷嚏x建筑工人)  &gt; P(非感冒|打喷嚏x建筑工人) ，所以我们更愿意相信一个打喷嚏的建筑工人是感冒的。</p>
+</blockquote>
+<p>从上面的例子可以看出，贝叶斯分类的步骤是这样的：</p>
+<ol>
+<li>设$x = {a_1,a_2,\cdots}$为一个待分类项，每个a为x的一个特征属性。</li>
+<li>有类别集合$C = {y_1,y_2,\cdots,y_n}$.</li>
+<li>根据训练集计算，$P(y_1|x), P(y_2|x),\cdots,P(y_n|x)$.</li>
+<li>如果$P(y_k|x)=max{P(y_1|x), P(y_2|x),\cdots,P(y_n|x)}$，则$x$的分类为$y_k$。</li>
+</ol>
+<p>说到贝叶斯分类，还有几个需要注意的问题：</p>
+<ol>
+<li>如果已知条件不止一个属性，二是多个呢，这个时候贝叶斯公式可以写作$$P(y|a_1a_2\cdots)=\frac{P(y)P(a_1a_2\cdots|y)}{P(a_1a_2\cdots)}=\frac{P(y)P(a_1|y)P(a_2|y)\cdots}{P(a_1)P(a_2)\cdots}$$上述公式假设特征属性$a_1,a_2\cdots$相互独立，这也是“朴素”一词的由来。另外，可以看到对于不同的分类，分母都是恒定的，而我们只想找到概率最大的类别，因此可以把分母省略，求条件概率的相对值，$$P(y|a_1a_2\cdots)_{relative}=P(y)P(a_1|y)P(a_2|y)\cdots$$</li>
+<li>不知道大家有没有注意到，上面的已知条件都是离散值，如果是连续值呢，对于连续值通常有两种办法，一是将连续值截取为离散值，然后求概率，二是假定离散值服从高斯分布，即$$f(x)=\frac{1}{\sqrt{2\pi}\sigma}exp(-\frac{(x-\mu)^2}{2\sigma^2})$$因为我们只需求概率的相对值，所以这里只需计算属性的概率密度值即可。</li>
+<li>还有一个问题，当某些类别下某个特征值计数为0，即$P(a_i|y_j)$=0，这会使某些分类最终的概率为0，会降低分类器的准确性，为了解决这个问题，引入Laplace校准，就是对这些类别的某些特征值计数加1，这样如果训练样本集数量充分大时，并不会对结果产生影响。</li>
+</ol>
+<p>如果想更详细的了解贝叶斯分类，请参考这两篇文章<a target="_blank" rel="noopener" href="http://www.cnblogs.com/leoo2sk/archive/2010/09/17/naive-bayesian-classifier.html">分类算法之朴素贝叶斯分类</a>和<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2013/12/naive_bayes_classifier.html">朴素贝叶斯分类器的应用</a>。</p>
+<p>接下来，我用R语言实现一个分类器并用一些数据集测试分类效果。</p>
+<p>三、算法实现</p>
+<p>程序主要由三部分组成：</p>
+<p>分类器主要由下面几个函数组成，具体的代码见<a target="_blank" rel="noopener" href="https://github.com/naosense">GitHub</a>。</p>
+<pre><code># 1.求各个分类概率P(ycol)
+get.ytable &lt;- function(ycol, trainset)
+# 2.1求离散属性xcol的条件概率P(xcol|ycol)
+get.discrete.xtable &lt;- function(xcol, ycol, trainset)
+# 2.2求连续属性xcol的概率密度，假设服从高斯分布
+get.continout.xdensity &lt;- function(xcol, ycol, trainset)
+# 3.对于某些概率为零的类别，采用Laplace校准设置默认值
+get.defaultx &lt;- function(ycol, trainset)
+# 注：xcol特征属性，ycol类别属性，trainset训练集
+</code></pre><p>下面以基础包里的<em>iris</em>数据集验证一下分类器的效果，选取前四列为特征，预测鸢尾花的种类，</p>
+<p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E5%A4%A7%E9%81%93%E8%87%B3%E7%AE%80%EF%BC%9A%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8/iris_1,2,3,4.png" alt=""></p>
+<p>图上有两条曲线，黑色为我实现的贝叶斯分类器，红色虚线为<em>e1071</em>包里的一个贝叶斯分类器实现。观察可得，随着训练集样本数的增加，测试集的分类正确率越来越高。</p>
+<p>再来看看特征属性的选取对正确率的影响，</p>
+<p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E5%A4%A7%E9%81%93%E8%87%B3%E7%AE%80%EF%BC%9A%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8/iris_2.png" alt=""></p>
+<p>这次只选择了第二列（花萼宽度）作为特征值，可以看到正确率明显下降了。</p>
+<p>再来看一个多分类问题，采用<a href="https://naosense.github.io/2017/11/16/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF%EF%BC%88%E4%B8%8A%EF%BC%89/">北京二手房</a>这个数据集，</p>
+<p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E5%A4%A7%E9%81%93%E8%87%B3%E7%AE%80%EF%BC%9A%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8/houses_price,school,area.png" alt=""></p>
+<p>通过房价和是否学区这两列来预测房子所在的区，可以看到这两个特征属性的预测正确率稳定在0.4左右，下面再添加户型、朝向、楼层三列，</p>
+<p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E5%A4%A7%E9%81%93%E8%87%B3%E7%AE%80%EF%BC%9A%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8/houses_price,school,zone,direction,floor,area.png" alt=""></p>
+<p>上图显示，添加了三个特征属性后，正确率并没有明显的改善，但是如果再添加一个区域列(con)，</p>
+<p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E5%A4%A7%E9%81%93%E8%87%B3%E7%AE%80%EF%BC%9A%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%88%86%E7%B1%BB%E5%99%A8/houses_price,school,zone,direction,con,floor,area.png" alt=""></p>
+<p>由图观察，添加了区域这一列后，正确率得到了大幅度的提升，事实上仅保留区域这一列，预测的正确率也很高，这是因为区域(con)与区(area)的相关性较强。</p>
+<p>根据我实验的结果，通常情况下，提高预测正确率的方法有两种：</p>
+<ol>
+<li>增加训练集样本数，但是样本到达一定的数目正确率就保持稳定，很难再提高了。</li>
+<li>选取恰当的特征，注意单纯的增加特征数目并不能提高正确率，反而会引入更多的误差造成过拟合。</li>
+</ol>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag">机器学习</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E8%B4%9D%E5%8F%B6%E6%96%AF/" rel="tag">贝叶斯</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2022
+    <span class="author">
+        nonsense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2015/10/11/大道至简：朴素贝叶斯分类器/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2015/10/11/大道至简：朴素贝叶斯分类器/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '大道至简：朴素贝叶斯分类器';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

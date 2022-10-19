@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Java的equals和hashCode方法浅谈 - 扯淡有理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=Java>
+  
+    <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.initHighlightingOnLoad();
+  </script>
+  <script type='text/x-mathjax-config'>
+        MathJax.Hub.Config({
+            extensions: ["tex2jax.js"],
+            jax: ["input/TeX", "output/SVG"],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+            },
+            messageStyle: "none"
+        });
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-44085500-1');
+    </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Java的equals和hashCode方法浅谈</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2018-07-02</span>
+  </div>
+  <div class="post-content">
+    <h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><p><code>equals</code>和<code>hashCode</code>作为Java基础经常在面试中提到，比如下面几个问题：</p>
+<ol>
+<li><code>equals</code>和<code>==</code>有什么区别？</li>
+<li><code>equals</code>和<code>hashCode</code>有什么关系？</li>
+<li><code>equals</code>和<code>hashCode</code>如何编写？</li>
+</ol>
+<p>对于第一个问题不少人只停留在字符串<code>equals</code>比较的是内容，<code>==</code>比较的是内存地址，而对<code>equals</code>的本质极少过问。第二个问题，大多数都知道答案，也有不少记反了，但是更进一步为什么是那样的关系，就不知道了。对于第三个问题，大部分人一上手就把方法签名写错了，就别谈正确的写出实现了。带着这些问题，接下来谈谈自己的一点理解。</p>
+<span id="more"></span>
+<h2 id="二、equals方法"><a href="#二、equals方法" class="headerlink" title="二、equals方法"></a>二、equals方法</h2><p>先来看见<code>equals</code>方法的签名，</p>
+<pre><code class="java">public boolean equals(Object obj) &#123;
+  return (this == obj);
+&#125;
+</code></pre>
+<p>可以看到入参是<code>Object</code>，很多人没有注意到这一点，上来就写错了。equals方法顾名思义就判断对象的相等性，默认实现就是<code>==</code>，那么说到二者的区别，个人理解，<code>equals</code>方法是一种用户定义的“逻辑等”，而<code>==</code>是一种“物理等”，用俗语解释就是，<code>equals</code>判断是否相同，<code>==</code>判断是否一样。</p>
+<p><code>equals</code>方法在编写的时候需要遵循以下原则：</p>
+<ul>
+<li>自反性</li>
+<li>对称性</li>
+<li>传递性</li>
+<li>一致性</li>
+</ul>
+<p>下面展开说一下，</p>
+<ol>
+<li>自反性的意思是，对于一个非<code>null</code>的对象x，<code>x.equals(x)</code>一定为<code>true</code>，这是显而易见的，无须赘述。</li>
+<li><p>对称性，对于非<code>null</code>对象x、y，<code>x.equals(y) == true</code>，当且仅当<code>y.equals(x) == true</code>。来看一个来自《Effective Java》的例子，</p>
+<pre><code class="java"> // Broken - violates symmetry!
+ public final class CaseInsensitiveString &#123;
+   private final String s;
+
+   public CaseInsensitiveString(String s) &#123;
+     this.s = Objects.requireNonNull(s);
+   &#125;
+
+   // Broken - violates symmetry!
+   @Override public boolean equals(Object o) &#123;
+     if (o instanceof CaseInsensitiveString)
+       return s.equalsIgnoreCase(
+           ((CaseInsensitiveString) o).s);
+     if (o instanceof String)  // One-way interoperability!
+       return s.equalsIgnoreCase((String) o);
+     return false;
+   &#125;
+   ...  // Remainder omitted
+ &#125;
+ CaseInsensitiveString cis = new CaseInsensitiveString(&quot;Polish&quot;);
+ String s = &quot;polish&quot;;
+ List&lt;CaseInsensitiveString&gt; list = new ArrayList&lt;&gt;();
+ list.add(cis);
+ // true or false
+ list.contains(s);
+</code></pre>
+<p> 在JDK8运行<code>list.contains(s)</code>返回<code>false</code>，但是有的JDK可能会返回<code>true</code>，甚至直接崩溃，所以如果违反了对称性，程序的行为是不可预测的。</p>
+</li>
+<li><p>传递性，对于非<code>null</code>对象x、y、z，如果<code>x.equals(y) == true</code>且<code>y.equals(z) == true</code>，那么<code>x.equals(z) == true</code>。同样是来自《Effective Java》的一个例子，</p>
+<pre><code class="java"> public class Point &#123;
+   private final int x;
+   private final int y;
+
+   public Point(int x, int y) &#123;
+     this.x = x;
+     this.y = y;
+   &#125;
+
+   @Override public boolean equals(Object o) &#123;
+     if (!(o instanceof Point))
+       return false;
+     Point p = (Point)o;
+     return p.x == x &amp;&amp; p.y == y;
+   &#125;
+
+   ...  // Remainder omitted
+ &#125;
+
+ public class ColorPoint extends Point &#123;
+   private final Color color;
+
+   public ColorPoint(int x, int y, Color color) &#123;
+     super(x, y);
+     this.color = color;
+   &#125;
+
+   // Broken - violates transitivity!
+   @Override public boolean equals(Object o) &#123;
+     if (!(o instanceof Point))
+       return false;
+
+     // If o is a normal Point, do a color-blind comparison
+     if (!(o instanceof ColorPoint))
+       return o.equals(this);
+
+     // o is a ColorPoint; do a full comparison
+     return super.equals(o) &amp;&amp; ((ColorPoint) o).color == color;
+   &#125;
+
+   ...  // Remainder omitted
+ &#125;
+
+ ColorPoint p1 = new ColorPoint(1, 2, Color.RED);
+ Point p2 = new Point(1, 2);
+ ColorPoint p3 = new ColorPoint(1, 2, Color.BLUE);
+</code></pre>
+<p> 显然<code>ColorPoint</code>的<code>equals</code>实现违反了传递性，<code>p1.equals(p2) == p2.equals(p3) != p1.equals(p3)</code>。假如<code>Point</code>有两个子类<code>ColorPoint</code>和<code>SmellPoint</code>，<code>colorPoint.equals(smellPoint)</code>将会导致无限递归，最终导致内存耗尽。引用《Effective Java》的说法，</p>
+<blockquote>
+<p>There is no way to extend an instantiable class and add a value component while preserving the equals contract, unless you’re willing to forgo the benefits of object-oriented abstraction.</p>
+</blockquote>
+<p> 这句话的大意是如果你继承扩展一个类，就没法再保持<code>equals</code>的原则了，除非放弃使用继承。放弃继承？这不是让我们因噎废食嘛，咦，别说，还真能放弃继承，那就是组合，因为本文的重点是<code>equals</code>和<code>hashCode</code>就不展开了。</p>
+</li>
+<li><p>一致性，对于非<code>null</code>对象x、y，多次调用<code>x.equals(y)</code>返回一致。一致性意味着<code>equals</code>方法不要依赖不可靠的变量，这里“可靠”的意思不光意味着“不该变时不变”，还意味着“想获取时能获取到”，比如<code>java.net.URL</code>的<code>equals</code>实现依赖了ip地址，而网络故障时无法获取ip，这是一个不好的实现。</p>
+</li>
+</ol>
+<p>说了那么多，有人可能会说，哎呀这么多原则顾头不顾尾，都要满足，太难了吧，下面列出实现<code>equals</code>的一些tips，照着做实现起来就易如反掌，</p>
+<ol>
+<li>使用<code>==</code>判断是否为<code>null</code>或<code>this</code>，如果是前者返回<code>false</code>，后者就返回<code>true</code>。</li>
+<li>使用<code>instanceof</code>检测是否是正确的类型，如果不是直接返回<code>false</code>，如果是，强制转换为正确的类型，然后比较与“逻辑等”相关的变量。</li>
+</ol>
+<h2 id="三、hashCode方法"><a href="#三、hashCode方法" class="headerlink" title="三、hashCode方法"></a>三、hashCode方法</h2><p><code>hashCode</code>主要用来在Java中哈希数据结构<code>HashMap</code>、<code>HashSet</code>生成哈希值，<code>hashCode</code>的方法签名，</p>
+<pre><code class="java">public native int hashCode();
+</code></pre>
+<p>默认实现会将对象的内存地址转化为一个整数，因此只有同一个对象<code>hashCode</code>才一样，即使两个<code>equals</code>返回<code>true</code>的对象<code>hashCode</code>也不一样，如果不进行重写。和<code>equals</code>一样，<code>hashCode</code>也需要满足一些原则：</p>
+<ol>
+<li><p>一致性，和<code>equals</code>相关的变量没有变化，<code>hashCode</code>返回值也不能变化。</p>
+</li>
+<li><p>两个对象<code>equals</code>返回<code>true</code>，<code>hashCode</code>返回值应该相等。由上面得知，<code>hashCode</code>默认实现不满足这一条件，因此任何类如果实现了<code>equals</code>就必须实现<code>hashCode</code>，确保二者的步调一致，下面来看一个反例，</p>
+<pre><code class="java"> public class Person &#123;
+   private int age;
+   private String name;
+
+   public Person(int age, String name) &#123;
+     this.age = age;
+     this.name = name;
+   &#125;
+
+   @Override
+     public boolean equals(Object obj) &#123;
+       if (obj == null) &#123;
+         return false;
+       &#125;
+       if (obj == this) &#123;
+         return true;
+       &#125;
+
+       if (obj instanceof Person) &#123;
+         Person that = (Person) obj;
+         return age == that.age &amp;&amp; Objects.equals(name, that.name);
+       &#125;
+
+       return false;
+     &#125;
+ &#125;
+
+ Map&lt;Person, Integer&gt; map = new HashMap&lt;&gt;();
+ map.put(new Person(10, &quot;小明&quot;), 1);
+ map.get(new Person(10, &quot;小明&quot;));
+</code></pre>
+<p> 初学者可能觉得最后一条语句会返回1，事实上返回的是<code>null</code>，为什么会这样呢？明明将数据放进去了，而数据却像被黑洞吞噬一样，要解释得从<code>HashMap</code>的数据结构说起，<code>HashMap</code>是由数组和链表组成的一种组合结构，如下图，往里存放时，<code>hashCode</code>决定数组的下标，而<code>equals</code>用于查找值是否已存在，存在的话替换，否则插入；往外取时，先用<code>hashCode</code>找到对应数组下标，然后用<code>equals</code>挨个比较直到链表的尾部，找到返回相应值，找不到返回null。再回过头看刚才的问题，先放进去一个<code>new Person(10, &quot;小明&quot;)</code>，然后取的时候又新建了一个<code>new Person(10, &quot;小明&quot;)</code>，由于没有重写<code>hashCode</code>，这两个对象的<code>hashCode</code>是不一样的，存和取的数组下标也就不一样，自然取不出来了。</p>
+<p> <img src="https://wocanmei-hexo.nos-eastchina1.126.net/Java%E7%9A%84equals%E5%92%8ChashCode%E6%96%B9%E6%B3%95%E6%B5%85%E8%B0%88/hashmap.png" alt="HashMap数据结构"></p>
+</li>
+<li><p>两个对象<code>equals</code>返回<code>false</code>，<code>hashCode</code>返回值可以相等，但是如果不等的话，可以改进哈希数据结构的性能。这条原则也可以用<code>HashMap</code>的数据结构解释，举一个极端的例子，假如<code>Person</code>所有对象的<code>hashCode</code>都一样，那么<code>HashMap</code>内部数组的下标都一样，数据就会进到同一张链表里，这张链表比正常情况下要长的多，而遍历链表是一项耗时的工作，性能也就下来了。</p>
+</li>
+</ol>
+<p>那么如何写一个好的<code>hashCode</code>呢？</p>
+<ol>
+<li>声明一个变量<code>int</code>的变量<code>result</code>，将第一个和<code>equals</code>相关的实例变量的<code>hashCode</code>赋值给它。</li>
+<li>然后按照下列规则依次计算剩下的实例变量的<code>hashCode</code>值<code>c</code>。<ol>
+<li>如果是null，设置一个常数，通常为0</li>
+<li>如果是原始类型，使用<code>Type.hashCode(f)</code>，<code>Type</code>为它们的装箱类型</li>
+<li>如果是数组，如果每一个元素都是相关的，可以使用<code>Arrays.hashCode</code>；否则将相关元素看作独立的变量计算</li>
+</ol>
+</li>
+<li>使用<code>result = 31 * result + c</code>的形式将每个变量的哈希值组合起来，最后返回<code>result</code>。</li>
+</ol>
+<p>参考资料：《Effective Java》</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2022
+    <span class="author">
+        nonsense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2018/07/02/Java的equals和hashCode方法浅谈/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2018/07/02/Java的equals和hashCode方法浅谈/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = 'Java的equals和hashCode方法浅谈';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

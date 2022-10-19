@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>MySQL事务隔离小记 - 扯淡有理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=事务,MySQL>
+  
+    <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+    <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
+  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.initHighlightingOnLoad();
+  </script>
+  <script type='text/x-mathjax-config'>
+        MathJax.Hub.Config({
+            extensions: ["tex2jax.js"],
+            jax: ["input/TeX", "output/SVG"],
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+            },
+            messageStyle: "none"
+        });
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-44085500-1');
+    </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">MySQL事务隔离小记</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2019-03-31</span>
+  </div>
+  <div class="post-content">
+    <p>大家都知道事务系统有四大特征：原子性、一致性、隔离性、持久性。隔离性是其中重要的一环，什么是隔离呢，顾名思义就是事务之间啥时候可见啥时候不可见，这就是MySQL的四个隔离级别：</p>
+<ul>
+<li>未提交读（read uncommited）</li>
+<li>提交读（read commited）</li>
+<li>可重复读（repeatable read）</li>
+<li>串行读（serializable）</li>
+</ul>
+<span id="more"></span>
+<p>其实前两种从名字上就能理解什么意思，未提交读是事务没提交呢，别的事务就读到了，也就是可以读取事务的中间状态，即常说的脏读，这违反了事务的原子性和一致性；提交读呢，只有事务提交了，其他事务才可以读取，提交读解决了脏读问题却存在如下问题，比如A事务和B事务并行执行，假设A事务第一次读取了字段name是“小明”，这个时候B事务修改了name为“小红”，接下来A事务又读取了这个字段，发现“小明”变成了“小红”，“小明”去哪了，说好的隔离呢，这种问题被称为不可重复读，所以有时候提交读也称为不可重复读。</p>
+<p>可重复读就是为解决不可重复读问题而出现的另一个隔离级别，也是MySQL的默认事务隔离级别。但是可重复读也不是完美无缺的，比如A事务和B事务同时执行，A先查找name字段为“小红”的记录发现没有，这时候B添加name为“小红”的记录，A又执行一次查询，发现有“小红”这条记录了，即所谓的幻行，A像产生了幻觉一样，这种问题被称为幻读。</p>
+<p>串行读就是所有的事务串行化执行，看似完美解决了所有的问题，却付出了加锁同步的代价。</p>
+<p>总结四种级别的问题矩阵：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">隔离级别</th>
+<th style="text-align:center">脏读</th>
+<th style="text-align:center">不可重复读</th>
+<th style="text-align:center">幻度</th>
+<th style="text-align:center">加锁读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">未提交读</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">提交读</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">可重复读</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">否</td>
+</tr>
+<tr>
+<td style="text-align:center">串行读</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">是</td>
+</tr>
+</tbody>
+</table>
+<p>综合来看，第一种隔离级别太低违反了原子性和一致性，最后一种串行读效率太低在实际项目中鲜见使用，第二第三种都有一个幻读的问题，接下来看看MySQL如何解决这个问题。</p>
+<p>MySQL使用了一种称之为多版本并发控制（MVCC）的机制，通过在每行记录后面保存两个隐藏列，一个保存了行的创建时间，一个保存了行的删除时间，这里的“时间”实际上是版本号，说到版本号你可能会猜测这应该是一种类似于乐观锁的并发控制机制，没错，MySQL就是通过这两个列实现了一种乐观锁。每当开始一个事务，系统版本号自动递增，事务开始的版本号作为事务的版本号，下面分别看看各种操作下这两个版本号是如何控制并发的。</p>
+<ul>
+<li>查询操作（select）时，读取创建时间小于等于事务版本且删除时间未定义或大于事务版本的那些行，翻译成人话就是只读取本次事务添加或之前就存在，并且至少截止到本次事务还没有删除的那些记录。</li>
+<li>插入时（insert），行的创建时间设置为当前系统版本号。</li>
+<li>删除时（delete），删除时间设为系统版本号。</li>
+<li>修改时（update），将当前版本号作为新行的创建时间和旧行的删除时间，可见修改相当于删除和插入两个动作。</li>
+</ul>
+<p>回过头看上面A第二次读取时如果按这种方式就不会出现幻行，因为A只会读取A之前就存在和A自身插入的行。但是MVCC如果工作在提交读的情况下，不就没法读取新提交的记录了，这与提交读的语义不是矛盾了？</p>
+<p>带着这个疑问去看MySQL官方说明，原来MySQL有一个<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_consistent_read">consistent read</a>的概念，MySQL通过快照（snapshot）给每个事务返回结果，在可重复读的情况下快照由<strong>本事务第一次</strong>读取操作决定，也就是快照在第一次读取操作时就定了（本事务如果更新或删除其他事务提交的记录将会更新快照），而提交读<strong>事务每次</strong>读取都会更新快照。那么问题来了，快照是如何生成的呢？其实MySQL增加的两列不是上面所述的“创建时间”和“删除时间”，而是DB_TRX_ID，即最后一个对本行进行操作的事务版本号，另一个是DB_ROLL_PTR，称为滚动指针，它指向<a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/glossary.html#glos_undo_log">undo log</a>，undo log中包含了恢复到未修改前数据的必要信息，比方说insert了一条记录，undo log里就存上一条delete。MySQL就是利用这两个隐藏列和undo log来构建快照的，下面以一个简单的示例说明一下，假设当前隔离级别为可重复读：</p>
+<p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E5%B0%8F%E8%AE%B0/undo_log.png" alt="快照构建示例"></p>
+<ol>
+<li>事务1首先insert一条name为小红的记录，undo log里插入一条delete记录：事务：1：delete 小红，DB_TRX_ID为事务版本号：1，DB_ROLL_PTR指向undo log的第1条记录</li>
+<li>事务2执行select name=小红操作，由于DB_TRX_ID小于当前事务版本2，所以小红这条记录对事务2可见，最终小红这条记录返回</li>
+<li>在事务2执行过程中，事务3将小红更新成了小明，DB_TRX_ID需要更新成最新的事务版本号3，DB_ROLL_PTR指向undo log的第2条记录：事务：3：update 小明-&gt;小红</li>
+<li>事务2又执行select name=小红操作，由于DB_TRX_ID大于2，也就是在当前事务之后修改的，所以需要借助undo log回滚构建快照（不是真正的回滚），执行DB_ROLL_PTR指向的记录：update：事务：3：update 小明-&gt;小红，name由小明变为小红，执行select语句还是返回这条记录</li>
+</ol>
+<p>当然MySQL真正的实现肯定比这复杂的多，这只是我根据看到的文档抽象的一个简化模型。</p>
+<p>参考资料：</p>
+<ul>
+<li>高性能MySQL</li>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-consistent-read.html">Consistent Nonlocking Reads</a></li>
+<li><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/5.7/en/innodb-multi-versioning.html">InnoDB Multi-Versioning</a></li>
+</ul>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E4%BA%8B%E5%8A%A1/" rel="tag">事务</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2022
+    <span class="author">
+        nonsense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2019/03/31/MySQL事务隔离小记/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2019/03/31/MySQL事务隔离小记/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = 'MySQL事务隔离小记';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>
