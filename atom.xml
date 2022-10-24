@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://naosense.github.io/"/>
-  <updated>2022-10-10T03:17:39.219Z</updated>
+  <updated>2022-10-24T09:35:31.077Z</updated>
   <id>https://naosense.github.io/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Hexo站点地图网址错误修复方法</title>
+    <link href="https://naosense.github.io/2022/10/19/Hexo%E7%AB%99%E7%82%B9%E5%9C%B0%E5%9B%BE%E7%BD%91%E5%9D%80%E9%94%99%E8%AF%AF%E4%BF%AE%E5%A4%8D%E6%96%B9%E6%B3%95/"/>
+    <id>https://naosense.github.io/2022/10/19/Hexo站点地图网址错误修复方法/</id>
+    <published>2022-10-19T07:12:01.000Z</published>
+    <updated>2022-10-24T09:35:31.077Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近升级了下hexo，部署的时候发现<code>sitemap.xml</code>全失效了，每个网址都增加了一个<code>%25</code>字符，比如原本应该是<code>https://naosense.github.io/2016/08/22/%E5%8A%A0%E5%AF%86%E5%92%8C%E8%A7%A3%E5%AF%86/</code>变成了如下所示网址，</p><p><img src="invalid_url.png" alt="invalid_url"></p><p>原因应该和升级Hexo版本有关系，<a href="https://carlos.mynet.tw/%E8%A7%A3%E6%B1%BAhexo%E5%BB%BA%E7%AB%8Bsitemap%E7%9A%84%E9%8C%AF%E8%AA%A4%E7%B6%B2%E5%9D%80%E5%85%A7%E5%AE%B9/">网上有一个办法</a>是修改<code>node_modules/hexo-generator-sitemap/sitemap.xml</code>的代码，但是我的原则是“用新不用旧，谁的问题谁解决”，看了下hexo-generator-sitemap的版本才1.2.0，最新版已经3.0.1了，果断升级，重新生成<code>sitemap.xml</code>，一切正常。</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;最近升级了下hexo，部署的时候发现&lt;code&gt;sitemap.xml&lt;/code&gt;全失效了，每个网址都增加了一个&lt;code&gt;%25&lt;/code&gt;字符，比如原本应该是&lt;code&gt;https://naosense.github.io/2016/08/22/%E5%8A%A0%
+      
+    
+    </summary>
+    
+    
+      <category term="Hexo, hexo-generator-sitemap" scheme="https://naosense.github.io/tags/Hexo-hexo-generator-sitemap/"/>
+    
+  </entry>
   
   <entry>
     <title>中国工业化成长的代价</title>
@@ -534,38 +557,6 @@
       <category term="Coursera" scheme="https://naosense.github.io/tags/Coursera/"/>
     
       <category term="算法" scheme="https://naosense.github.io/tags/%E7%AE%97%E6%B3%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>DrRacket使用技巧总结</title>
-    <link href="https://naosense.github.io/2018/12/03/DrRacket%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/"/>
-    <id>https://naosense.github.io/2018/12/03/DrRacket使用技巧总结/</id>
-    <published>2018-12-03T06:27:03.000Z</published>
-    <updated>2022-10-10T03:17:39.214Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="引用其他文件的函数"><a href="#引用其他文件的函数" class="headerlink" title="引用其他文件的函数"></a>引用其他文件的函数</h2><p>假设test.scm想引用max-two.scm中的一个函数max-two，可以这样，</p><p>test.scm</p><pre><code class="scheme">#lang sicp(#%require rackunit)(#%require &quot;max-two.scm&quot;)(max-two 2 3 4)</code></pre><span id="more"></span><p>max-two.scm</p><pre><code class="scheme">#lang sicp;; 千万别忘了这一句(#%provide (all-defined))(define (max-two x y z)  (define (min-three x y z)    (cond ((&gt;= x y) (if (&gt;= y z) z y))          (else (if (&gt;= x z) z x))))  (- (+ x y z) (min-three x y z)))</code></pre><h2 id="Window10安装sicp包"><a href="#Window10安装sicp包" class="headerlink" title="Window10安装sicp包"></a>Window10安装sicp包</h2><p>7.1版本ui界面安装pkg报错cadr: contract violation，可以使用命令行安装，命令如下：</p><pre><code class="scheme">raco pkg install --auto sicp</code></pre><h2 id="从Vim中运行scheme程序"><a href="#从Vim中运行scheme程序" class="headerlink" title="从Vim中运行scheme程序"></a>从Vim中运行scheme程序</h2><p>可以做如下配置：</p><pre><code class="scheme">augroup scheme    autocmd!    &quot; 加上&lt;esc&gt;可以避免弹出命令行必须按两次enter才能回到代码    autocmd filetype scheme nnoremap &lt;F9&gt; :w&lt;cr&gt;:! racket %&lt;cr&gt;&lt;esc&gt;augroup end</code></pre><p>这样直接按下<code>F9</code>就能运行了</p>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;引用其他文件的函数&quot;&gt;&lt;a href=&quot;#引用其他文件的函数&quot; class=&quot;headerlink&quot; title=&quot;引用其他文件的函数&quot;&gt;&lt;/a&gt;引用其他文件的函数&lt;/h2&gt;&lt;p&gt;假设test.scm想引用max-two.scm中的一个函数max-two，可以这样，&lt;/p&gt;
-&lt;p&gt;test.scm&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;scheme&quot;&gt;#lang sicp
-
-(#%require rackunit)
-(#%require &amp;quot;max-two.scm&amp;quot;)
-
-(max-two 2 3 4)
-&lt;/code&gt;&lt;/pre&gt;
-    
-    </summary>
-    
-      <category term="技术人生" scheme="https://naosense.github.io/categories/%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%94%9F/"/>
-    
-    
-      <category term="DrRacket" scheme="https://naosense.github.io/tags/DrRacket/"/>
-    
-      <category term="Lisp" scheme="https://naosense.github.io/tags/Lisp/"/>
     
   </entry>
   
