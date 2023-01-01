@@ -7,6 +7,20 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   
   <title>谁说大象不能跳舞：基于Java的Markdown预览插件 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="谁说大象不能跳舞：基于Java的Markdown预览插件 - 扯淡有理"/>
+  <meta name="twitter:description" content="&lt;p&gt;Java一直以来都给人留下了笨重的印象，按说插件这种轻量的任务根本和Java没啥关系，但是这次我要霸王硬上弓，让大象跳次舞。&lt;/p&gt;
+&lt;p&gt;跳什么舞呢？这是个问题，突然想起写博客一直困扰自己的一个问题：我一直使用Vim编写Markdown，有时候难免想看看效果，欣赏下文字跳动的样子，但是Vim不支持预览，自己一直用Chrome一款插件&lt;a href=&#34;https://chrome.google.com/webstore/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk&#34;&gt;Markdown Viewer&lt;/a&gt;进行预览，遗憾的是这款插件不支持动态刷新也不支持同步滚动，所以如果你没有一下点出十个信号的手速，这个操作是比较尴尬的。既然这样，能不能用Java整个插件呢？&lt;/p&gt;"/>
+  <meta name="twitter:image" content="https://wocanmei-hexo.nos-eastchina1.126.net/%E8%B0%81%E8%AF%B4%E5%A4%A7%E8%B1%A1%E4%B8%8D%E8%83%BD%E8%B7%B3%E8%88%9E%EF%BC%9A%E5%9F%BA%E4%BA%8EJava%E7%9A%84Markdown%E9%A2%84%E8%A7%88%E6%8F%92%E4%BB%B6/architecture.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="谁说大象不能跳舞：基于Java的Markdown预览插件 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="&lt;p&gt;Java一直以来都给人留下了笨重的印象，按说插件这种轻量的任务根本和Java没啥关系，但是这次我要霸王硬上弓，让大象跳次舞。&lt;/p&gt;
+&lt;p&gt;跳什么舞呢？这是个问题，突然想起写博客一直困扰自己的一个问题：我一直使用Vim编写Markdown，有时候难免想看看效果，欣赏下文字跳动的样子，但是Vim不支持预览，自己一直用Chrome一款插件&lt;a href=&#34;https://chrome.google.com/webstore/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk&#34;&gt;Markdown Viewer&lt;/a&gt;进行预览，遗憾的是这款插件不支持动态刷新也不支持同步滚动，所以如果你没有一下点出十个信号的手速，这个操作是比较尴尬的。既然这样，能不能用Java整个插件呢？&lt;/p&gt;"/>
+  <meta property="og:image" content="https://wocanmei-hexo.nos-eastchina1.126.net/%E8%B0%81%E8%AF%B4%E5%A4%A7%E8%B1%A1%E4%B8%8D%E8%83%BD%E8%B7%B3%E8%88%9E%EF%BC%9A%E5%9F%BA%E4%BA%8EJava%E7%9A%84Markdown%E9%A2%84%E8%A7%88%E6%8F%92%E4%BB%B6/architecture.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   
   <meta name="keywords" content=Java,Vim,Markdown,Python>
@@ -19,37 +33,47 @@
   
     <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
   
-  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
-  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
   <script>
-      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
   </script>
   <script type='text/x-mathjax-config'>
-        MathJax.Hub.Config({
-            extensions: ["tex2jax.js"],
-            jax: ["input/TeX", "output/SVG"],
-            tex2jax: {
-                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-            },
-            messageStyle: "none"
-        });
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', 'UA-44085500-1');
-    </script>
+    gtag('config', 'UA-44085500-1');
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
 
   
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
   <body>
     <div class="container">
@@ -92,10 +116,12 @@
     <p>Java一直以来都给人留下了笨重的印象，按说插件这种轻量的任务根本和Java没啥关系，但是这次我要霸王硬上弓，让大象跳次舞。</p>
 <p>跳什么舞呢？这是个问题，突然想起写博客一直困扰自己的一个问题：我一直使用Vim编写Markdown，有时候难免想看看效果，欣赏下文字跳动的样子，但是Vim不支持预览，自己一直用Chrome一款插件<a target="_blank" rel="noopener" href="https://chrome.google.com/webstore/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk">Markdown Viewer</a>进行预览，遗憾的是这款插件不支持动态刷新也不支持同步滚动，所以如果你没有一下点出十个信号的手速，这个操作是比较尴尬的。既然这样，能不能用Java整个插件呢？</p>
 <span id="more"></span>
-<h2 id="整体思路"><a href="#整体思路" class="headerlink" title="整体思路"></a>整体思路</h2><p>既然现在Markdown Viewer只能显示不能滚动，那么通过程序将Vim的某种位置信息传给浏览器，然后调用js滚动到这个位置不就可以了吗？想让浏览器显示网页而且网页的内容还得不停的变，需要一个Web服务器，这正是Java的强项。从浏览器到Java的路走通了，但是Vim到Java的路怎么走呢？由于Vim不支持Java，二者怎么通信呢，这时看到著名的胶水语言，编程语言界的媒婆Python是被Vim支持的，方案有了：让Python与Java通信。好，这样整个流程就通了。整体框架如下所示：</p>
+<h2 id="整体思路">整体思路</h2>
+<p>既然现在Markdown Viewer只能显示不能滚动，那么通过程序将Vim的某种位置信息传给浏览器，然后调用js滚动到这个位置不就可以了吗？想让浏览器显示网页而且网页的内容还得不停的变，需要一个Web服务器，这正是Java的强项。从浏览器到Java的路走通了，但是Vim到Java的路怎么走呢？由于Vim不支持Java，二者怎么通信呢，这时看到著名的胶水语言，编程语言界的媒婆Python是被Vim支持的，方案有了：让Python与Java通信。好，这样整个流程就通了。整体框架如下所示：</p>
 <p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E8%B0%81%E8%AF%B4%E5%A4%A7%E8%B1%A1%E4%B8%8D%E8%83%BD%E8%B7%B3%E8%88%9E%EF%BC%9A%E5%9F%BA%E4%BA%8EJava%E7%9A%84Markdown%E9%A2%84%E8%A7%88%E6%8F%92%E4%BB%B6/architecture.png" alt="architecture"></p>
-<h2 id="Java服务器"><a href="#Java服务器" class="headerlink" title="Java服务器"></a>Java服务器</h2><p>Web这片领域简直就是Java的主场，自然一点问题没有。以前学过Netty，一直没有派上用场，这次终于可以小试牛刀了。</p>
-<pre><code class="java">public class HttpRequestHandler extends SimpleChannelInboundHandler&lt;FullHttpRequest&gt; &#123;
+<h2 id="Java服务器">Java服务器</h2>
+<p>Web这片领域简直就是Java的主场，自然一点问题没有。以前学过Netty，一直没有派上用场，这次终于可以小试牛刀了。</p>
+<pre><code class="language-java">public class HttpRequestHandler extends SimpleChannelInboundHandler&lt;FullHttpRequest&gt; &#123;
 
     private MarkDownServer server;
 
@@ -130,7 +156,7 @@
 <p>先说服务器怎么和浏览器通信，最初定的是ajax，但是后来找到一种更好的方案WebSocket，WebSocket可以让浏览器和服务器保持长连接，有更好的流畅性和速度，这就是上面/ws所处理的内容。</p>
 <p>第二个问题，网页中的静态文件js和css需要让服务器返回，就像tomcat这些通用服务器做的那样，这里没什么复杂的，就是一个简单的文件读写，只有一点需要注意：文件的编码，否则页面会乱码。</p>
 <p>第三个问题，Python怎么和Java通信，最初采用的是<a target="_blank" rel="noopener" href="https://www.py4j.org/">py4j</a>，优点是这个库可以直接在Python里调用Java程序，缺点是需要安装额外的库，对于有着代码洁癖的我不是一个完美的方案，后来一想既然已经有了Web服务器，直接使用Http不就可以了，所以将方案又改为使用Http与Java通信，经过实验，这个方案虽然不用安装额外的库了，但是由于Python的原装urllib库不能保持长连接，随着连接的增多，速度会慢慢降下来，看来还得另寻出路。</p>
-<pre><code class="java">private class SocketServerHandler extends ChannelInboundHandlerAdapter &#123;
+<pre><code class="language-java">private class SocketServerHandler extends ChannelInboundHandlerAdapter &#123;
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) &#123;
         ByteBuf in = (ByteBuf) msg;
@@ -167,29 +193,30 @@
 <li>close：关闭预览窗口</li>
 <li>stop：停止Http服务器，退出系统</li>
 </ul>
-<h2 id="Java-gt-浏览器"><a href="#Java-gt-浏览器" class="headerlink" title="Java-&gt;浏览器"></a>Java-&gt;浏览器</h2><pre><code class="javascript">var url = &#39;ws://127.0.0.1:&#39; + window.location.port + &#39;/ws&#39;;
+<h2 id="Java-浏览器">Java-&gt;浏览器</h2>
+<pre><code class="language-javascript">var url = 'ws://127.0.0.1:' + window.location.port + '/ws';
 if (!WebSocket) &#123;
-    console.warn(&#39;WebSocket is not support&#39;);
+    console.warn('WebSocket is not support');
 &#125; else &#123;
-    console.log(&#39;Try to connect &#39; + url);
+    console.log('Try to connect ' + url);
     var ws = new WebSocket(url);
 
     ws.onclose = function () &#123;
-        console.log(&#39;Disconnected&#39;);
+        console.log('Disconnected');
         close();
     &#125;;
 
     ws.onmessage = function (d) &#123;
-        console.log(&#39;Response : &#39; + d.data.length);
+        console.log('Response : ' + d.data.length);
         var data = JSON.parse(d.data);
-        var path = $(&#39;#path&#39;);
-        if (path.val() === &#39;&#39;) &#123;
+        var path = $('#path');
+        if (path.val() === '') &#123;
             init(data);
         &#125; else &#123;
             if (path.val() === data.path) &#123;
-                if (data.command === &#39;close&#39;) &#123;
+                if (data.command === 'close') &#123;
                     close()
-                &#125; else if (data.command === &#39;sync&#39;) &#123;
+                &#125; else if (data.command === 'sync') &#123;
                     sync(data);
                 &#125;
             &#125;
@@ -198,9 +225,9 @@ if (!WebSocket) &#123;
 &#125;
 
 var init = function (data) &#123;
-    $(&#39;title&#39;).html(data.path);
-    $(&#39;#path&#39;).val(data.path);
-    $(&#39;.markdown-body&#39;).html(&#39;&#39;);
+    $('title').html(data.path);
+    $('#path').val(data.path);
+    $('.markdown-body').html('');
     markdown_refresh(data.units);
     highlight_code();
     scroll_if_possible();
@@ -214,9 +241,10 @@ var sync = function (data) &#123;
 </code></pre>
 <p>前端就是一个WebSoket客户端，接受两种指令：close和sync，前者用于关闭页面，后者用于同步信息。</p>
 <p>大致的流程是浏览器第一次收到服务器消息调用<code>init</code>进行初始化，它会将网页的title和页面元素#path置为文件的路径，将.markdown-body清空，因为浏览器刚启动时会启动一个index介绍页面，需要将其清空，然后调用<code>markdown_refresh</code>刷新显示新的内容，内容显示后<code>hightlight_code</code>负责高亮其中的代码，最后用<code>scroll_if_possible</code>滚动到指定位置。往后浏览器每收到服务器消息都会调用<code>sync</code>同步信息和位置，<code>sync</code>和<code>init</code>内部代码差不多，我就不再赘述了。</p>
-<h2 id="Vim-gt-Java"><a href="#Vim-gt-Java" class="headerlink" title="Vim-&gt;Java"></a>Vim-&gt;Java</h2><p>以上走通了Java到浏览器的路，下面看看如何走Vim到Java的路，在整体思路中提到Vim支持Python，所以这条路的主角就是Python，最初是发送Http请求与Java交互，后来又改为使用Socket，原因参看Java服务器那一节。最终的代码如下：</p>
-<pre><code class="python">SEP = &#39;\r\n\r\n&#39;
-EOF = &#39;$_@&#39;
+<h2 id="Vim-Java">Vim-&gt;Java</h2>
+<p>以上走通了Java到浏览器的路，下面看看如何走Vim到Java的路，在整体思路中提到Vim支持Python，所以这条路的主角就是Python，最初是发送Http请求与Java交互，后来又改为使用Socket，原因参看Java服务器那一节。最终的代码如下：</p>
+<pre><code class="language-python">SEP = '\r\n\r\n'
+EOF = '$_@'
 
 s = None
 
@@ -224,71 +252,74 @@ s = None
 def start(port, theme):
     global s
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((&#39;127.0.0.1&#39;, 23789))
-    s.send(&#39;start&#39; + SEP + str(port) + SEP + theme + EOF)
+    s.connect(('127.0.0.1', 23789))
+    s.send('start' + SEP + str(port) + SEP + theme + EOF)
 
 
 def sync(path, content, bottom):
-    s.send(&#39;sync&#39; + SEP + path + SEP + base64.b64encode(content) + SEP + str(bottom) + EOF)
+    s.send('sync' + SEP + path + SEP + base64.b64encode(content) + SEP + str(bottom) + EOF)
 
 
 def close(path):
-    s.send(&#39;close&#39; + SEP + path + EOF)
+    s.send('close' + SEP + path + EOF)
 
 
 def stop():
-    s.send(&#39;stop&#39; + EOF)
+    s.send('stop' + EOF)
     s.close()
 
 </code></pre>
 <p>变量解释：<code>path</code>表示打开文件的路径，<code>content</code>为buffer内容，<code>bottom</code>为当前窗口的末行。</p>
 <p>这里的函数和Java Socket服务器那一节里处理的四种情况一一对应，想不起来的可以回去再看下。你可能注意到每次发送消息后面都加了一个<code>EOF</code>，这是因为Tcp是基于流的通信协议，需要一种策略告诉接受方什么时候是一条完整的消息，这里采用的是终结符的形式，即每条消息后面都加了一个<code>EOF</code>告知接收方已经接受了一条完整的消息。另外需要对<code>content</code>进行base64编码，因为<code>content</code>里可能包含一些特殊字符，传输过程中对这些字符处理不一致会导致出错。</p>
 <p>下一步就是在Vimscript里调用Python，我就不贴代码了。</p>
-<h2 id="一步之遥"><a href="#一步之遥" class="headerlink" title="一步之遥"></a>一步之遥</h2><p>至此，插件就基本编写完成了，似乎离成功只有一步之遥了，但成功往往没那么简单。运行一下，乍看起来效果还可以，但是存在两个比较严重的问题：</p>
-<h3 id="MathJax抖动"><a href="#MathJax抖动" class="headerlink" title="MathJax抖动"></a>MathJax抖动</h3><p>每次滚动时，如果页面里包含MathJax表达式，页面就会一抖一抖的。这是因为所有的内容都存在一个<code>&lt;article&gt;&lt;/article&gt;</code>标签里，前端每次加载内容，都要刷新内容里所有的MathJax表达式，表达式加载需要时间，未加载完成时有一个空的占位，加载完成使用真正的元素替换，类似网页中的图片加载流程，占位和真正的元素大小不一致，这样给人的感觉就是页面一抖一抖的，最初用的代码如下：</p>
-<pre><code class="javascript">MathJax.Hub.Config(&#123;
+<h2 id="一步之遥">一步之遥</h2>
+<p>至此，插件就基本编写完成了，似乎离成功只有一步之遥了，但成功往往没那么简单。运行一下，乍看起来效果还可以，但是存在两个比较严重的问题：</p>
+<h3 id="MathJax抖动">MathJax抖动</h3>
+<p>每次滚动时，如果页面里包含MathJax表达式，页面就会一抖一抖的。这是因为所有的内容都存在一个<code>&lt;article&gt;&lt;/article&gt;</code>标签里，前端每次加载内容，都要刷新内容里所有的MathJax表达式，表达式加载需要时间，未加载完成时有一个空的占位，加载完成使用真正的元素替换，类似网页中的图片加载流程，占位和真正的元素大小不一致，这样给人的感觉就是页面一抖一抖的，最初用的代码如下：</p>
+<pre><code class="language-javascript">MathJax.Hub.Config(&#123;
 extensions: [&quot;tex2jax.js&quot;],
     jax: [&quot;input/TeX&quot;, &quot;output/SVG&quot;],
     tex2jax: &#123;
-        inlineMath: [ [&#39;$&#39;,&#39;$&#39;], [&quot;\\(&quot;,&quot;\\)&quot;] ],
-        displayMath: [ [&#39;$$&#39;,&#39;$$&#39;], [&quot;\\[&quot;,&quot;\\]&quot;] ]
+        inlineMath: [ ['$','$'], [&quot;\\(&quot;,&quot;\\)&quot;] ],
+        displayMath: [ ['$$','$$'], [&quot;\\[&quot;,&quot;\\]&quot;] ]
     &#125;,
     messageStyle: &quot;none&quot;
 &#125;);
 MathJax.Hub.Queue([&quot;Typeset&quot;, MathJax.Hub]);
 </code></pre>
-<p>那怎么解决呢？既然是因为刷新全部的MathJax表达式，那么不让它刷新全部，让它刷新的内容越少抖动不就越小了？查阅MathJax的文档，找到一个函数<code>MathJax.Hub.Queue([&#39;Typeset&#39;, MathJax.Hub, element])</code>，它只会刷新页面元素element里的表达式，修改服务器同步信息代码，改全量同步为增量同步，如果里面包含MathJax表达式就调用上述命令刷新。</p>
+<p>那怎么解决呢？既然是因为刷新全部的MathJax表达式，那么不让它刷新全部，让它刷新的内容越少抖动不就越小了？查阅MathJax的文档，找到一个函数<code>MathJax.Hub.Queue(['Typeset', MathJax.Hub, element])</code>，它只会刷新页面元素element里的表达式，修改服务器同步信息代码，改全量同步为增量同步，如果里面包含MathJax表达式就调用上述命令刷新。</p>
 <p>新的前端代码如下：</p>
-<pre><code class="javascript">$.each(units, function (i, u) &#123;
-    if (u.operate === &#39;REPLACE&#39;) &#123;
-        if (u.id === &#39;toc_container&#39;) &#123;
-            $(&#39;.markdown-body&#39;).css(&#39;padding-left&#39;, &#39;200px&#39;);
-            var toc = $(&#39;#&#39; + u.id);
+<pre><code class="language-javascript">$.each(units, function (i, u) &#123;
+    if (u.operate === 'REPLACE') &#123;
+        if (u.id === 'toc_container') &#123;
+            $('.markdown-body').css('padding-left', '200px');
+            var toc = $('#' + u.id);
             toc.html(u.content);
             toc.show();
         &#125; else &#123;
-            $(&#39;#&#39; + u.id).replaceWith(u.content);
+            $('#' + u.id).replaceWith(u.content);
         &#125;
-    &#125; else if (u.operate === &#39;APPEND&#39;) &#123;
-        $(&#39;.markdown-body&#39;).append(u.content);
-    &#125; else if (u.operate === &#39;REMOVE&#39;) &#123;
-        if (u.id === &#39;toc_container&#39;) &#123;
-            $(&#39;.markdown-body&#39;).css(&#39;padding-left&#39;, &#39;45px&#39;);
-            var cot = $(&#39;#&#39; + u.id);
-            cot.html(&#39;&#39;);
+    &#125; else if (u.operate === 'APPEND') &#123;
+        $('.markdown-body').append(u.content);
+    &#125; else if (u.operate === 'REMOVE') &#123;
+        if (u.id === 'toc_container') &#123;
+            $('.markdown-body').css('padding-left', '45px');
+            var cot = $('#' + u.id);
+            cot.html('');
             cot.hide();
         &#125; else &#123;
-            $(&#39;#&#39; + u.id).remove();
+            $('#' + u.id).remove();
         &#125;
     &#125;
 
     if (u.isMathJax === 1) &#123;
-        MathJax.Hub.Queue([&#39;Typeset&#39;, MathJax.Hub, u.id]);
+        MathJax.Hub.Queue(['Typeset', MathJax.Hub, u.id]);
     &#125;
 &#125;)
 </code></pre>
-<h3 id="本地图片不显示"><a href="#本地图片不显示" class="headerlink" title="本地图片不显示"></a>本地图片不显示</h3><p>由于浏览器安全策略的限制，页面的img标签不能打开本地图片，即形如<code>&lt;img src=&#39;D:\path-to-img.jpg&#39;/&gt;</code>这种写法浏览器不会加载图片，而是提示“Not allowed to load local resource”。一般在文章未发布到网上时，图片地址往往写一个本地的绝对路径，如果不能显示本地图片的话将会大大影响方便性。那么该怎么办呢，第一种方法是写相对路径，即<code>&lt;img src=&#39;/path-to-img.jpg&#39;/&gt;</code>，这种方式有很大的局限性，即必须将图片放在一个位置，与网页呈一种相对关系；另一种是写的时候还是写绝对路径，经过程序转成服务器地址，然后通过服务器将图片返给浏览器。显然第二种方式更加灵活，核心代码如下：</p>
-<pre><code class="java">private static void transformLocalImgSrc(Element element) &#123;
+<h3 id="本地图片不显示">本地图片不显示</h3>
+<p>由于浏览器安全策略的限制，页面的img标签不能打开本地图片，即形如<code>&lt;img src='D:\path-to-img.jpg'/&gt;</code>这种写法浏览器不会加载图片，而是提示“Not allowed to load local resource”。一般在文章未发布到网上时，图片地址往往写一个本地的绝对路径，如果不能显示本地图片的话将会大大影响方便性。那么该怎么办呢，第一种方法是写相对路径，即<code>&lt;img src='/path-to-img.jpg'/&gt;</code>，这种方式有很大的局限性，即必须将图片放在一个位置，与网页呈一种相对关系；另一种是写的时候还是写绝对路径，经过程序转成服务器地址，然后通过服务器将图片返给浏览器。显然第二种方式更加灵活，核心代码如下：</p>
+<pre><code class="language-java">private static void transformLocalImgSrc(Element element) &#123;
     Elements images = element.select(&quot;img&quot;);
     for (Element img : images) &#123;
         String src = img.attr(&quot;src&quot;);
@@ -303,7 +334,8 @@ MathJax.Hub.Queue([&quot;Typeset&quot;, MathJax.Hub]);
 &#125;
 </code></pre>
 <p>上面的代码将形如<code>D:\path-to-img.jpg</code>的本地路径转成<code>http://127.0.0.1:7788/image?path=D:\\path-to-img.jpg</code>(windows系统，其他系统路径与此略有不同)，然后由服务器将图片内容返回。这样就绕过了浏览器的安全策略，实现本地图片的加载了。</p>
-<h2 id="阳光总在风雨后"><a href="#阳光总在风雨后" class="headerlink" title="阳光总在风雨后"></a>阳光总在风雨后</h2><p>尽管经过了一些风雨，最后还是看到胜利的曙光了。这个项目够小，涵盖的语言和知识并不少，作为一个练手的项目还是不错的，如果碰巧还能给生活提供点便利，何乐而不为呢？想了解大象跳舞的更多细节请戳<a target="_blank" rel="noopener" href="https://github.com/naosense/markdown-preview-sync">github</a>。</p>
+<h2 id="阳光总在风雨后">阳光总在风雨后</h2>
+<p>尽管经过了一些风雨，最后还是看到胜利的曙光了。这个项目够小，涵盖的语言和知识并不少，作为一个练手的项目还是不错的，如果碰巧还能给生活提供点便利，何乐而不为呢？想了解大象跳舞的更多细节请戳<a target="_blank" rel="noopener" href="https://github.com/naosense/markdown-preview-sync">github</a>。</p>
 <p>参考资料：</p>
 <ul>
 <li>Netty in action</li>
@@ -320,9 +352,9 @@ MathJax.Hub.Queue([&quot;Typeset&quot;, MathJax.Hub]);
   </div>
 </article>
 <footer>
-    &copy; 2022
+    &copy; 2023
     <span class="author">
-        nonsense
+        naosense
     </span>
 
      
@@ -337,7 +369,7 @@ MathJax.Hub.Queue([&quot;Typeset&quot;, MathJax.Hub]);
         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
         var disqus_config = function () {
-        this.page.url = 'https://naosense.github.io/2018/08/04/谁说大象不能跳舞：基于Java的Markdown预览插件/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = 'https://naosense.github.io/2018/08/04/%E8%B0%81%E8%AF%B4%E5%A4%A7%E8%B1%A1%E4%B8%8D%E8%83%BD%E8%B7%B3%E8%88%9E%EF%BC%9A%E5%9F%BA%E4%BA%8EJava%E7%9A%84Markdown%E9%A2%84%E8%A7%88%E6%8F%92%E4%BB%B6/';  // Replace PAGE_URL with your page's canonical URL variable
         this.page.identifier = '2018/08/04/谁说大象不能跳舞：基于Java的Markdown预览插件/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
         this.page.title = '谁说大象不能跳舞：基于Java的Markdown预览插件';
         };

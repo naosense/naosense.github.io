@@ -7,6 +7,30 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   
   <title>MySQL事务隔离小记 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="MySQL事务隔离小记 - 扯淡有理"/>
+  <meta name="twitter:description" content="&lt;p&gt;大家都知道事务系统有四大特征：原子性、一致性、隔离性、持久性。隔离性是其中重要的一环，什么是隔离呢，顾名思义就是事务之间啥时候可见啥时候不可见，这就是MySQL的四个隔离级别：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;未提交读（read uncommited）&lt;/li&gt;
+&lt;li&gt;提交读（read commited）&lt;/li&gt;
+&lt;li&gt;可重复读（repeatable read）&lt;/li&gt;
+&lt;li&gt;串行读（serializable）&lt;/li&gt;
+&lt;/ul&gt;"/>
+  <meta name="twitter:image" content="https://wocanmei-hexo.nos-eastchina1.126.net/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E5%B0%8F%E8%AE%B0/undo_log.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="MySQL事务隔离小记 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="&lt;p&gt;大家都知道事务系统有四大特征：原子性、一致性、隔离性、持久性。隔离性是其中重要的一环，什么是隔离呢，顾名思义就是事务之间啥时候可见啥时候不可见，这就是MySQL的四个隔离级别：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;未提交读（read uncommited）&lt;/li&gt;
+&lt;li&gt;提交读（read commited）&lt;/li&gt;
+&lt;li&gt;可重复读（repeatable read）&lt;/li&gt;
+&lt;li&gt;串行读（serializable）&lt;/li&gt;
+&lt;/ul&gt;"/>
+  <meta property="og:image" content="https://wocanmei-hexo.nos-eastchina1.126.net/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E5%B0%8F%E8%AE%B0/undo_log.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   
   <meta name="keywords" content=事务,MySQL>
@@ -19,37 +43,47 @@
   
     <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
   
-  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
-  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
   <script>
-      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
   </script>
   <script type='text/x-mathjax-config'>
-        MathJax.Hub.Config({
-            extensions: ["tex2jax.js"],
-            jax: ["input/TeX", "output/SVG"],
-            tex2jax: {
-                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-            },
-            messageStyle: "none"
-        });
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', 'UA-44085500-1');
-    </script>
+    gtag('config', 'UA-44085500-1');
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
 
   
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
   <body>
     <div class="container">
@@ -177,9 +211,9 @@
   </div>
 </article>
 <footer>
-    &copy; 2022
+    &copy; 2023
     <span class="author">
-        nonsense
+        naosense
     </span>
 
      
@@ -194,7 +228,7 @@
         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
         var disqus_config = function () {
-        this.page.url = 'https://naosense.github.io/2019/03/31/MySQL事务隔离小记/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = 'https://naosense.github.io/2019/03/31/MySQL%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E5%B0%8F%E8%AE%B0/';  // Replace PAGE_URL with your page's canonical URL variable
         this.page.identifier = '2019/03/31/MySQL事务隔离小记/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
         this.page.title = 'MySQL事务隔离小记';
         };

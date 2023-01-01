@@ -7,6 +7,26 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   
   <title>Javascript中的this - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="Javascript中的this - 扯淡有理"/>
+  <meta name="twitter:description" content="&lt;p&gt;对于js的函数有两个特殊的关键字，this和arguments，后者存储的是函数的参数，类似于一个数组。例如如下的函数，&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;var testArgus = function() &amp;#123;console.log(arguments);&amp;#125;
+// [1, 2]
+testArgus(1,2)
+&lt;/code&gt;&lt;/pre&gt;"/>
+  <meta name="twitter:image" content="https://naosense.github.io/default.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="Javascript中的this - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="&lt;p&gt;对于js的函数有两个特殊的关键字，this和arguments，后者存储的是函数的参数，类似于一个数组。例如如下的函数，&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-javascript&#34;&gt;var testArgus = function() &amp;#123;console.log(arguments);&amp;#125;
+// [1, 2]
+testArgus(1,2)
+&lt;/code&gt;&lt;/pre&gt;"/>
+  <meta property="og:image" content="https://naosense.github.io/default.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   
   <meta name="keywords" content=Javascript>
@@ -19,37 +39,47 @@
   
     <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
   
-  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
-  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
   <script>
-      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
   </script>
   <script type='text/x-mathjax-config'>
-        MathJax.Hub.Config({
-            extensions: ["tex2jax.js"],
-            jax: ["input/TeX", "output/SVG"],
-            tex2jax: {
-                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-            },
-            messageStyle: "none"
-        });
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', 'UA-44085500-1');
-    </script>
+    gtag('config', 'UA-44085500-1');
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
 
   
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
   <body>
     <div class="container">
@@ -90,20 +120,20 @@
   </div>
   <div class="post-content">
     <p>对于js的函数有两个特殊的关键字，this和arguments，后者存储的是函数的参数，类似于一个数组。例如如下的函数，</p>
-<pre><code class="javascript">var testArgus = function() &#123;console.log(arguments);&#125;
+<pre><code class="language-javascript">var testArgus = function() &#123;console.log(arguments);&#125;
 // [1, 2]
 testArgus(1,2)
 </code></pre>
 <span id="more"></span>
 <p>arguments的含义比较明确，而this就不那么直白了，<strong>this指代的是函数运行时所处的上下文</strong>。这句话有两点需要注意：一是this是在运行时决定的，也就是函数在调用之前this的值是不确定的，二是函数所处的上下文，也就是函数运行时所处的环境。</p>
 <p>首先看看什么是上下文，对比下面的代码，注意它们的差别。</p>
-<pre><code class="javascript">var o = &#123;testThis: function() &#123;return this;&#125;&#125;;
+<pre><code class="language-javascript">var o = &#123;testThis: function() &#123;return this;&#125;&#125;;
 var b = &#123;testThis: function() &#123;return this;&#125;()&#125;;
 o.testThis();
 b.testThis;
 </code></pre>
 <p>它们的分别会输出什么？事实上，前者会输出Object，也就是o本身；后者会输出window，也就是全局对象。如果感到疑惑，再看《JavaScript高级程序设计》中的一个例子，</p>
-<pre><code class="javascript">window.color = &quot;red&quot;;
+<pre><code class="language-javascript">window.color = &quot;red&quot;;
 var o = &#123;color: &quot;blue&quot;&#125;;
 
 function sayColor() &#123;
@@ -115,9 +145,9 @@ o.sayColor = sayColor;
 // &quot;blue&quot;
 o.sayColor();
 </code></pre>
-<p>需要明确的是，函数的名字仅仅是一个包含指针的变量而已。即使是在不同的环境中执行，全局的sayColor()和o.sayColor()指向的仍然是同一个函数。前者在全局作用域调用，因此this指向的是window，因此输出”red”，当把这个函数赋给对象o并调用o.sayColor()时，this引用的是对象o，因此会输出”blue”。再回头看上面的代码，匿名函数在b中执行，并没有附加到任何对象，实际上相当于在window中执行，因此返回this，指向的是window。</p>
+<p>需要明确的是，函数的名字仅仅是一个包含指针的变量而已。即使是在不同的环境中执行，全局的sayColor()和o.sayColor()指向的仍然是同一个函数。前者在全局作用域调用，因此this指向的是window，因此输出&quot;red&quot;，当把这个函数赋给对象o并调用o.sayColor()时，this引用的是对象o，因此会输出&quot;blue&quot;。再回头看上面的代码，匿名函数在b中执行，并没有附加到任何对象，实际上相当于在window中执行，因此返回this，指向的是window。</p>
 <p>事实上this有那么一条规律，<strong>如果调用函数时是以构造函数的形式，即new函数的形式，this会指向创建的新变量，如果是以普通函数的形式调用，this指向的是全局变量</strong>。还是老样子，用代码说话。</p>
-<pre><code class="javascript">var Flower = function(name) &#123;this.name = name;&#125;
+<pre><code class="language-javascript">var Flower = function(name) &#123;this.name = name;&#125;
 // error
 alert(name);
 var f1 = Flower(&quot;f1&quot;);
@@ -131,7 +161,7 @@ alert(f2.name);
 </code></pre>
 <p>根据这条规律，也可以解释为什么b.testThis为什么指向window，匿名函数在b中执行，是以普通函数的形式被调用，因此this指向的是全局变量，即window。</p>
 <p>既然说到了this，就不得不提call和apply，js中这两个函数用来改变函数所处的上下文，也就是this的指向。例如上面的代码，</p>
-<pre><code class="javascript">window.color = &quot;red&quot;;
+<pre><code class="language-javascript">window.color = &quot;red&quot;;
 var o = &#123;color: &quot;blue&quot;&#125;;
 
 function sayColor() &#123;
@@ -153,9 +183,9 @@ sayColor.call(o);
   </div>
 </article>
 <footer>
-    &copy; 2022
+    &copy; 2023
     <span class="author">
-        nonsense
+        naosense
     </span>
 
      
@@ -170,7 +200,7 @@ sayColor.call(o);
         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
         var disqus_config = function () {
-        this.page.url = 'https://naosense.github.io/2016/03/27/Javascript中的this/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = 'https://naosense.github.io/2016/03/27/Javascript%E4%B8%AD%E7%9A%84this/';  // Replace PAGE_URL with your page's canonical URL variable
         this.page.identifier = '2016/03/27/Javascript中的this/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
         this.page.title = 'Javascript中的this';
         };

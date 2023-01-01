@@ -7,9 +7,23 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   
   <title>Java“锁”记 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="Java“锁”记 - 扯淡有理"/>
+  <meta name="twitter:description" content="&lt;h2 id=&#34;内置锁和显示锁&#34;&gt;内置锁和显示锁&lt;/h2&gt;
+&lt;p&gt;内置锁其实是相对显示锁来说的，说白了内置锁就是&lt;code&gt;synchronized&lt;/code&gt;所代表Java原生锁机制，Jdk5.0之后又引入了&lt;code&gt;Lock&lt;/code&gt;及其子类&lt;code&gt;ReentrantLock&lt;/code&gt;这样一种新的锁机制。从加锁和内存语义上二者一样，只不过后者添加了一些其他功能，可以实现诸如轮询锁、超时锁和中断锁的功能。&lt;/p&gt;"/>
+  <meta name="twitter:image" content="https://naosense.github.io/default.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="Java“锁”记 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="&lt;h2 id=&#34;内置锁和显示锁&#34;&gt;内置锁和显示锁&lt;/h2&gt;
+&lt;p&gt;内置锁其实是相对显示锁来说的，说白了内置锁就是&lt;code&gt;synchronized&lt;/code&gt;所代表Java原生锁机制，Jdk5.0之后又引入了&lt;code&gt;Lock&lt;/code&gt;及其子类&lt;code&gt;ReentrantLock&lt;/code&gt;这样一种新的锁机制。从加锁和内存语义上二者一样，只不过后者添加了一些其他功能，可以实现诸如轮询锁、超时锁和中断锁的功能。&lt;/p&gt;"/>
+  <meta property="og:image" content="https://naosense.github.io/default.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   
-  <meta name="keywords" content=并发,分布式,Java>
+  <meta name="keywords" content=Java,并发,分布式>
   
     <meta name="description" content="Java Python R 机器学习 统计 扯淡">
   
@@ -19,37 +33,47 @@
   
     <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
   
-  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
-  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
   <script>
-      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
   </script>
   <script type='text/x-mathjax-config'>
-        MathJax.Hub.Config({
-            extensions: ["tex2jax.js"],
-            jax: ["input/TeX", "output/SVG"],
-            tex2jax: {
-                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-            },
-            messageStyle: "none"
-        });
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', 'UA-44085500-1');
-    </script>
+    gtag('config', 'UA-44085500-1');
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
 
   
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
   <body>
     <div class="container">
@@ -89,8 +113,10 @@
     <span class="post-time">2019-03-07</span>
   </div>
   <div class="post-content">
-    <h2 id="内置锁和显示锁"><a href="#内置锁和显示锁" class="headerlink" title="内置锁和显示锁"></a>内置锁和显示锁</h2><p>内置锁其实是相对显示锁来说的，说白了内置锁就是<code>synchronized</code>所代表Java原生锁机制，Jdk5.0之后又引入了<code>Lock</code>及其子类<code>ReentrantLock</code>这样一种新的锁机制。从加锁和内存语义上二者一样，只不过后者添加了一些其他功能，可以实现诸如轮询锁、超时锁和中断锁的功能。<br><span id="more"></span></p>
-<pre><code class="java">public interface Lock &#123;
+    <h2 id="内置锁和显示锁">内置锁和显示锁</h2>
+<p>内置锁其实是相对显示锁来说的，说白了内置锁就是<code>synchronized</code>所代表Java原生锁机制，Jdk5.0之后又引入了<code>Lock</code>及其子类<code>ReentrantLock</code>这样一种新的锁机制。从加锁和内存语义上二者一样，只不过后者添加了一些其他功能，可以实现诸如轮询锁、超时锁和中断锁的功能。</p>
+<span id="more"></span>
+<pre><code class="language-java">public interface Lock &#123;
     void lock();
     void lockInterruptibly() throw InterruptedException;
     boolean tryLock();
@@ -103,7 +129,7 @@
 <p>如果内置锁是一个<code>Lock</code>的话，它只有<code>lock()</code>和<code>unlock()</code>方法。从锁的基本属性上说，内置锁和显示锁都是可重入的，内置锁是非公平的，显示锁还可以设置为公平的。</p>
 <p><code>tryLock</code>和<code>lock</code>的区别是前者获得锁返回true，获取不到返回false，都是立马返回，而后者如果获取不到将会阻塞到那里。</p>
 <p>另外由于内置锁是自动释放，而显示锁必须手动释放，这就形成了显示锁的调用模式如下面这样：</p>
-<pre><code class="java">Lock lock = ...;
+<pre><code class="language-java">Lock lock = ...;
 lock.lock();
 try &#123;
     // 逻辑
@@ -113,12 +139,16 @@ try &#123;
 </code></pre>
 <p>也就是锁的释放必须放在finally中，确保锁可以释放。</p>
 <p>从<code>ReentrantLock</code>衍生出来一个<code>ReentrantReadWriteLock</code>，为啥要有读写锁呢？其实是基于这样的原则，读写和写写是会引起线程安全问题的，所以都需要同步，前者是因为可见性，后者是因为一致性，但是读读是不需要同步的，所以讲读写拆分开来以提高性能。这就好比原来大家都排一个队，现在拆成两个队，自然排队等待的时间就短了。</p>
-<h2 id="闭锁"><a href="#闭锁" class="headerlink" title="闭锁"></a>闭锁</h2><p>闭锁就像一个门，等待一个“事件”开门（结束状态），在开门之前不允许任何人（线程）通过，在此之前大家只能在城门前面等待。只不过城门可以重复的开闭，闭锁只是一次性的。</p>
+<h2 id="闭锁">闭锁</h2>
+<p>闭锁就像一个门，等待一个“事件”开门（结束状态），在开门之前不允许任何人（线程）通过，在此之前大家只能在城门前面等待。只不过城门可以重复的开闭，闭锁只是一次性的。</p>
 <p>具体到Java中，闭锁的实现就是<code>CountDownLatch</code>，它可以用来实现等待某种条件满足后才把线程放行的功能，比如资源就绪、服务启动、某个操作执行等等。</p>
-<h2 id="信号量"><a href="#信号量" class="headerlink" title="信号量"></a>信号量</h2><p>信号量是用来控制同时访问某个资源的特定数量，或者同时执行某个操作的数量，有点像地铁中的限流。</p>
+<h2 id="信号量">信号量</h2>
+<p>信号量是用来控制同时访问某个资源的特定数量，或者同时执行某个操作的数量，有点像地铁中的限流。</p>
 <p>从某种程度上讲，锁有点像一个二值的信号量，也就是初始值为1的信号量，不同之处是锁是可重入的，信号量不可。</p>
-<h2 id="栅栏"><a href="#栅栏" class="headerlink" title="栅栏"></a>栅栏</h2><p>栅栏和闭锁类似，它也能阻塞一组线程直到某个事件发生。区别在于栅栏要求线程都到达栅栏位置，才能继续执行，即所谓的闭锁等待的是事件，栅栏等待的是线程。如果对比现实中的例子，闭锁犹如大家去登山，商议好早晨8点出发，无论人齐不齐，到8点大家就出发，而栅栏就类似于大家登一段就在一个歇息点等一等人，等人齐再往上登。</p>
-<h2 id="原子变量"><a href="#原子变量" class="headerlink" title="原子变量"></a>原子变量</h2><p>原子变量实际上是一种乐观锁技术，即利用冲突检测来判断是否有来自其他线程的干扰，当进行修改操作时，先把变量的当前值current取出来，然后用一个原子的比较交换操作（CAS）对变量进行修改。有两种情况：如果变量的当前值还等于current说明这中间没有线程修改变量，修改变量值为新值；如果当前值不等于current了，说明中间有线程修改变量，重试。</p>
+<h2 id="栅栏">栅栏</h2>
+<p>栅栏和闭锁类似，它也能阻塞一组线程直到某个事件发生。区别在于栅栏要求线程都到达栅栏位置，才能继续执行，即所谓的闭锁等待的是事件，栅栏等待的是线程。如果对比现实中的例子，闭锁犹如大家去登山，商议好早晨8点出发，无论人齐不齐，到8点大家就出发，而栅栏就类似于大家登一段就在一个歇息点等一等人，等人齐再往上登。</p>
+<h2 id="原子变量">原子变量</h2>
+<p>原子变量实际上是一种乐观锁技术，即利用冲突检测来判断是否有来自其他线程的干扰，当进行修改操作时，先把变量的当前值current取出来，然后用一个原子的比较交换操作（CAS）对变量进行修改。有两种情况：如果变量的当前值还等于current说明这中间没有线程修改变量，修改变量值为新值；如果当前值不等于current了，说明中间有线程修改变量，重试。</p>
 <p>以一个典型的count++为例，大家知道++这种操作实际上包括三步：</p>
 <ol>
 <li>获取count当前值current</li>
@@ -143,9 +173,9 @@ try &#123;
   </div>
 </article>
 <footer>
-    &copy; 2022
+    &copy; 2023
     <span class="author">
-        nonsense
+        naosense
     </span>
 
      
@@ -160,7 +190,7 @@ try &#123;
         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
         var disqus_config = function () {
-        this.page.url = 'https://naosense.github.io/2019/03/07/Java“锁”记/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = 'https://naosense.github.io/2019/03/07/Java%E2%80%9C%E9%94%81%E2%80%9D%E8%AE%B0/';  // Replace PAGE_URL with your page's canonical URL variable
         this.page.identifier = '2019/03/07/Java“锁”记/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
         this.page.title = 'Java“锁”记';
         };

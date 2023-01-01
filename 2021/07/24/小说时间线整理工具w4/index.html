@@ -7,6 +7,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   
   <title>小说时间线整理工具w4 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="小说时间线整理工具w4 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/2021/07/24/%E5%B0%8F%E8%AF%B4%E6%97%B6%E9%97%B4%E7%BA%BF%E6%95%B4%E7%90%86%E5%B7%A5%E5%85%B7w4/logic.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="小说时间线整理工具w4 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/2021/07/24/%E5%B0%8F%E8%AF%B4%E6%97%B6%E9%97%B4%E7%BA%BF%E6%95%B4%E7%90%86%E5%B7%A5%E5%85%B7w4/logic.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   
   <meta name="keywords" content=Javascript,Vim,Python>
@@ -19,37 +31,47 @@
   
     <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
   
-  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
-  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
   <script>
-      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
   </script>
   <script type='text/x-mathjax-config'>
-        MathJax.Hub.Config({
-            extensions: ["tex2jax.js"],
-            jax: ["input/TeX", "output/SVG"],
-            tex2jax: {
-                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-            },
-            messageStyle: "none"
-        });
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', 'UA-44085500-1');
-    </script>
+    gtag('config', 'UA-44085500-1');
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
 
   
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
   <body>
     <div class="container">
@@ -89,7 +111,8 @@
     <span class="post-time">2021-07-24</span>
   </div>
   <div class="post-content">
-    <p><img src="logic.png" alt="逻辑表达式"><br>本人是一名小说爱好者，看多了，有时候免不了要理一下时间线，更好的理解故事梗概。之前用过思维导图整理，但是总觉得思维导图“有点重”，在作图的过程中，会陷入“到底是选择方框还是圆框”、“到底是虚线还是实线”这样的纠结中，导致最后做出来的图形式大于内容，搞得自己是精疲力尽。也曾在本子上整理，但是不便于检索和保存。其实想要的很简单：可以大致下查看事件发生的先后顺序和联系，具有一定的筛查功能就够了。</p>
+    <p><img src="logic.png" alt="逻辑表达式"><br>
+本人是一名小说爱好者，看多了，有时候免不了要理一下时间线，更好的理解故事梗概。之前用过思维导图整理，但是总觉得思维导图“有点重”，在作图的过程中，会陷入“到底是选择方框还是圆框”、“到底是虚线还是实线”这样的纠结中，导致最后做出来的图形式大于内容，搞得自己是精疲力尽。也曾在本子上整理，但是不便于检索和保存。其实想要的很简单：可以大致下查看事件发生的先后顺序和联系，具有一定的筛查功能就够了。</p>
 <p>在这样的背景下，有了这款vim插件，之所以选择vim是因为自己平常用的较多，写博客、纯文本编辑一般都用它。插件名字w4，灵感来源小说三要素：地点、人物、事件，翻译成英文就是where、who、what，再加一个时间when。</p>
 <p>大概支持以下功能：</p>
 <ul>
@@ -99,34 +122,47 @@
 <li>类SQL筛查</li>
 <li>人物关系图</li>
 </ul>
-<h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><p>安装完成后，在vim输入<code>:W4Go</code>命令打开浏览窗口，按<code>enter</code>打开输入窗口。</p>
-<h2 id="文本样式"><a href="#文本样式" class="headerlink" title="文本样式"></a>文本样式</h2><p>文本以<code>%% who what when where</code>开头，如下所示：</p>
+<h2 id="使用方式">使用方式</h2>
+<p>安装完成后，在vim输入<code>:W4Go</code>命令打开浏览窗口，按<code>enter</code>打开输入窗口。</p>
+<h2 id="文本样式">文本样式</h2>
+<p>文本以<code>%% who what when where</code>开头，如下所示：</p>
 <pre><code>%% who what when where
 #0724073055 @阿Q 赵太爷儿子中秀才的时，喝了三碗酒，吹嘘和赵太爷是本家，并且比他儿子长三辈 - 未庄
 #0724073430 @赵太爷 对于阿Q的强攀亲戚，说出了那句著名的话：你怎么会姓赵！你哪里配姓赵 第二天 自己家 #0724073055
 #0724073803 @阿Q 头上长了癞疮疤 - -
 #0724074006 @未庄人 取笑阿Q：亮起来了 - - #0724073803
 #0724074205 @阿Q 每次形式上被打败总能在心理上取胜：这个世界不像样，我被儿子打了 - - #0724074006
-</code></pre><p>分别代表人物、事件、时间、地点，人名以@开头。可以看成一个4列的数据库表，列的顺序可以调整，如果当前列为空用<code>-</code>代替。列以空格分割，如果不愿意用空格也可以在文件头自己指定。例如可以在文件头加上下面的指令指定以斜杠（<code>/</code>）为分隔符。</p>
+</code></pre>
+<p>分别代表人物、事件、时间、地点，人名以@开头。可以看成一个4列的数据库表，列的顺序可以调整，如果当前列为空用<code>-</code>代替。列以空格分割，如果不愿意用空格也可以在文件头自己指定。例如可以在文件头加上下面的指令指定以斜杠（<code>/</code>）为分隔符。</p>
 <pre><code>%% col_split_char=/
-</code></pre><p>可以看到，示例文本是多于四列的，因为第一列相当于id，唯一标识一行，最后一列是关联列，用于建立各行之间的联系。</p>
-<h2 id="自动补全"><a href="#自动补全" class="headerlink" title="自动补全"></a>自动补全</h2><p>输入@符号自动提示所有的人名</p>
-<p>输入#提示之前的条目，在输入过程中可以使用Tab触发补全，可以只输入少量字符按Tab自动补全，比如示例文本最后一行可以输入#006就会自动提示。<br><img src="autocmp.png" alt="自动补全"></p>
-<h2 id="类SQL筛查"><a href="#类SQL筛查" class="headerlink" title="类SQL筛查"></a>类SQL筛查</h2><p>支持：</p>
+</code></pre>
+<p>可以看到，示例文本是多于四列的，因为第一列相当于id，唯一标识一行，最后一列是关联列，用于建立各行之间的联系。</p>
+<h2 id="自动补全">自动补全</h2>
+<p>输入@符号自动提示所有的人名</p>
+<p>输入#提示之前的条目，在输入过程中可以使用Tab触发补全，可以只输入少量字符按Tab自动补全，比如示例文本最后一行可以输入#006就会自动提示。<br>
+<img src="autocmp.png" alt="自动补全"></p>
+<h2 id="类SQL筛查">类SQL筛查</h2>
+<p>支持：</p>
 <ul>
 <li>特殊命令：以<code>/</code>开头，目前只有两个，<code>/all</code>显示所有的条目，<code>/who</code>显示人物关系图</li>
 <li>逻辑表达式：与（&amp;）、或（|）、非（!）、等于（=，模糊匹配）、不等于（!=）</li>
 </ul>
 <p>比如和阿Q相关的事：</p>
 <pre><code>who=阿Q
-</code></pre><p>人物或事件包含小尼姑：</p>
+</code></pre>
+<p>人物或事件包含小尼姑：</p>
 <pre><code>who=小尼姑 | what=小尼姑
-</code></pre><p>未庄发生的事：</p>
+</code></pre>
+<p>未庄发生的事：</p>
 <pre><code>where=未庄
-</code></pre><p>春天发生的事：</p>
+</code></pre>
+<p>春天发生的事：</p>
 <pre><code>when=春天
-</code></pre><h2 id="人物关系图"><a href="#人物关系图" class="headerlink" title="人物关系图"></a>人物关系图</h2><p>输入<code>/who</code>命令</p>
-<p><img src="who1.png" alt="人物关系图"><br><img src="who2.png" alt="人物关系图"></p>
+</code></pre>
+<h2 id="人物关系图">人物关系图</h2>
+<p>输入<code>/who</code>命令</p>
+<p><img src="who1.png" alt="人物关系图"><br>
+<img src="who2.png" alt="人物关系图"></p>
 
   </div>
   <div class="post-footer">
@@ -138,9 +174,9 @@
   </div>
 </article>
 <footer>
-    &copy; 2022
+    &copy; 2023
     <span class="author">
-        nonsense
+        naosense
     </span>
 
      
@@ -155,7 +191,7 @@
         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
         var disqus_config = function () {
-        this.page.url = 'https://naosense.github.io/2021/07/24/小说时间线整理工具w4/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = 'https://naosense.github.io/2021/07/24/%E5%B0%8F%E8%AF%B4%E6%97%B6%E9%97%B4%E7%BA%BF%E6%95%B4%E7%90%86%E5%B7%A5%E5%85%B7w4/';  // Replace PAGE_URL with your page's canonical URL variable
         this.page.identifier = '2021/07/24/小说时间线整理工具w4/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
         this.page.title = '小说时间线整理工具w4';
         };

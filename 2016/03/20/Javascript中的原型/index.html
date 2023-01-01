@@ -7,6 +7,28 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   
   <title>Javascript中的原型 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="Javascript中的原型 - 扯淡有理"/>
+  <meta name="twitter:description" content="&lt;p&gt;首先要明确的是，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;js中的原型是一个对象，而且这个对象是函数(对象)的一个属性，即prototype。&lt;/li&gt;
+&lt;li&gt;当以构造函数的形式调用函数时，即new一个函数，会创建一个实例对象，这个实例的&lt;code&gt;__proto__&lt;/code&gt;属性会指向构造函数的prototype，由于原型也是对象，所以它也有一个&lt;code&gt;__proto__&lt;/code&gt;属性，这个属性指向的是原型对象的构造函数的prototype，这样一步一步上溯到Object.prototype,Object.prototype对象的&lt;code&gt;__proto__&lt;/code&gt;指向的是null，这就形成了一个锁链一样的东西，称为原型链。如果把原型链看做一条河流那么null就是源头了。注意原型prototype是函数的属性而不是实例的。&lt;/li&gt;
+&lt;li&gt;当一个函数被创建时，Function构造器产生的函数对象会执行类似的代码：&lt;code&gt;this.prototype = &amp;#123;constructor: this&amp;#125;&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;"/>
+  <meta name="twitter:image" content="https://wocanmei-hexo.nos-eastchina1.126.net/Javascript%E4%B8%AD%E7%9A%84%E5%8E%9F%E5%9E%8B/1-prototype.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="Javascript中的原型 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="&lt;p&gt;首先要明确的是，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;js中的原型是一个对象，而且这个对象是函数(对象)的一个属性，即prototype。&lt;/li&gt;
+&lt;li&gt;当以构造函数的形式调用函数时，即new一个函数，会创建一个实例对象，这个实例的&lt;code&gt;__proto__&lt;/code&gt;属性会指向构造函数的prototype，由于原型也是对象，所以它也有一个&lt;code&gt;__proto__&lt;/code&gt;属性，这个属性指向的是原型对象的构造函数的prototype，这样一步一步上溯到Object.prototype,Object.prototype对象的&lt;code&gt;__proto__&lt;/code&gt;指向的是null，这就形成了一个锁链一样的东西，称为原型链。如果把原型链看做一条河流那么null就是源头了。注意原型prototype是函数的属性而不是实例的。&lt;/li&gt;
+&lt;li&gt;当一个函数被创建时，Function构造器产生的函数对象会执行类似的代码：&lt;code&gt;this.prototype = &amp;#123;constructor: this&amp;#125;&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;"/>
+  <meta property="og:image" content="https://wocanmei-hexo.nos-eastchina1.126.net/Javascript%E4%B8%AD%E7%9A%84%E5%8E%9F%E5%9E%8B/1-prototype.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   
   <meta name="keywords" content=Javascript>
@@ -19,37 +41,47 @@
   
     <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
   
-  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
-  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
   <script>
-      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
   </script>
   <script type='text/x-mathjax-config'>
-        MathJax.Hub.Config({
-            extensions: ["tex2jax.js"],
-            jax: ["input/TeX", "output/SVG"],
-            tex2jax: {
-                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-            },
-            messageStyle: "none"
-        });
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', 'UA-44085500-1');
-    </script>
+    gtag('config', 'UA-44085500-1');
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
 
   
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
   <body>
     <div class="container">
@@ -97,13 +129,13 @@
 </ol>
 <span id="more"></span>
 <p>下面我们用代码来阐述一下上面的结论，假设有这样一段代码：</p>
-<pre><code class="javascript">var Flower = function(name) &#123;this.name = name;&#125;
+<pre><code class="language-javascript">var Flower = function(name) &#123;this.name = name;&#125;
 var f = new Flower(&quot;flower&quot;);
 </code></pre>
 <p>那么这段代码的原型链是什么样子的呢？</p>
 <p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/Javascript%E4%B8%AD%E7%9A%84%E5%8E%9F%E5%9E%8B/1-prototype.png" alt="原型链"></p>
 <p>原型链为图中红色虚线，我们用代码验证下我们的猜想，</p>
-<pre><code class="javascript">// true
+<pre><code class="language-javascript">// true
 f.__proto__ === Flower.prototype;
 // true;
 Flower.prototype.__proto__ === Object.prototype;
@@ -113,7 +145,7 @@ Object.prototype.__proto__ === null;
 <p>如果把原型链看做一条河流，那么null那一端就是上游，另一端为下游。我们都知道河流是有方向的，水只能由上游流向下游，而不能相反。</p>
 <p>那么这个原型链有什么作用呢？它是js继承系统的基础。上面提到，原型也是一个对象，既然是对象就可以拥有属性和方法，但是这个对象有点特殊，如果你往这个对象里添加了属性和方法，处于下游的对象包括原型都会拥有这个属性和方法，甚至会影响到已有的对象。这有点像你往河里面导入一瓶墨水，那么下游很快就会被染上颜色。</p>
 <p>还是老样子，用代码验证下，</p>
-<pre><code class="javascript">Object.prototype.nishishui = &quot;wo&quot;
+<pre><code class="language-javascript">Object.prototype.nishishui = &quot;wo&quot;
 // &quot;wo&quot;
 Flower.prototype.nishishui
 // &quot;wo&quot;
@@ -135,9 +167,9 @@ f.toString()
   </div>
 </article>
 <footer>
-    &copy; 2022
+    &copy; 2023
     <span class="author">
-        nonsense
+        naosense
     </span>
 
      
@@ -152,7 +184,7 @@ f.toString()
         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
         var disqus_config = function () {
-        this.page.url = 'https://naosense.github.io/2016/03/20/Javascript中的原型/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = 'https://naosense.github.io/2016/03/20/Javascript%E4%B8%AD%E7%9A%84%E5%8E%9F%E5%9E%8B/';  // Replace PAGE_URL with your page's canonical URL variable
         this.page.identifier = '2016/03/20/Javascript中的原型/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
         this.page.title = 'Javascript中的原型';
         };

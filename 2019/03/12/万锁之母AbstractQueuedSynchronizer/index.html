@@ -7,9 +7,21 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   
   <title>万锁之母AbstractQueuedSynchronizer - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="万锁之母AbstractQueuedSynchronizer - 扯淡有理"/>
+  <meta name="twitter:description" content="&lt;p&gt;翻看&lt;a href=&#34;https://naosense.github.io/2019/03/07/Java%E2%80%9C%E9%94%81%E2%80%9D%E8%AE%B0/&#34;&gt;Java“锁”记&lt;/a&gt;中提到的各种“锁”，其内部同步实现大多数都和一个类&lt;code&gt;AbstractQueuedSynchronizer&lt;/code&gt;相关，这个类称得上“万锁之母”，所以今天就来扒一扒这个类。&lt;/p&gt;"/>
+  <meta name="twitter:image" content="https://wocanmei-hexo.nos-eastchina1.126.net/%E4%B8%87%E9%94%81%E4%B9%8B%E6%AF%8DAbstractQueuedSynchronizer/CLH.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="万锁之母AbstractQueuedSynchronizer - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="&lt;p&gt;翻看&lt;a href=&#34;https://naosense.github.io/2019/03/07/Java%E2%80%9C%E9%94%81%E2%80%9D%E8%AE%B0/&#34;&gt;Java“锁”记&lt;/a&gt;中提到的各种“锁”，其内部同步实现大多数都和一个类&lt;code&gt;AbstractQueuedSynchronizer&lt;/code&gt;相关，这个类称得上“万锁之母”，所以今天就来扒一扒这个类。&lt;/p&gt;"/>
+  <meta property="og:image" content="https://wocanmei-hexo.nos-eastchina1.126.net/%E4%B8%87%E9%94%81%E4%B9%8B%E6%AF%8DAbstractQueuedSynchronizer/CLH.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   
-  <meta name="keywords" content=并发,分布式,Java>
+  <meta name="keywords" content=Java,并发,分布式>
   
     <meta name="description" content="Java Python R 机器学习 统计 扯淡">
   
@@ -19,37 +31,47 @@
   
     <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
   
-  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
-  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
   <script>
-      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
   </script>
   <script type='text/x-mathjax-config'>
-        MathJax.Hub.Config({
-            extensions: ["tex2jax.js"],
-            jax: ["input/TeX", "output/SVG"],
-            tex2jax: {
-                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-            },
-            messageStyle: "none"
-        });
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', 'UA-44085500-1');
-    </script>
+    gtag('config', 'UA-44085500-1');
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
 
   
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
   <body>
     <div class="container">
@@ -91,10 +113,11 @@
   <div class="post-content">
     <p>翻看<a href="https://naosense.github.io/2019/03/07/Java%E2%80%9C%E9%94%81%E2%80%9D%E8%AE%B0/">Java“锁”记</a>中提到的各种“锁”，其内部同步实现大多数都和一个类<code>AbstractQueuedSynchronizer</code>相关，这个类称得上“万锁之母”，所以今天就来扒一扒这个类。</p>
 <span id="more"></span>
-<h2 id="整体脉络"><a href="#整体脉络" class="headerlink" title="整体脉络"></a>整体脉络</h2><p>为了避免一头扎进去纠缠于各种细节出不来，可以先从宏观上来看一下这个类。首先大家思考一个问题：什么是同步器？假如把线程比作车辆，同步器的角色和警察叔叔差不多，警察的做的事无非是在合适的时机指挥车辆走和停，同步器呢，也是在选择合适的时间调度线程阻塞和执行。</p>
+<h2 id="整体脉络">整体脉络</h2>
+<p>为了避免一头扎进去纠缠于各种细节出不来，可以先从宏观上来看一下这个类。首先大家思考一个问题：什么是同步器？假如把线程比作车辆，同步器的角色和警察叔叔差不多，警察的做的事无非是在合适的时机指挥车辆走和停，同步器呢，也是在选择合适的时间调度线程阻塞和执行。</p>
 <p>对于车辆来说，什么时候走什么时候停呢，警察叔叔给你招手的时候啊，来来来小伙子，否则就老老实实排队，等警察叔叔给你招手；对于线程来讲也可以采用这种策略，获得许可可以执行，否则排队阻塞，等同步器给与你许可。如果前方交通比较疏松，警察可能一次会叫好几辆车一起走，如果比较拥堵，则会一辆一辆的来；同步器呢同样如此，它有两种模式：共享和独占，前者允许多个线程一起运行，后者只允许单一线程运行。</p>
 <p>如果用伪代码表示上面的逻辑可能是这样子的：</p>
-<pre><code class="java">// 获得许可
+<pre><code class="language-java">// 获得许可
 while (不允许获得许可) &#123;
     线程排队
     停止执行
@@ -113,13 +136,14 @@ if (允许释放许可) &#123;
 <li>线程采用什么方法停止和继续执行</li>
 <li>对于不能立马获得许可的线程得有排队机制</li>
 </ol>
-<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><p>说是源码分析其实是自己在学习<code>AbstractQueuedSynchronizer</code>源码的一些学习笔记，并不是完整的源码分析。相信想了解<code>AbstractQueuedSynchronizer</code>运行机制的人多多少少都看过它的代码了，甚至看了一遍都不止，其实大部分代码一般人都能看懂，就是有那么几处难懂的代码，犹如芒刺在背不拔不快。本文就是为了这个目的而写的，并不是要面面俱到而是重点突破，给有心人一点启发。为了符合上下文的语义，下面描述的时候可能节点和线程交替使用，也会把阻塞停止，唤醒叫醒混用，大家留意就是了。</p>
+<h2 id="源码分析">源码分析</h2>
+<p>说是源码分析其实是自己在学习<code>AbstractQueuedSynchronizer</code>源码的一些学习笔记，并不是完整的源码分析。相信想了解<code>AbstractQueuedSynchronizer</code>运行机制的人多多少少都看过它的代码了，甚至看了一遍都不止，其实大部分代码一般人都能看懂，就是有那么几处难懂的代码，犹如芒刺在背不拔不快。本文就是为了这个目的而写的，并不是要面面俱到而是重点突破，给有心人一点启发。为了符合上下文的语义，下面描述的时候可能节点和线程交替使用，也会把阻塞停止，唤醒叫醒混用，大家留意就是了。</p>
 <p><code>AbstractQueuedSynchronizer</code>整体是利用模板模式，通过维护一个<code>state</code>变量状态配合<code>tryAcquire</code>，<code>tryRelease</code>以及<code>tryAcquireShared</code>，<code>tryReleaseShared</code>间接的影响许可获取和释放。</p>
 <p>同步器使用CLH队列来维护排队的线程，CLH队列说白了就是一个单向链表，特性是后一个节点的状态是由前一个节点的状态决定的，每个节点都有一个<code>pred</code>指针指向前一个节点，<code>AbstractQueuedSynchronizer</code>在原生的CLH队列基础上进行了优化，加入了一个<code>next</code>指针，指向后继节点，用于提高寻找后继节点的性能，这就形成了一个双向链表。由于没有更新两个<code>volatile</code>的变量的CAS方法，所以<code>next</code>变量为<code>null</code>的时候并不表明没有后继节点，因为有可能一个节点入列的时候更新完<code>pred</code>指针，还没来得及更新<code>next</code>指针。具体结构如下：</p>
 <p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E4%B8%87%E9%94%81%E4%B9%8B%E6%AF%8DAbstractQueuedSynchronizer/CLH.png" alt="CLH队列结构"></p>
 <p><code>head</code>和<code>tail</code>分别指向队列的头和尾，<code>next</code>我这里画成了虚线，表明其不可靠性。</p>
 <p><code>AbstractQueuedSynchronizer</code>的核心就是如何维护CLH队列的状态，所以我们把重点放在这一块。它提供了两套获取许可和释放许可的方法：<code>acquire</code>，<code>release</code>和<code>acquireShared</code>，<code>releaseShared</code>，分别对应独占和共享模式。下面分别看看这两套方法的签名：</p>
-<pre><code class="java">// 独占模式模板方法
+<pre><code class="language-java">// 独占模式模板方法
 public final void acquire(int arg) &#123;
     if (!tryAcquire(arg) &amp;&amp;
         acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
@@ -151,7 +175,7 @@ public final boolean releaseShared(int arg) &#123;
 &#125;
 </code></pre>
 <p>可以看到这两套方法是非常类似的，我们一个一个的看看，首先看看<code>acquire</code>方法：</p>
-<pre><code class="java">// acquire方法的逻辑粗看起来可能是先尝试获取下许可
+<pre><code class="language-java">// acquire方法的逻辑粗看起来可能是先尝试获取下许可
 // 如果成功，直接跳出，不用排队了；
 // 如果不成功就添加一个独占节点到队列中排队，如果
 // 有中断响应中断，细节一个方法一个方法的进入看看
@@ -280,7 +304,7 @@ private final boolean parkAndCheckInterrupt() &#123;
 &#125;
 </code></pre>
 <p><code>acquire</code>分析完了，再看看<code>release</code></p>
-<pre><code class="java">// 如果释放许可成功，并且后面还有节点，叫醒它
+<pre><code class="language-java">// 如果释放许可成功，并且后面还有节点，叫醒它
 // 返回
 public final boolean release(int arg) &#123;
     if (tryRelease(arg)) &#123;
@@ -324,7 +348,7 @@ private void unparkSuccessor(Node node) &#123;
 &#125;
 </code></pre>
 <p>独占模式的获取和释放代码就分析完了，再来看看共享模式的。</p>
-<pre><code class="java">public final void acquireShared(int arg) &#123;
+<pre><code class="language-java">public final void acquireShared(int arg) &#123;
     if (tryAcquireShared(arg) &lt; 0)
         doAcquireShared(arg);
 &#125;
@@ -434,7 +458,8 @@ public final boolean releaseShared(int arg) &#123;
     return false;
 &#125;
 </code></pre>
-<h2 id="运行图景"><a href="#运行图景" class="headerlink" title="运行图景"></a>运行图景</h2><p>经过上面的源码分析，估计大部分人心里有点数了，可能还形不成清晰的运行图景或者说直觉性的认识，那么接下来说下我自己的一点理解。</p>
+<h2 id="运行图景">运行图景</h2>
+<p>经过上面的源码分析，估计大部分人心里有点数了，可能还形不成清晰的运行图景或者说直觉性的认识，那么接下来说下我自己的一点理解。</p>
 <p>整个的图景是这样子的：对于独占模式，因为只有一个线程能获取许可，进而也只有一个线程释放许可，只会叫醒队伍头部的一个线程，这样整个队列是<strong>串行出列，并行入列</strong>，有点像排队坐公交，虽然队伍后面挤作一团，队伍前面还是有序的，一个一个的上车；对于共享模式而言，由于允许多个线程一起运行，也就是多个线程获得许可，同样也会有多个线程释放许可，这就需要叫醒队伍里多个线程，整个队列的样子是<strong>并行出列，并行入列</strong>。</p>
 <p>忽略不必要的细节，来看看独占和共享模式下主逻辑的函数调用栈：</p>
 <p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E4%B8%87%E9%94%81%E4%B9%8B%E6%AF%8DAbstractQueuedSynchronizer/function_stack.png" alt="函数主逻辑调用栈"></p>
@@ -455,9 +480,9 @@ public final boolean releaseShared(int arg) &#123;
   </div>
 </article>
 <footer>
-    &copy; 2022
+    &copy; 2023
     <span class="author">
-        nonsense
+        naosense
     </span>
 
      
@@ -472,7 +497,7 @@ public final boolean releaseShared(int arg) &#123;
         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
         var disqus_config = function () {
-        this.page.url = 'https://naosense.github.io/2019/03/12/万锁之母AbstractQueuedSynchronizer/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = 'https://naosense.github.io/2019/03/12/%E4%B8%87%E9%94%81%E4%B9%8B%E6%AF%8DAbstractQueuedSynchronizer/';  // Replace PAGE_URL with your page's canonical URL variable
         this.page.identifier = '2019/03/12/万锁之母AbstractQueuedSynchronizer/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
         this.page.title = '万锁之母AbstractQueuedSynchronizer';
         };

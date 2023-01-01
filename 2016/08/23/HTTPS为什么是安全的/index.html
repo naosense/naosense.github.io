@@ -7,6 +7,26 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   
   <title>HTTPS为什么是安全的 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="HTTPS为什么是安全的 - 扯淡有理"/>
+  <meta name="twitter:description" content="&lt;p&gt;HTTP我们都知道是超文本传输协议，HTTPS与HTTP一字之差，它到底是什么呢？引用《HTTP权威指南》的介绍：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;HTTPS是最常见的HTTP安全版本。它得到了很广泛的应用，所有主要的商业浏览器和服务器上都提供HTTPS。HTTPS将HTTP协议与一组强大的对称、非对称和基于证书的加密技术结合在一起，使得HTTPS不仅很安全，而且很灵活，很容易在处于无序状态的、分散的全球互联网上进行管理。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;HTTPS是最常见的HTTP安全版本。多出的S是Security安全的意思，那么它是如何保证安全的呢？&lt;/p&gt;"/>
+  <meta name="twitter:image" content="https://wocanmei-hexo.nos-eastchina1.126.net/HTTPS%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E5%AE%89%E5%85%A8%E7%9A%84/1-http%20layer.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="HTTPS为什么是安全的 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="&lt;p&gt;HTTP我们都知道是超文本传输协议，HTTPS与HTTP一字之差，它到底是什么呢？引用《HTTP权威指南》的介绍：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;HTTPS是最常见的HTTP安全版本。它得到了很广泛的应用，所有主要的商业浏览器和服务器上都提供HTTPS。HTTPS将HTTP协议与一组强大的对称、非对称和基于证书的加密技术结合在一起，使得HTTPS不仅很安全，而且很灵活，很容易在处于无序状态的、分散的全球互联网上进行管理。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;HTTPS是最常见的HTTP安全版本。多出的S是Security安全的意思，那么它是如何保证安全的呢？&lt;/p&gt;"/>
+  <meta property="og:image" content="https://wocanmei-hexo.nos-eastchina1.126.net/HTTPS%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E5%AE%89%E5%85%A8%E7%9A%84/1-http%20layer.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   
   <meta name="keywords" content=Http,Https>
@@ -19,37 +39,47 @@
   
     <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
   
-  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
-  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
   <script>
-      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
   </script>
   <script type='text/x-mathjax-config'>
-        MathJax.Hub.Config({
-            extensions: ["tex2jax.js"],
-            jax: ["input/TeX", "output/SVG"],
-            tex2jax: {
-                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-            },
-            messageStyle: "none"
-        });
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', 'UA-44085500-1');
-    </script>
+    gtag('config', 'UA-44085500-1');
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
 
   
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
   <body>
     <div class="container">
@@ -108,7 +138,7 @@
 <ul>
 <li>数字证书是否过期</li>
 <li>数字证书是否可信，即证书的颁发机构是否在客户端往往是浏览器的信任列表</li>
-<li>数字证书的公钥能否验证数字签名，即数字签名的合法性，这个过程参见<em><a href="https://naosense.github.io/2018/08/15/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%E6%98%AF%E4%BB%80%E4%B9%88/">数字签名是什么</a></em></li>
+<li>数字证书的公钥能否验证数字签名，即数字签名的合法性，这个过程参见*<a href="https://naosense.github.io/2018/08/15/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D%E6%98%AF%E4%BB%80%E4%B9%88/">数字签名是什么</a>*</li>
 <li>域名是否与证书的域名匹配</li>
 </ul>
 <ol start="4">
@@ -120,7 +150,7 @@
 <li>服务器也发送一条消息通知客户端以后的数据都将使用会话密钥加密，然后再发送一条消息表明握手过程的服务器部分完成。</li>
 <li>握手过程完成，SSL会话开始使用会话密钥传输数据。</li>
 </ol>
-<p>可以看到整个握手过程既包括非对称加密又包括对称加密，先用非对称密钥传送对称密钥，再用对称密钥传送后面的数据，充分利用了两种加密方式的优势，参见<em><a href="https://naosense.github.io/2018/08/17/%E5%8A%A0%E5%AF%86%E5%92%8C%E8%A7%A3%E5%AF%86/">加密和解密</a></em>。</p>
+<p>可以看到整个握手过程既包括非对称加密又包括对称加密，先用非对称密钥传送对称密钥，再用对称密钥传送后面的数据，充分利用了两种加密方式的优势，参见*<a href="https://naosense.github.io/2018/08/17/%E5%8A%A0%E5%AF%86%E5%92%8C%E8%A7%A3%E5%AF%86/">加密和解密</a>*。</p>
 <p>回到开头的问题，HTTPS如何保证安全呢？兵法云：知己知彼百战百胜，我们知道互联网安全三大威胁：窃听、篡改和伪装，假如让我们作为攻击者，该如何去做呢？</p>
 <p>事实上，上面十个步骤中第1、2步是明文传输的，我们可以对这两步的信息进行拦截得到双方的协议版本、加密方式、随机数以及服务器证书，然后原封不动的将相应信息再发送给对方，我们在通信中间扮演一个伪装者，对客户端来说我们就是服务器，对服务器来说我们就是客户端。现在来到第3步，客户端对我们的攻击全然不知，还把我们当成真正的服务器，客户端验证我们发送给它的数字证书，结果肯定是通过的，因为我们是将服务器的数字证书原封不动的发过去的。接着客户端将预置密码加密然后发送给服务器，这个信息肯定也没法逃脱我们的火眼金睛，但是我们拿过拦截到的信息一看有点傻眼了，由于我们没有服务器密钥，无法进行解密，也就无法得到预置密码，接下来的步骤就无法进行，客户端这时候就反应过来了，等了这么久没反应，对方肯定就问题，会话终止。至于其他的步骤，都是加密数据，窃听篡改没什么意义，这样，三大威胁就被解决了。</p>
 
@@ -134,9 +164,9 @@
   </div>
 </article>
 <footer>
-    &copy; 2022
+    &copy; 2023
     <span class="author">
-        nonsense
+        naosense
     </span>
 
      
@@ -151,7 +181,7 @@
         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
         var disqus_config = function () {
-        this.page.url = 'https://naosense.github.io/2016/08/23/HTTPS为什么是安全的/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = 'https://naosense.github.io/2016/08/23/HTTPS%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E5%AE%89%E5%85%A8%E7%9A%84/';  // Replace PAGE_URL with your page's canonical URL variable
         this.page.identifier = '2016/08/23/HTTPS为什么是安全的/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
         this.page.title = 'HTTPS为什么是安全的';
         };

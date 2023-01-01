@@ -7,6 +7,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   
   <title>Oracle中的高水位线 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="Oracle中的高水位线 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/default.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="Oracle中的高水位线 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/default.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   
   <meta name="keywords" content=高水位线,Oracle,数据库>
@@ -19,37 +31,47 @@
   
     <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
   
-  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
-  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
   <script>
-      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
   </script>
   <script type='text/x-mathjax-config'>
-        MathJax.Hub.Config({
-            extensions: ["tex2jax.js"],
-            jax: ["input/TeX", "output/SVG"],
-            tex2jax: {
-                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-            },
-            messageStyle: "none"
-        });
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', 'UA-44085500-1');
-    </script>
+    gtag('config', 'UA-44085500-1');
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
 
   
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
   <body>
     <div class="container">
@@ -92,18 +114,18 @@
     <p>高水位线(High Water Mark, HWM)类似于一个指针，用来标识分配给段(segment)的块(block)状态。块是Oracle中数据分配和操作的最小单位，段是类似于表、索引这样的数据库实体。块有下面几种状态：</p>
 <ul>
 <li>在HWM之上，块是未格式化和未使用的(unformated and unused)</li>
-<li>在HWM之下，块又有下面几种状态：<ul>
+<li>在HWM之下，块又有下面几种状态：</li>
 <li>分配的(allocated)，但是还未格式化</li>
 <li>格式化并且存有数据</li>
 <li>格式化但是没有数据，delete操作会造成这种状态</li>
 </ul>
-</li>
-</ul>
-<p>另有一个低水位线的概念(Low HWM)，处于Low HWM之下的块都是格式化的，处于Low HWM和HWM之间有可能格式化也可能未格式化。<br>示意图如下，</p>
+<p>另有一个低水位线的概念(Low HWM)，处于Low HWM之下的块都是格式化的，处于Low HWM和HWM之间有可能格式化也可能未格式化。<br>
+示意图如下，</p>
 <pre><code>-- =============================================================
 -- &lt;-formated--&gt;Low HWM&lt;----allocated-----&gt;hwm&lt;-----empty----&gt;total
 -- ================^========================^===================^
-</code></pre><p>HWM有如下特点：</p>
+</code></pre>
+<p>HWM有如下特点：</p>
 <ul>
 <li>一般情况下只升不降，只有在truncate、move、shrink等操作才会降低，delete不会降低，delete后留下的空间，以后insert可以使用。</li>
 <li>执行全表扫描时，数据库扫描Low HWM以下所有的块，不管有没有数据，读取两个水位线之间的块时则要小心一点，因为这中间的块并不一定都是格式化的。如果频繁的删除插入操作，会在HWM下的块中留下大量碎片，影响性能。</li>
@@ -111,7 +133,7 @@
 </ul>
 <p>可是为什么要设置一个HWM呢？既然有了一个位图块记录块的状态，为什么要设置一个水位线，全表扫描时还要扫描下面的所有块，而不是那些有数据的？这不是出力不讨好吗，百度了半天，没找到满意的答案，基本上大家都是说“它是这样的”，而没有说“它为什么是这样的”，知道的告诉一声。</p>
 <p>下面是检测表水位线的一个小程序：</p>
-<pre><code class="sql">PROCEDURE P_TABLE_HWM_ANALYSE(TABLE_NAME IN VARCHAR2) IS
+<pre><code class="language-sql">PROCEDURE P_TABLE_HWM_ANALYSE(TABLE_NAME IN VARCHAR2) IS
     -- 表占用空间高水位检测
     LVC_TABLE_TMP        VARCHAR2(50);
     LVC_MB               NUMBER; -- 表的大小MB
@@ -126,8 +148,8 @@
   BEGIN
     LVC_TABLE_TMP := UPPER(TABLE_NAME);
 
-    EXECUTE IMMEDIATE &#39;ANALYZE TABLE &#39; || LVC_TABLE_TMP ||
-                      &#39; ESTIMATE STATISTICS&#39;;
+    EXECUTE IMMEDIATE 'ANALYZE TABLE ' || LVC_TABLE_TMP ||
+                      ' ESTIMATE STATISTICS';
 
     SELECT ROUND(SUM(DECODE(BYTES, NULL, 0, BYTES)) / 1024 / 1024, 1),
            SUM(DECODE(BLOCKS, NULL, 0, BLOCKS))
@@ -142,8 +164,8 @@
       FROM USER_TABLES
      WHERE TABLE_NAME = LVC_TABLE_TMP;
 
-    EXECUTE IMMEDIATE &#39;SELECT COUNT(DISTINCT DBMS_ROWID.ROWID_BLOCK_NUMBER(ROWID)
-                        || DBMS_ROWID.ROWID_RELATIVE_FNO(ROWID)) FROM &#39; ||
+    EXECUTE IMMEDIATE 'SELECT COUNT(DISTINCT DBMS_ROWID.ROWID_BLOCK_NUMBER(ROWID)
+                        || DBMS_ROWID.ROWID_RELATIVE_FNO(ROWID)) FROM ' ||
                       LVC_TABLE_TMP
       INTO LVC_USED;
 
@@ -166,21 +188,21 @@
     ELSE
       LVC_HWM_PERCENT_POS := ROUND(LVC_HWM_PERCENT / 2);
     END IF;
-    DBMS_OUTPUT.PUT_LINE(RPAD(LVC_TABLE_TMP || &#39;: &#39; || LVC_MB || &#39;MB&#39;, 50) ||
-                         LPAD(&#39;U: Used, H: HWM, T: Total&#39;, 52));
+    DBMS_OUTPUT.PUT_LINE(RPAD(LVC_TABLE_TMP || ': ' || LVC_MB || 'MB', 50) ||
+                         LPAD('U: Used, H: HWM, T: Total', 52));
 
-        DBMS_OUTPUT.PUT_LINE(LPAD(&#39;=&#39;, 102, &#39;=&#39;));
-    DBMS_OUTPUT.PUT_LINE(LPAD(LVC_USED_PERCENT || &#39;%&#39;,
+		DBMS_OUTPUT.PUT_LINE(LPAD('=', 102, '='));
+    DBMS_OUTPUT.PUT_LINE(LPAD(LVC_USED_PERCENT || '%',
                               LVC_USED_PERCENT_POS));
-    DBMS_OUTPUT.PUT_LINE(&#39;|&#39; || LPAD(&#39;|U&#39;, LVC_USED_PERCENT + 2, &#39;-&#39;));
-    DBMS_OUTPUT.PUT_LINE(LPAD(LVC_HWM_PERCENT || &#39;%&#39;, LVC_HWM_PERCENT_POS));
-    DBMS_OUTPUT.PUT_LINE(&#39;|&#39; || LPAD(&#39;|H&#39;, LVC_HWM_PERCENT + 2, &#39;-&#39;));
-        DBMS_OUTPUT.PUT_LINE(&#39;&#39;);
-    DBMS_OUTPUT.PUT_LINE(LPAD(&#39;T&#39;, 103, &#39;=&#39;));
+    DBMS_OUTPUT.PUT_LINE('|' || LPAD('|U', LVC_USED_PERCENT + 2, '-'));
+    DBMS_OUTPUT.PUT_LINE(LPAD(LVC_HWM_PERCENT || '%', LVC_HWM_PERCENT_POS));
+    DBMS_OUTPUT.PUT_LINE('|' || LPAD('|H', LVC_HWM_PERCENT + 2, '-'));
+		DBMS_OUTPUT.PUT_LINE('');
+    DBMS_OUTPUT.PUT_LINE(LPAD('T', 103, '='));
 
   EXCEPTION
     WHEN OTHERS THEN
-      DBMS_OUTPUT.PUT_LINE(LVC_TABLE_TMP || &#39;, &#39; || SQLERRM);
+      DBMS_OUTPUT.PUT_LINE(LVC_TABLE_TMP || ', ' || SQLERRM);
 
   END P_TABLE_HWM_ANALYSE;
 </code></pre>
@@ -194,6 +216,7 @@
 
 ======================================================================================================T
 </code></pre>
+
   </div>
   <div class="post-footer">
     
@@ -204,9 +227,9 @@
   </div>
 </article>
 <footer>
-    &copy; 2022
+    &copy; 2023
     <span class="author">
-        nonsense
+        naosense
     </span>
 
      
@@ -221,7 +244,7 @@
         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
         var disqus_config = function () {
-        this.page.url = 'https://naosense.github.io/2016/03/25/Oracle中的高水位线/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = 'https://naosense.github.io/2016/03/25/Oracle%E4%B8%AD%E7%9A%84%E9%AB%98%E6%B0%B4%E4%BD%8D%E7%BA%BF/';  // Replace PAGE_URL with your page's canonical URL variable
         this.page.identifier = '2016/03/25/Oracle中的高水位线/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
         this.page.title = 'Oracle中的高水位线';
         };

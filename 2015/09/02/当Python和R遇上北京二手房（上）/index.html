@@ -7,6 +7,22 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   
   <title>当Python和R遇上北京二手房（上） - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="当Python和R遇上北京二手房（上） - 扯淡有理"/>
+  <meta name="twitter:description" content="&lt;blockquote&gt;
+&lt;p&gt;最近忙活了一阵子，终于把房子的事情落实了，俗话说饱暖思淫欲，某天突发奇想能不能利用手头上的一些工具对北京的二手房数据捣鼓一下，看看能不能有一些有意思的发现？想到以前有点python经验，正巧最近也在看R，正好借此机会巩固一下，齐活，走起！&lt;/p&gt;
+&lt;/blockquote&gt;"/>
+  <meta name="twitter:image" content="https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/1-1.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="当Python和R遇上北京二手房（上） - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="&lt;blockquote&gt;
+&lt;p&gt;最近忙活了一阵子，终于把房子的事情落实了，俗话说饱暖思淫欲，某天突发奇想能不能利用手头上的一些工具对北京的二手房数据捣鼓一下，看看能不能有一些有意思的发现？想到以前有点python经验，正巧最近也在看R，正好借此机会巩固一下，齐活，走起！&lt;/p&gt;
+&lt;/blockquote&gt;"/>
+  <meta property="og:image" content="https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/1-1.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   
   <meta name="keywords" content=R,Python,统计>
@@ -19,37 +35,47 @@
   
     <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
   
-  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
-  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
   <script>
-      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
   </script>
   <script type='text/x-mathjax-config'>
-        MathJax.Hub.Config({
-            extensions: ["tex2jax.js"],
-            jax: ["input/TeX", "output/SVG"],
-            tex2jax: {
-                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-            },
-            messageStyle: "none"
-        });
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', 'UA-44085500-1');
-    </script>
+    gtag('config', 'UA-44085500-1');
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
 
   
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
   <body>
     <div class="container">
@@ -93,25 +119,30 @@
 <p>最近忙活了一阵子，终于把房子的事情落实了，俗话说饱暖思淫欲，某天突发奇想能不能利用手头上的一些工具对北京的二手房数据捣鼓一下，看看能不能有一些有意思的发现？想到以前有点python经验，正巧最近也在看R，正好借此机会巩固一下，齐活，走起！</p>
 </blockquote>
 <span id="more"></span>
-<h2 id="一、数据准备"><a href="#一、数据准备" class="headerlink" title="一、数据准备"></a>一、数据准备</h2><p>看了下各大房产网站，从数据的量级、真实性、即时性等方面对比了下，有的数据挺多，但是数据真实性不高，上面既有房主的帖子，也有中介的帖子；有的真实性不错，但是房源太少，综合对比下来，最终选择了某家网。</p>
+<h2 id="一、数据准备">一、数据准备</h2>
+<p>看了下各大房产网站，从数据的量级、真实性、即时性等方面对比了下，有的数据挺多，但是数据真实性不高，上面既有房主的帖子，也有中介的帖子；有的真实性不错，但是房源太少，综合对比下来，最终选择了某家网。</p>
 <p>有了数据源，用Python写了一个爬虫，从网站上随机爬取了30000条房源数据。有人可能说数据太少了，少就少吧，这里只是想起到一个抛砖引玉的作用。</p>
-<h2 id="二、数据整理"><a href="#二、数据整理" class="headerlink" title="二、数据整理"></a>二、数据整理</h2><p>来看下获取的数据，每条数据描述了房子的13个属性，分别为：区、小区、户型、面积、朝向、区域（区下面更细分的一级，比如昌平的天通苑、回龙观）、楼层、房龄、学区、地铁、税、总价、单价。</p>
+<h2 id="二、数据整理">二、数据整理</h2>
+<p>来看下获取的数据，每条数据描述了房子的13个属性，分别为：区、小区、户型、面积、朝向、区域（区下面更细分的一级，比如昌平的天通苑、回龙观）、楼层、房龄、学区、地铁、税、总价、单价。</p>
 <ol>
 <li>区，原始数据都是英文代号，比如BJCP代表昌平，BJCY代表朝阳，为了查看起来方便，将它们都替换为相应的中文名。</li>
 <li>楼层，原始数据大部分是以“低楼层”、“中楼层”这样的楼层区间划分的，不过有少量数据也写了具体楼层，我统一把它替换为楼层区间。</li>
 <li>学区和地铁，我进行了简化，只进行了是否学区、是否地铁的划分，对于学区的品质，地铁的远近没有细分。</li>
 <li>税，抓取的30000条数据里面很奇怪只有“满五唯一”和空值这两种，并没有例如“满二不唯一”、“满二唯一”等类型，为了简化，就认为空值没有免税。</li>
 <li>对异常值的处理，查看了一下数据，通过与网站上同区域同小区的数据对比，有一些年代过早、总价、单价过高过低等异常情况，比如年代为1000年的房子，总价43亿的“西山小镇”等等，这可能是信息录入员笔误或者采用了默认值造成，由于异常值占比较小，我进行了简单的删除处理。</li>
-<li>为了对面积、年代这样的连续值进行分组，我增加了四列，<ul>
+<li>为了对面积、年代这样的连续值进行分组，我增加了四列，
+<ul>
 <li>面积分组：0~50, 50~100, 100~150, 150~200, &gt;200</li>
 <li>年代分组：&lt;1990, 90~95, 95~00, 00~05, 05~10, 10~15, &gt;=2015</li>
-<li>总价分组：0~1, 1~2, 2~3, 3~4, 4~5, 5~6, 6~7, 7~8, 8~9, 9~10,<br>>10，单位为百万</li>
-<li>单价分组：0~1万, 1~2万, 2~3万, 3~4万, 4~5万, 5~6万, 6~7万, 7~8万, 8~9万,<br>9~10万, &gt;10万</li>
+<li>总价分组：0~1, 1~2, 2~3, 3~4, 4~5, 5~6, 6~7, 7~8, 8~9, 9~10,<br>
+&gt;10，单位为百万</li>
+<li>单价分组：0~1万, 1~2万, 2~3万, 3~4万, 4~5万, 5~6万, 6~7万, 7~8万, 8~9万,<br>
+9~10万, &gt;10万</li>
 </ul>
 </li>
 </ol>
 <p>整理完共有29790条数据，这是数据的结构：</p>
-<pre><code>## &#39;data.frame&#39;:    29790 obs. of  17 variables:
+<pre><code>## 'data.frame':	29790 obs. of  17 variables:
 ##  $ area     : Factor w/ 15 levels &quot;昌平&quot;,&quot;朝阳&quot;,..: 2 13 7 7 15 5 6 14 2 11 ...
 ##  $ region   : Factor w/ 5139 levels &quot;@北京&quot;,&quot;10AM新坐标&quot;,..: 674 2299 1789 1955 1063 463 2764 407 2480 2601 ...
 ##  $ zone     : Ord.factor w/ 53 levels &quot;0室0厅&quot;&lt;&quot;0室1厅&quot;&lt;..: 12 27 12 6 11 16 11 6 6 16 ...
@@ -129,7 +160,9 @@
 ##  $ year_cg  : Ord.factor w/ 7 levels &quot;&lt;1990&quot;&lt;&quot;90~95&quot;&lt;..: 4 4 3 3 5 6 6 5 4 3 ...
 ##  $ num_cg   : Ord.factor w/ 11 levels &quot;0~1&quot;&lt;&quot;1~2&quot;&lt;&quot;2~3&quot;&lt;..: 4 10 3 3 1 4 3 2 2 3 ...
 ##  $ price_cg : Ord.factor w/ 11 levels &quot;0~1万&quot;&lt;&quot;1~2万&quot;&lt;..: 6 3 4 6 2 3 4 3 4 2 ...
-</code></pre><h2 id="三、数据概览"><a href="#三、数据概览" class="headerlink" title="三、数据概览"></a>三、数据概览</h2><p>下面从总体上看下数据，</p>
+</code></pre>
+<h2 id="三、数据概览">三、数据概览</h2>
+<p>下面从总体上看下数据，</p>
 <p>1.县区分布</p>
 <p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/1-1.png" alt=""></p>
 <p>本次抽到的数据包括北京13个区和2个特别区域亦庄和燕郊，后两个地方不是区，但是在北京的朋友都知道，这两个地方有可能比某些区还有名。</p>
@@ -140,7 +173,9 @@
 <p>看来小户型还是主流，不过这有可能因为一是大部分二手房年代较早，小户型较多,不过查看了下数据，2000年以后的房子二室一厅也有26%；另外一点可能是北京房价太贵，作为购房者的主体普通大众大部分购买力有限，开发商盖房的时候主要盖的就是这种户型。</p>
 <p>3.面积分布</p>
 <p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/1-3.png" alt=""></p>
-<p>右上角密度图显示本次抽取的数据，面积的区间为0 ~ 3000平方，不过大部分的房子的面积还是集中在一个<br>较小的范围内。从下图可以看到大部分面积都落在50 ~ 150这个区间，50 ~ 100的房子约为54%，而200平米<br>以上的大房子仅为6%。</p>
+<p>右上角密度图显示本次抽取的数据，面积的区间为0 ~ 3000平方，不过大部分的房子的面积还是集中在一个<br>
+较小的范围内。从下图可以看到大部分面积都落在50 ~ 150这个区间，50 ~ 100的房子约为54%，而200平米<br>
+以上的大房子仅为6%。</p>
 <p>不太清楚其他地方的房子，在北京房子的面积和要交的税是有关系的。这可能在一定程度上会遏制房子的面积。</p>
 <p>4.朝向分布</p>
 <p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/1-4.png" alt=""></p>
@@ -157,7 +192,8 @@
 <p>7.建筑年代分布</p>
 <p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/1-7.png" alt=""></p>
 <p>房子的建筑年代对于土豪不是那么重要，但是对于普通购房者就不一样了，因为贷款的年限和房龄是有关系的。一般情况下钢混结构带电梯的贷款年限为57减去房龄，砖结构比如6层不带电梯的板楼是45减去房龄，具体的年限和你的房屋具体评估值有关系，我在网上找了半天，没有找到这种算法的明文规定，这应该是一个经验值，不过具有一定的准确性。也就是说你想贷款30年，钢混的必须至少为88年后的，砖混的必须至少是2000年后的。</p>
-<p>数据显示，建筑年代区间为1952 ~ 2015，从图中可以看到，建筑年代主要集中在1995年到2015年这个时间段，<br>2000年后的房子竟然占了总量的72%。这是我没有想到的，因为看房的时候，看到的房子基本上都是90年代的房子，这可能和当初我的定位有关系，当初买房的时候就想买个离市区近点的，上班方便，房子老点没关系，而市区可能新房子较少。</p>
+<p>数据显示，建筑年代区间为1952 ~ 2015，从图中可以看到，建筑年代主要集中在1995年到2015年这个时间段，<br>
+2000年后的房子竟然占了总量的72%。这是我没有想到的，因为看房的时候，看到的房子基本上都是90年代的房子，这可能和当初我的定位有关系，当初买房的时候就想买个离市区近点的，上班方便，房子老点没关系，而市区可能新房子较少。</p>
 <p>8.学区房、地铁房、免税房</p>
 <p><img src="https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/1-8.png" alt=""></p>
 <p>这三个属性有点相似，放在了一起。这里没有对学区的优劣，地铁的远近等进行细分，只是简单粗暴的分为有无两种。</p>
@@ -184,9 +220,9 @@
   </div>
 </article>
 <footer>
-    &copy; 2022
+    &copy; 2023
     <span class="author">
-        nonsense
+        naosense
     </span>
 
      
@@ -201,7 +237,7 @@
         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
         var disqus_config = function () {
-        this.page.url = 'https://naosense.github.io/2015/09/02/当Python和R遇上北京二手房（上）/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = 'https://naosense.github.io/2015/09/02/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF%EF%BC%88%E4%B8%8A%EF%BC%89/';  // Replace PAGE_URL with your page's canonical URL variable
         this.page.identifier = '2015/09/02/当Python和R遇上北京二手房（上）/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
         this.page.title = '当Python和R遇上北京二手房（上）';
         };

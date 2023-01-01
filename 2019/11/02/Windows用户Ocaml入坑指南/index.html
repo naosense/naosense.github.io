@@ -7,6 +7,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   
   <title>Windows用户Ocaml入坑指南 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="Windows用户Ocaml入坑指南 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/2019/11/02/Windows%E7%94%A8%E6%88%B7Ocaml%E5%85%A5%E5%9D%91%E6%8C%87%E5%8D%97/vscode.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="Windows用户Ocaml入坑指南 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/2019/11/02/Windows%E7%94%A8%E6%88%B7Ocaml%E5%85%A5%E5%9D%91%E6%8C%87%E5%8D%97/vscode.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   
   <meta name="keywords" content=Ocaml,函数式>
@@ -19,37 +31,47 @@
   
     <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
   
-  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
-  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
   <script>
-      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
   </script>
   <script type='text/x-mathjax-config'>
-        MathJax.Hub.Config({
-            extensions: ["tex2jax.js"],
-            jax: ["input/TeX", "output/SVG"],
-            tex2jax: {
-                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-            },
-            messageStyle: "none"
-        });
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', 'UA-44085500-1');
-    </script>
+    gtag('config', 'UA-44085500-1');
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
 
   
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
   <body>
     <div class="container">
@@ -90,7 +112,7 @@
   </div>
   <div class="post-content">
     <p>第一次听说Ocaml是看到Ocaml写的quicksort算法：</p>
-<pre><code class="ocaml">let rec quicksort = function
+<pre><code class="language-ocaml">let rec quicksort = function
   | [] -&gt; []
   | x::xs -&gt;
     let smaller, larger = List.partition (fun y -&gt; y &lt; x) xs
@@ -99,7 +121,7 @@
 List.iter (fun x -&gt; Printf.printf &quot;%d &quot; x) (quicksort [2; 3; 1; 1; 7; 10])
 </code></pre>
 <p>Java语言的实现相信大家都看过，这里我把<em>Algorithms 4th</em>中的源码贴一下：</p>
-<pre><code class="java">public class Quick &#123;
+<pre><code class="language-java">public class Quick &#123;
 
     public static void sort(Comparable[] a) &#123;
         StdRandom.shuffle(a);
@@ -147,24 +169,24 @@ List.iter (fun x -&gt; Printf.printf &quot;%d &quot; x) (quicksort [2; 3; 1; 1; 
 <p>怀着激动的心情一通谷歌，发现只支持Linux和OSX，这就蛋疼了。尝试了官网<a target="_blank" rel="noopener" href="https://ocaml.org/docs/install.html">安装说明</a>中几种Windows安装方式，效果都不理想，顶多就一个黑框框，毕竟自己不是大神，还是需要代码提示和代码格式化这样的功能的，所以尝试了几次，只好忍痛割爱。一个偶然的机会，接触了Windows上的Wsl系统，感觉不错，又想起心心念念的Ocaml了，自然就想到了结合Wsl是否可以搭建一个理想的Ocaml环境？摸索了一段时间，终于找到一种比较理想的方法。</p>
 <p>首先安装Wsl，在Windows开始中搜索：“程序与功能”，勾选“适用于Linux的Windows子系统”。下载<a target="_blank" rel="noopener" href="https://github.com/yuk7/ArchWSL/">Archlinux镜像</a>，解压到文件夹，打开Arch.exe，等待安装完成。</p>
 <p>Archlinux刚开始只有一个root，我习惯先新建一个用户，你也可以直接使用root。新建用户命令如下：</p>
-<pre><code class="shell">useradd -m -G wheel -s /bin/bash  [用户名]
+<pre><code class="language-shell">useradd -m -G wheel -s /bin/bash  [用户名]
 passwd [用户名]
 visudo
 </code></pre>
 <p>找到这么一行<code>#%wheel ALL=(ALL) ALL</code>，将全面的#去掉，用户就创建好了，然后使用下面的命令切换到此用户的主目录：</p>
-<pre><code class="shell">su [用户名]
+<pre><code class="language-shell">su [用户名]
 cd ~
 </code></pre>
 <p>下面配置pacman，</p>
-<pre><code class="shell">sudo pacman-key --init
+<pre><code class="language-shell">sudo pacman-key --init
 sudo pacman-key --populate
 sudo vim /etc/pacman.d/mirrorlist
 </code></pre>
 <p>找到mirrorlist里China那一组，找几个离你比较近的源，把前面的#去掉，然后用下面的命令更新软件包缓存：</p>
-<pre><code class="shell">sudo pacman -Syy
+<pre><code class="language-shell">sudo pacman -Syy
 </code></pre>
 <p>下面安装Ocaml必须的软件，</p>
-<pre><code class="shell">sudo pacman -S ocaml
+<pre><code class="language-shell">sudo pacman -S ocaml
 # opam是ocaml的包管理工具，类似python的pip，java的maven
 sudo pacman -S opam
 sudo pacman -S patch
@@ -173,7 +195,7 @@ sudo pacman -S make
 sudo pacman -S gcc
 </code></pre>
 <p>接着，初始化opam，</p>
-<pre><code class="shell"># wsl系统需要加上--disable-sandboxing选项
+<pre><code class="language-shell"># wsl系统需要加上--disable-sandboxing选项
 opam init --disable-sandboxing
 # 可以将下面的命令加到.bashrc文件中，不用每次手动执行了
 eval $(opam env)
@@ -185,7 +207,7 @@ opam user-setup install
 opam install utop
 </code></pre>
 <p>这些都成功后下载vscode，在Windows上安装，完成后回到Linux执行下面的命令：</p>
-<pre><code class="shell">code .
+<pre><code class="language-shell">code .
 </code></pre>
 <p>下面推荐一下几个插件：</p>
 <ul>
@@ -194,7 +216,7 @@ opam install utop
 <li>ocaml-reason-format，用来格式化代码，OCaml and Reason IDE本身的格式化不太好。</li>
 </ul>
 <p>最终的settings.json如下：</p>
-<pre><code class="json">&quot;editor.fontSize&quot;: 18,
+<pre><code class="language-json">&quot;editor.fontSize&quot;: 18,
 &quot;reason.path.ocamlmerlin&quot;: &quot;/home/user/.opam/default/bin/ocamlmerlin&quot;,
 &quot;reason.path.ocpindent&quot;: &quot;/home/user/.opam/default/bin/ocp-indent&quot;,
 &quot;editor.formatOnType&quot;: true,
@@ -206,7 +228,7 @@ opam install utop
 </code></pre>
 <p><img src="vscode.png" alt="vscode"></p>
 <p>最后一步了，大家加油！新建一个文件<code>test.ml</code>，将开头的那段Ocaml代码拷进去，新建另一个文件<code>dune</code>，输入下面的内容：</p>
-<pre><code class="ocaml">(executables
+<pre><code class="language-ocaml">(executables
  (names test))
 </code></pre>
 <p>在vscode的terminal中执行<code>dune exec ./test.bc</code>，如果看到<code>1 1 2 3 7 10</code>，就说明配置成功了，接下来尽情享受Ocaml带给你不一样的感觉吧！</p>
@@ -221,9 +243,9 @@ opam install utop
   </div>
 </article>
 <footer>
-    &copy; 2022
+    &copy; 2023
     <span class="author">
-        nonsense
+        naosense
     </span>
 
      
@@ -238,7 +260,7 @@ opam install utop
         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
         var disqus_config = function () {
-        this.page.url = 'https://naosense.github.io/2019/11/02/Windows用户Ocaml入坑指南/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = 'https://naosense.github.io/2019/11/02/Windows%E7%94%A8%E6%88%B7Ocaml%E5%85%A5%E5%9D%91%E6%8C%87%E5%8D%97/';  // Replace PAGE_URL with your page's canonical URL variable
         this.page.identifier = '2019/11/02/Windows用户Ocaml入坑指南/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
         this.page.title = 'Windows用户Ocaml入坑指南';
         };

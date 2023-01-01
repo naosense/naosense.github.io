@@ -7,6 +7,18 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   
   <title>Jsonp到底是个什么东西 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="Jsonp到底是个什么东西 - 扯淡有理"/>
+  <meta name="twitter:description" content="&lt;p&gt;这个世界上有好多事对你来说是模棱两可，可能是这样或者那样的原因你没有动力去了解它，以至于它久久萦绕在你的心头，Jsonp就是这么一件事。今天终于有动力想了解一番，经过一番热火朝天的谷歌百度后，发现Jsonp这东西说起来简单的很啊，我自己用一句话总结就是：&lt;strong&gt;使用script标签进行跨域访问&lt;/strong&gt;。由于跨域请求返回的数据和JSON相关，故而得名Jsonp。&lt;/p&gt;"/>
+  <meta name="twitter:image" content="https://naosense.github.io/default.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="Jsonp到底是个什么东西 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="&lt;p&gt;这个世界上有好多事对你来说是模棱两可，可能是这样或者那样的原因你没有动力去了解它，以至于它久久萦绕在你的心头，Jsonp就是这么一件事。今天终于有动力想了解一番，经过一番热火朝天的谷歌百度后，发现Jsonp这东西说起来简单的很啊，我自己用一句话总结就是：&lt;strong&gt;使用script标签进行跨域访问&lt;/strong&gt;。由于跨域请求返回的数据和JSON相关，故而得名Jsonp。&lt;/p&gt;"/>
+  <meta property="og:image" content="https://naosense.github.io/default.png"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   
   <meta name="keywords" content=Jsonp,Javascript>
@@ -19,37 +31,47 @@
   
     <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
   
-  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/9.2.0/styles/github.min.css">
-  <script src="//cdn.bootcss.com/highlight.js/9.2.0/highlight.min.js"></script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
   <script>
-      hljs.initHighlightingOnLoad();
+      hljs.highlightAll();
   </script>
   <script type='text/x-mathjax-config'>
-        MathJax.Hub.Config({
-            extensions: ["tex2jax.js"],
-            jax: ["input/TeX", "output/SVG"],
-            tex2jax: {
-                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-                displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
-            },
-            messageStyle: "none"
-        });
-    </script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-        gtag('config', 'UA-44085500-1');
-    </script>
+    gtag('config', 'UA-44085500-1');
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
 
   
 <link rel="stylesheet" href="/css/style.css">
 
-<meta name="generator" content="Hexo 5.4.2"></head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
   <body>
     <div class="container">
@@ -92,22 +114,22 @@
     <p>这个世界上有好多事对你来说是模棱两可，可能是这样或者那样的原因你没有动力去了解它，以至于它久久萦绕在你的心头，Jsonp就是这么一件事。今天终于有动力想了解一番，经过一番热火朝天的谷歌百度后，发现Jsonp这东西说起来简单的很啊，我自己用一句话总结就是：<strong>使用script标签进行跨域访问</strong>。由于跨域请求返回的数据和JSON相关，故而得名Jsonp。</p>
 <span id="more"></span>
 <p>众所周知，javascript有同源策略的限制，是不允许跨域访问的，比如位于a.xxx.com下面的js代码，</p>
-<pre><code class="javascript">function print_log(json) &#123;
+<pre><code class="language-javascript">function print_log(json) &#123;
     console.log(json.name);
 &#125;
 
 var xhr = new XMLHttpRequest();
-xhr.open(&#39;GET&#39;, &#39;http://b.xxx.com/test?callback=print_log&#39;, true);
+xhr.open('GET', 'http://b.xxx.com/test?callback=print_log', true);
 </code></pre>
 <p>假设/test?callback=print_log接口的返回值为：</p>
-<pre><code class="javascript">print_log(&#123;&quot;name&quot;: &quot;小明&quot;, &quot;id&quot; : 1823, &quot;rank&quot;: 7&#125;)
+<pre><code class="language-javascript">print_log(&#123;&quot;name&quot;: &quot;小明&quot;, &quot;id&quot; : 1823, &quot;rank&quot;: 7&#125;)
 </code></pre>
 <p>/test接口返回了一段js代码，这段代码如果正常执行的话将会打印出“小明”，但是由于同源策略，位于a.xxx.com上的js想请求b.xxx.com上的test接口是无法通过的，这就是常说的“js无法跨域”。有没有办法实现跨域呢，大神们想了各种各样的办法，其中之一就是Jsonp，具体来说就是虽说js不能跨域，但是有个例外，那就是script标签可以，利用script标签的跨域特性访问其他域名上的接口，动态生成一段js代码，这样就绕过了同源策略，实现了跨域访问。具体代码如下，</p>
-<pre><code class="javascript">var script = document.createElement(&#39;script&#39;);
-script.setAttribute(&#39;src&#39;, &#39;http://b.xxx.com/test?callback=print_log&#39;);
+<pre><code class="language-javascript">var script = document.createElement('script');
+script.setAttribute('src', 'http://b.xxx.com/test?callback=print_log');
 </code></pre>
 <p>这实际上相当于执行下面的代码，</p>
-<pre><code class="javascript">function print_log(json) &#123;
+<pre><code class="language-javascript">function print_log(json) &#123;
     console.log(json.name);
 &#125;
 
@@ -125,9 +147,9 @@ print_log(&#123;&quot;name&quot;: &quot;小明&quot;, &quot;id&quot; : 1823, &qu
   </div>
 </article>
 <footer>
-    &copy; 2022
+    &copy; 2023
     <span class="author">
-        nonsense
+        naosense
     </span>
 
      
@@ -142,7 +164,7 @@ print_log(&#123;&quot;name&quot;: &quot;小明&quot;, &quot;id&quot; : 1823, &qu
         *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
         *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
         var disqus_config = function () {
-        this.page.url = 'https://naosense.github.io/2018/11/22/JSONP到底是个什么东西/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.url = 'https://naosense.github.io/2018/11/22/JSONP%E5%88%B0%E5%BA%95%E6%98%AF%E4%B8%AA%E4%BB%80%E4%B9%88%E4%B8%9C%E8%A5%BF/';  // Replace PAGE_URL with your page's canonical URL variable
         this.page.identifier = '2018/11/22/JSONP到底是个什么东西/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
         this.page.title = 'Jsonp到底是个什么东西';
         };
