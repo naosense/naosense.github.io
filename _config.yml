@@ -85,3 +85,10 @@ sitemap:
   path: sitemap.xml
 baidusitemap:
   path: baidusitemap.xml
+
+markdown:
+  render:
+    linkify: false
+  plugins:
+    - markdown-it-abbr
+    - markdown-it-footnote
