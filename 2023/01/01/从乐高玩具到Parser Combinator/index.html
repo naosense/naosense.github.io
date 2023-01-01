@@ -117,7 +117,7 @@
 <p>作为程序员，或多或少都会接触到解析字符串的任务， 比如从日志中解析出用户和id，这种工作可以用正则表达式轻松搞定，但是如果是解析json、xml这样复杂的结构，正则表达式就有点力不从心啦，这个时候有经验的程序员可能会想起Antlr、Yacc类似的解析器生成器，没错，这是一个可行的方案，这个方案需要你了解基本的词法、语法知识，编写一些晦涩的EBNF文件，不过好在除了这套方案，还有另一种方法，那就是今天要说的Parser Combinator。</p>
 <span id="more"></span>
 <p><img src="lego.png" alt="lego"></p>
-<p>如果你去网上搜索它，上面的文章上来不是Monad、Functor，就是范畴论、幺半群这些玄而又玄的概念，导致我虽然很早就听过Parser Combinator，但一直都只敢远观。直到最近看了Bodil<a target="_blank" rel="noopener" href="https://bodil.lol/parser-combinators/">一篇文章</a>，写的深入浅出。看完之后我才知道Parser Combinator原来是两种算子，一种叫解析器，另一种叫组合器，也叫组合子，原理也很直接，就像搭积木，由一些基本的构件搭出城堡的各个部分，再由各个部分搭出整个城堡，整个过程没啥玄学。原文中的程序是Rust编写的，考虑到Rust语言的受众规模，以及Rust的一些核心理念会平白增加编写Parser Combinator的难度，比如借用引用、生命周期，我打算用Scala重写一下，并按照Scala的习惯做下调整。</p>
+<p>如果你去网上搜索它，上面的文章上来不是Monad、Functor，就是范畴论、幺半群这些玄而又玄的概念，以致于我虽然很早就听过Parser Combinator，但一直都只敢远观。直到最近看了Bodil<a target="_blank" rel="noopener" href="https://bodil.lol/parser-combinators/">一篇文章</a>，写的深入浅出。看完之后我才知道Parser Combinator原来是两种算子，一种叫解析器，另一种叫组合器，也叫组合子，原理也很直接，就像搭积木，由一些基本的构件搭出城堡的各个部分，再由各个部分搭出整个城堡，整个过程没啥玄学。原文中的程序是Rust编写的，考虑到Rust语言的受众规模，以及Rust的一些核心理念会平白增加编写Parser Combinator的难度，比如借用引用、生命周期，我打算用Scala重写一下，并按照Scala的习惯做下调整。</p>
 <p>我一直认为最好的学习方法是<em>learn by doing</em>。因此建议大家在电脑上跟着敲一遍代码，哪怕只是粘贴一下看看运行效果，你绝对能找到和玩乐高类似的乐趣。</p>
 <h2 id="简化版xml解析器">简化版xml解析器</h2>
 <p>我们的目标是编写一个简化版的xml解析器，因为完整的xml包含namespaces、schema等一大堆琐碎的概念，要实现一个完备的解析器用来作为入门还是过于复杂了，因此我们只实现xml的一个子集，下面是一段示例，</p>
