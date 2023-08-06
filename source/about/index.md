@@ -16,4 +16,7 @@ layout: "page"
 GitHub: [https://github.com/naosense](https://github.com/naosense)
 
 ---
+
+![不积跬步，无以至千里](https://raw.githubusercontent.com/naosense/miles/master/miles.svg)
+
 扯自己的淡，让别人去喷吧！
