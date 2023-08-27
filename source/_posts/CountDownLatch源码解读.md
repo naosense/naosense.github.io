@@ -2,7 +2,7 @@
 title: CountDownLatch源码解读
 date: 2023-08-05 10:43:12
 categories:
-tags: [Java, 并发]
+tags: [Java, 并发, JUC]
 ---
 之前写过一篇关于[AQS的源码分析](https://naosense.github.io/2019/03/12/%E4%B8%87%E9%94%81%E4%B9%8B%E6%AF%8DAbstractQueuedSynchronizer/)的文章，介绍了AQS是Java并发组件的基础，基础的介绍了，我们再看看它的应用，因此从这一篇开始我将依次介绍下AQS在Java各个并发组件如何应用的，先从`CountDownLatch`开始。
 
