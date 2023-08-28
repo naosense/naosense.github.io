@@ -111,7 +111,7 @@ abstract static class Sync extends AbstractQueuedSynchronizer {
 }
 ```
 
-这是`Semaphore`的核心代码。Sync继承了AQS，通过`state`状态变量维护最大并发许可数`permits`，获取许可就减去一定的许可，释放就增加一定的许可，最终通过`compareAndSetState`完成修改。
+这是`Semaphore`的核心代码。`Sync`继承了AQS，通过`state`状态变量维护最大并发许可数`permits`，获取许可就减去一定的许可，释放就增加一定的许可，最终通过`compareAndSetState`完成修改。
 
 ```java
 /**
@@ -155,4 +155,4 @@ static final class FairSync extends Sync {
 
 `Semaphore`可以设置成公平和非公平模式，二者唯一的差别就是公平模式会调用`hasQueuedPredecessors`判断前面是否还有等待的线程。如果前面还有排队的线程，直接返回失败，否则，和非公平逻辑一样。
 
-Semaphore api看着不少，核心其实就两个`acquire`和`release`，都是围绕着Sync中的方法进行调用，就不赘述了。
+Semaphore api看着不少，核心其实就两个`acquire`和`release`，都是围绕着`Sync`中的方法进行调用，就不赘述了。
