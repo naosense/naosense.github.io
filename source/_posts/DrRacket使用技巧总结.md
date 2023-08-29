@@ -1,7 +1,7 @@
 ---
 title: DrRacket使用技巧总结
 date: 2018-12-03 14:27:03
-categories: 技术人生
+categories:
 tags: [DrRacket, Lisp]
 ---
 ## 引用其他文件的函数

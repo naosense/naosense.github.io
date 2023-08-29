@@ -1,7 +1,7 @@
 ---
 title: 马上TI了，有一起玩的道友吗
 date: 2018-08-10 21:35:49
-categories: 七七八八
+categories:
 tags: Dota
 ---
 

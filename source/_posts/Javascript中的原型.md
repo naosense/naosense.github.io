@@ -1,7 +1,7 @@
 ---
 title: Javascript中的原型
 date: 2016-03-20 13:28:20
-categories: 技术人生
+categories:
 tags: Javascript
 ---
 首先要明确的是，

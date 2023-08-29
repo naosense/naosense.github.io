@@ -1,7 +1,7 @@
 ---
 title: Vim Markdown预览插件markdown-preview-sync
 date: 2018-07-29 10:24:06
-categories: 七七八八
+categories:
 tags: [Vim, Markdown]
 ---
 

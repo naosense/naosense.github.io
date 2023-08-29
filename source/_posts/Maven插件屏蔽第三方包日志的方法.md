@@ -1,7 +1,7 @@
 ---
 title: Maven插件屏蔽第三方包日志的方法
 date: 2018-06-01 15:23:04
-categories: 技术人生
+categories:
 tags: [Maven, 日志]
 ---
 

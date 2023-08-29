@@ -1,7 +1,7 @@
 ---
 title: 谁说大象不能跳舞：基于Java的Markdown预览插件
 date: 2018-08-04 11:49:59
-categories: 技术人生
+categories:
 tags: [Markdown, Java, Vim, Python]
 ---
 

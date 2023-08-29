@@ -1,7 +1,7 @@
 ---
 title: 一个初级阶段的五子棋ai
 date: 2017-12-11 16:46:03
-categories: 技术人生
+categories:
 tags: [五子棋, minimax, alpha-beta]
 ---
 

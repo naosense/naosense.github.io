@@ -1,7 +1,7 @@
 ---
 title: Windows用户Ocaml入坑指南
 date: 2019-11-02 10:33:32
-categories: 技术人生
+categories:
 tags: [Ocaml, 函数式]
 ---
 第一次听说Ocaml是看到Ocaml写的quicksort算法：

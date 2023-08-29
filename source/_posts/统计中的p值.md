@@ -1,7 +1,7 @@
 ---
 title: 统计中的p值
 date: 2016-03-20 11:36:27
-categories: 技术人生
+categories:
 tags: 统计
 ---
 

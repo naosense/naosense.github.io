@@ -1,7 +1,7 @@
 ---
 title: 'Loom项目的进展：第一部分（State of Loom）'
 date: 2020-10-11 13:27:24
-categories: 技术人生
+categories:
 tags: Java
 ---
 

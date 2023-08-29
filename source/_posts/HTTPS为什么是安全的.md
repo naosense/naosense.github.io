@@ -1,7 +1,7 @@
 ---
 title: HTTPS为什么是安全的
 date: 2016-08-23 17:08:28
-categories: 技术人生
+categories:
 tags: [Http, Https]
 ---
 

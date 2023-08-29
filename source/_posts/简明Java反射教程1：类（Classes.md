@@ -1,7 +1,7 @@
 ---
 title: 简明Java反射教程1：类（Classes）
 date: 2020-03-07 11:44:19
-categories: 技术人生
+categories:
 tags: [Java,反射]
 ---
 

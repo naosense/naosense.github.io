@@ -1,7 +1,7 @@
 ---
 title: 侏罗纪下一部可以叫做We are family
 date: 2018-06-25 10:14:51
-categories: 生活生活
+categories:
 tags: 侏罗纪公园
 ---
 

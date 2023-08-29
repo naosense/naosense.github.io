@@ -1,7 +1,7 @@
 ---
 title: 'Java HotSpot虚拟机垃圾收集优化指南'
 date: 2019-05-03 18:39:07
-categories: 技术人生
+categories:
 tags: [垃圾收集, 虚拟机, Java]
 ---
 现在不懂点虚拟机都不好意思说是Java程序员了，这方面的文章不少，但质量参差不齐。在百度谷歌上看了一圈大部分是你抄我我抄你，要不就是泛泛而谈，看完之后还是一头雾水，看到Oracle官网上有一篇将虚拟机调优的文章[Garbage Collection Tuning](https://www.oracle.com/pls/topic/lookup?ctx=javase12&id=JSGCT-GUID-326EB4CF-8C8C-4267-8355-21AB04F0D304)不错，有理论有实操，试着翻译下。

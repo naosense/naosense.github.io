@@ -1,7 +1,7 @@
 ---
 title: VIM中的正则表达式
 date: 2015-11-01 21:00:10
-categories: 技术人生
+categories:
 tags: Vim
 ---
 

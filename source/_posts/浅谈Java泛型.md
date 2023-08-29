@@ -1,7 +1,7 @@
 ---
 title: 浅谈Java泛型
 date: 2017-11-28 11:03:16
-categories: 技术人生
+categories:
 tags: [Java, 泛型]
 ---
 

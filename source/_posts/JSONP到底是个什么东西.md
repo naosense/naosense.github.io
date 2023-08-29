@@ -1,7 +1,7 @@
 ---
 title: Jsonp到底是个什么东西
 date: 2018-11-22 18:43:44
-categories: 技术人生
+categories:
 tags: [Jsonp, Javascript]
 ---
 
