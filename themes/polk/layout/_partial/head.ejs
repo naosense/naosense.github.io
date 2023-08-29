@@ -22,12 +22,12 @@
       title = __('Post.Tags') + ' : ' + page.tag + separator + title;
     }
 
-    page_title = ''
     if (page.title) {
+      page_title = __(page.title) || page.title;
       if (page.subtitle) {
-        title = page.title + '——' + page.subtitle + separator + title;
+        title = page_title + '——' + page.subtitle + separator + title;
       } else {
-        title = page.title + separator + title;
+        title = page_title + separator + title;
       }
     }
     var description = page.description || page.excerpt || config.description;
