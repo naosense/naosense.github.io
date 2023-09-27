@@ -21,6 +21,8 @@ sns:
 menu:
   Home: /archives
   Tags: /tags
-  About: /about
+  Books: /books
+  Movies: /movies
   RSS: /atom.xml
   Links: /links
+  About: /about

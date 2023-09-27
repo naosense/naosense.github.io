@@ -92,3 +92,21 @@ markdown:
   plugins:
     - markdown-it-abbr
     - markdown-it-footnote
+
+douban:
+  id: 55551545
+  builtin: false
+  item_per_page: 10
+  meta_max_line: 4
+  customize_layout: page
+  book:
+    path: books/index.html
+    title: '读书'
+    quote: ''
+    option:
+  movie:
+    path: movies/index.html
+    title: '观影'
+    quote: ''
+    option:
+  timeout: 10000

@@ -9,7 +9,7 @@
             <%= config.motto || '' %>
         </span>
      <% } %>
-     <% if (is_post() || is_page()) { %>
+     <% if (!is_home() && !is_archive()) { %>
         <div id="disqus_thread">
         <script>
         /**
