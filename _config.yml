@@ -104,9 +104,4 @@ douban:
     title: '读书'
     quote: ''
     option:
-  movie:
-    path: movies/index.html
-    title: '观影'
-    quote: ''
-    option:
   timeout: 10000
