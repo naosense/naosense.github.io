@@ -65,7 +65,7 @@ if __name__ == "__main__":
                 if "delete" in label_names:
                     if os.path.exists(md_path):
                         os.remove(md_path)
-                        print("ready")
+                        print(f"delete {title}")
                 elif "done" in label_names:
                     label_names.remove("blog")
                     label_names.remove("done")
@@ -74,10 +74,11 @@ if __name__ == "__main__":
                         md.write(f"title: {title}\n")
                         md.write(f"date: {datetime.now():%Y-%m-%d %H:%M:%S}\n")
                         md.write("categories: \n")
-                        md.write(f"tags: [{', '.join(label_names)}]\n")
+                        label_str = f"[{', '.join(label_names)}]" if label_names else ""
+                        md.write(f"tags: {label_str}\n")
                         md.write("---\n")
                         md.write(f"{body}\n")
-                        print("ready")
+                        print(f"create or update {title}")
                 else:
                     print("Discussion is not ready.")
             else:

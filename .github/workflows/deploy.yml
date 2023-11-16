@@ -66,6 +66,8 @@ jobs:
           git config --global user.email "${{ env.GITHUB_EMAIL }}"
           git config --global user.name "${{ env.GITHUB_NAME }}"
           git add source/_posts
-          git commit -m 'sync from discussion' || echo "nothing to commit"
-          git push && hexo deploy -g || echo "nothing to push or deploy failed"
+          git commit -m 'sync from discussion' 
+          \ && git push 
+          \ && hexo deploy -g 
+          \ && echo "done, congrats!"
           
