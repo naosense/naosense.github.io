@@ -62,16 +62,15 @@ if __name__ == "__main__":
             title = discussion["title"]
             body = discussion["body"]
             category = discussion["category"]
-            labels = discussion.get("labels", {}).get("nodes", [])
-            label_names = [label["name"] for label in labels]
             if category["name"] == "Blogs":
                 md_path = f"source/_posts/{title}.md"
-                if "delete" in label_names:
+                if f"go away, {title}" in body:
                     if os.path.exists(md_path):
                         os.remove(md_path)
                         print(f"delete {title}")
-                elif "done" in label_names:
-                    label_names.remove("done")
+                else:
+                    labels = discussion.get("labels", {}).get("nodes", [])
+                    label_names = [label["name"] for label in labels]
                     label_str = f"[{', '.join(label_names)}]" if label_names else ""
                     tz_east_8 = timezone(timedelta(hours=8))
                     now_localized = datetime.now().astimezone(tz_east_8)
@@ -84,8 +83,6 @@ if __name__ == "__main__":
                         md.write("---\n")
                         md.write(f"{body}\n")
                         print(f"create or update {title}")
-                else:
-                    print(f"{title} is not ready.")
             else:
                 print(f"{title} is not blog.")
     else:
