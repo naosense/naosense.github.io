@@ -12,6 +12,7 @@ env:
   # change env here
   GITHUB_NAME: naosense
   GITHUB_EMAIL: pingao777@gmail.com
+  GH_TOKEN: ${{ secrets.GH_TOKEN}}
 
 jobs:
   sync:
