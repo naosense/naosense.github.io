@@ -48,10 +48,10 @@ jobs:
         id: check_discussion
         run: |
           status=$(python deploy.py)
-          echo "{status}={$status}" >> $GITHUB_OUTPUT
+          echo "status=$status" >> $GITHUB_OUTPUT
       - name: Continue or Cancel Workflow
         if: ${{ steps.check_discussion.outputs.status != 'ready' }}
-        run: exit 0  # Cancel workflow
+        run: exit -1  # Cancel workflow
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
