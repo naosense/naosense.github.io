@@ -55,7 +55,7 @@ jobs:
         run: |
           npm install -g hexo-cli
           npm install
-      - name: Commit md file and deploy hexo
+      - name: Hexo deploy and Commit md file 
         run: |
           mkdir -p ~/.ssh/
           echo "$ACTION_DEPLOY_KEY" > ~/.ssh/id_rsa
