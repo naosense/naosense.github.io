@@ -56,7 +56,7 @@ jobs:
         run: |
           git config --local user.email "${{ env.GITHUB_EMAIL }}"
           git config --local user.name "${{ env.GITHUB_NAME }}"
-          git add source/_post
+          git add source/_posts
           git commit -m 'sync from discussion' || echo "nothing to commit"
           git push || exit
           hexo deploy -g
