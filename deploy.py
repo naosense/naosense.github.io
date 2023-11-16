@@ -62,7 +62,7 @@ if __name__ == "__main__":
             label_str = ", ".join(label_names)
             print(f"Labels: {label_str}")
             if "blog" in label_names:
-                md_path = f"source/_post/{title}.md"
+                md_path = f"source/_posts/{title}.md"
                 if "delete" in label_names:
                     if os.path.exists(md_path):
                         os.remove(md_path)
