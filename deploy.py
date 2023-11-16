@@ -64,7 +64,7 @@ if __name__ == "__main__":
             category = discussion["category"]
             if category["name"] == "Blogs":
                 md_path = f"source/_posts/{title}.md"
-                if f"go away, {title}" in body:
+                if f"!go away, {title}" in body:
                     if os.path.exists(md_path):
                         os.remove(md_path)
                         print(f"delete {title}")
