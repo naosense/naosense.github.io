@@ -38,12 +38,12 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
-      - name: Install dependencies
+      - name: Install python dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if: steps.pip-cache.outputs.cache-hit != 'true'
-      - name: Check discussion status
+      - name: Check discussion if is ready
         run: |
           python deploy.py 
       - name: Set up Node.js
@@ -51,7 +51,9 @@ jobs:
         with:
           node-version: '16.19.0'
       - name: Install hexo and dependencies
-        run: npm install
+        run: |
+          npm install -g hexo-cli
+          npm install
       - name: Commit md file and deploy hexo
         run: |
           git config --local user.email "${{ env.GITHUB_EMAIL }}"
