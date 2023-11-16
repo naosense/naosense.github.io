@@ -67,7 +67,7 @@ if __name__ == "__main__":
                     if os.path.exists(md_path):
                         os.remove(md_path)
                 elif "done" in label_names:
-                    with open(md_path) as md:
+                    with open(md_path, "w+") as md:
                         md.write("---\n")
                         md.write(f"title: {title}\n")
                         md.write(f"date: {title}\n")
