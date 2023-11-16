@@ -82,10 +82,5 @@ if __name__ == "__main__":
                 print("Discussion is not blog.")
                 exit(-1)
     else:
-        print("No discussion need to sync.")
-        exit(-1)
-
-
-    else:
-        print("Failed to retrieve discussions.")
+        print("No discussion.")
         exit(-1)
