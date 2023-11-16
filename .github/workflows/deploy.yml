@@ -47,8 +47,7 @@ jobs:
       - name: Check discussion if is ready
         id: check_discussion
         run: |
-          status=$(python deploy.py)
-          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "status=$(python deploy.py)" >> "$GITHUB_OUTPUT"
       - name: Continue or Cancel Workflow
         if: ${{ steps.check_discussion.outputs.status != 'ready' }}
         run: exit -1  # Cancel workflow
