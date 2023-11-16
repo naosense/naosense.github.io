@@ -1,10 +1,10 @@
-name: Sync discussion to hexo
+name: deploy discussion to hexo blog
 
 on:
   # init workflow
-  push:
-    branches:
-      - source
+  # push:
+  #  branches:
+  #    - source
   discussion:
     types: [created, edited]
 

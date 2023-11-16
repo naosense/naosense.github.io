@@ -60,19 +60,20 @@ if __name__ == "__main__":
             body = discussion["body"]
             labels = discussion.get("labels", {}).get("nodes", [])
             label_names = [label["name"] for label in labels]
-            label_str = ", ".join(label_names)
             if "blog" in label_names:
                 md_path = f"source/_posts/{title}.md"
                 if "delete" in label_names:
                     if os.path.exists(md_path):
                         os.remove(md_path)
                 elif "done" in label_names:
+                    label_names.remove("blog")
+                    label_names.remove("done")
                     with open(md_path, "w+") as md:
                         md.write("---\n")
                         md.write(f"title: {title}\n")
-                        md.write(f"date: {datetime.now(): %Y-%m-%d %H:%M:%S}\n")
+                        md.write(f"date: {datetime.now():%Y-%m-%d %H:%M:%S}\n")
                         md.write("categories: \n")
-                        md.write(f"tags: [{label_str}]\n")
+                        md.write(f"tags: [{', '.join(label_names)}]\n")
                         md.write("---\n")
                         md.write(f"{body}\n")
                 else:
