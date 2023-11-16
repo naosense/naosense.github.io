@@ -67,7 +67,9 @@ if __name__ == "__main__":
                 if f"!go away, {title}" in body:
                     if os.path.exists(md_path):
                         os.remove(md_path)
-                        print(f"delete {title}")
+                        print(f"Delete {title}")
+                    else:
+                        print(f"{md_path} is not exist")
                 else:
                     labels = discussion.get("labels", {}).get("nodes", [])
                     label_names = [label["name"] for label in labels]
@@ -82,7 +84,7 @@ if __name__ == "__main__":
                         md.write(f"tags: {label_str}\n")
                         md.write("---\n")
                         md.write(f"{body}\n")
-                        print(f"create or update {title}")
+                        print(f"Create or Update {title}")
             else:
                 print(f"{title} is not blog.")
     else:
