@@ -45,12 +45,18 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if: steps.pip-cache.outputs.cache-hit != 'true'
       - name: Check discussion if is ready
+        id: check_discussion
         run: |
-          python deploy.py 
+          status=$(python deploy.py)
+          echo "::set-output name=status::$status"
+      - name: Continue or Cancel Workflow
+        if: ${{ steps.check_discussion.outputs.status == 'go on' }}
+        run: exit 0  # Cancel workflow
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '16.19.0'
+          node-version: 16.19.0
+          cache: 'npm'
       - name: Install hexo and dependencies
         run: |
           npm install -g hexo-cli
@@ -63,7 +69,7 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           git config --global user.email "${{ env.GITHUB_EMAIL }}"
           git config --global user.name "${{ env.GITHUB_NAME }}"
-          hexo deploy -g
           git add source/_posts
           git commit -m 'sync from discussion' || echo "nothing to commit"
           git push || echo "nothing to push"
+          hexo deploy -g
