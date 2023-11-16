@@ -47,10 +47,7 @@ jobs:
       - name: Check discussion if is ready
         id: check_discussion
         run: |
-          echo "status=$(python deploy.py)" >> "$GITHUB_OUTPUT"
-      - name: Continue or Cancel Workflow
-        if: ${{ steps.check_discussion.outputs.status != 'ready' }}
-        run: exit -1  # Cancel workflow
+          python deploy.py
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -70,5 +67,5 @@ jobs:
           git config --global user.name "${{ env.GITHUB_NAME }}"
           git add source/_posts
           git commit -m 'sync from discussion' || echo "nothing to commit"
-          git push || echo "nothing to push"
-          hexo deploy -g
+          git push && hexo deploy -g || echo "nothing to push or deploy failed"
+          
