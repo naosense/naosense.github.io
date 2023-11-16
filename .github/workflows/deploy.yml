@@ -69,5 +69,6 @@ jobs:
           git commit -m 'sync from discussion' 
           \ && git push 
           \ && hexo deploy -g 
-          \ && echo "done, congrats!"
+          \ && echo "Done, congrats!"
+          \ || echo "Oops, something wrong!"
           
