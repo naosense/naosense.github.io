@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 import requests
 
@@ -33,6 +33,7 @@ query GetDiscussions($owner: String!, $repo: String!) {
         id
         title
         body
+        category
         labels(first: 5) {
           nodes {
             name
@@ -58,30 +59,32 @@ if __name__ == "__main__":
         for discussion in discussions:
             title = discussion["title"]
             body = discussion["body"]
+            category = discussion["category"]
             labels = discussion.get("labels", {}).get("nodes", [])
             label_names = [label["name"] for label in labels]
-            if "blog" in label_names:
+            if category == "Blogs":
                 md_path = f"source/_posts/{title}.md"
                 if "delete" in label_names:
                     if os.path.exists(md_path):
                         os.remove(md_path)
                         print(f"delete {title}")
                 elif "done" in label_names:
-                    label_names.remove("blog")
                     label_names.remove("done")
+                    label_str = f"[{', '.join(label_names)}]" if label_names else ""
+                    tz_east_8 = timezone(timedelta(hours=8))
+                    now_localized = datetime.now().astimezone(tz_east_8)
                     with open(md_path, "w+") as md:
                         md.write("---\n")
                         md.write(f"title: {title}\n")
-                        md.write(f"date: {datetime.now():%Y-%m-%d %H:%M:%S}\n")
+                        md.write(f"date: {now_localized:%Y-%m-%d %H:%M:%S}\n")
                         md.write("categories: \n")
-                        label_str = f"[{', '.join(label_names)}]" if label_names else ""
                         md.write(f"tags: {label_str}\n")
                         md.write("---\n")
                         md.write(f"{body}\n")
                         print(f"create or update {title}")
                 else:
-                    print("Discussion is not ready.")
+                    print(f"{title} is not ready.")
             else:
-                print("Discussion is not blog.")
+                print(f"{title} is not blog.")
     else:
         print("No discussion.")
