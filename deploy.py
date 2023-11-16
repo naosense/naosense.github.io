@@ -33,6 +33,7 @@ query GetDiscussions($owner: String!, $repo: String!) {
         id
         title
         body
+        createdAt
         category {
           name
         }
@@ -75,11 +76,12 @@ if __name__ == "__main__":
                     label_names = [label["name"] for label in labels]
                     label_str = f"[{', '.join(label_names)}]" if label_names else ""
                     tz_east_8 = timezone(timedelta(hours=8))
-                    now_localized = datetime.now().astimezone(tz_east_8)
+                    created_at = datetime.strptime(discussion['createdAt'], "%Y-%m-%dT%H:%M:%SZ")
+                    created_localized = created_at.astimezone(tz_east_8)
                     with open(md_path, "w+") as md:
                         md.write("---\n")
                         md.write(f"title: {title}\n")
-                        md.write(f"date: {now_localized:%Y-%m-%d %H:%M:%S}\n")
+                        md.write(f"date: {created_localized:%Y-%m-%d %H:%M:%S}\n")
                         md.write("categories: \n")
                         md.write(f"tags: {label_str}\n")
                         md.write("---\n")
