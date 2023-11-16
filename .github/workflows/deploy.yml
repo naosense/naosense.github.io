@@ -1,6 +1,10 @@
 name: Sync discussion to hexo
 
 on:
+  # init workflow
+  push:
+    branches:
+      - source
   discussion:
     types: [created, edited]
 
