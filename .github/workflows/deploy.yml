@@ -12,7 +12,8 @@ env:
   # change env here
   GITHUB_NAME: naosense
   GITHUB_EMAIL: pingao777@gmail.com
-  GH_TOKEN: ${{ secrets.GH_TOKEN}}
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+  ACTION_DEPLOY_KEY: ${{ secrets.HEXO_DEPLOY_SECRET }}
 
 jobs:
   sync:
@@ -56,6 +57,10 @@ jobs:
           npm install
       - name: Commit md file and deploy hexo
         run: |
+          mkdir -p ~/.ssh/
+          echo "$ACTION_DEPLOY_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
           git config --local user.email "${{ env.GITHUB_EMAIL }}"
           git config --local user.name "${{ env.GITHUB_NAME }}"
           git add source/_posts
