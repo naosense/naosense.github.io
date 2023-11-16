@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 import requests
 
@@ -55,12 +56,11 @@ if __name__ == "__main__":
             .get("nodes", [])
         )
         for discussion in discussions:
-            title = {discussion["title"]}
-            body = {discussion["body"]}
+            title = discussion["title"]
+            body = discussion["body"]
             labels = discussion.get("labels", {}).get("nodes", [])
             label_names = [label["name"] for label in labels]
             label_str = ", ".join(label_names)
-            print(f"Labels: {label_str}")
             if "blog" in label_names:
                 md_path = f"source/_posts/{title}.md"
                 if "delete" in label_names:
@@ -70,17 +70,14 @@ if __name__ == "__main__":
                     with open(md_path, "w+") as md:
                         md.write("---\n")
                         md.write(f"title: {title}\n")
-                        md.write(f"date: {title}\n")
+                        md.write(f"date: {datetime.now(): %Y-%m-%d %H:%M:%S}\n")
                         md.write("categories: \n")
                         md.write(f"tags: [{label_str}]\n")
                         md.write("---\n")
                         md.write(f"{body}\n")
                 else:
                     print("Discussion is not ready.")
-                    exit(-1)
             else:
                 print("Discussion is not blog.")
-                exit(-1)
     else:
         print("No discussion.")
-        exit(-1)
