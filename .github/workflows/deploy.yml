@@ -50,7 +50,7 @@ jobs:
           status=$(python deploy.py)
           echo "::set-output name=status::$status"
       - name: Continue or Cancel Workflow
-        if: ${{ steps.check_discussion.outputs.status == 'go on' }}
+        if: ${{ steps.check_discussion.outputs.status != 'go on' }}
         run: exit 0  # Cancel workflow
       - name: Set up Node.js
         uses: actions/setup-node@v4
