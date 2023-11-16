@@ -33,8 +33,10 @@ query GetDiscussions($owner: String!, $repo: String!) {
         id
         title
         body
-        category
-        labels(first: 5) {
+        category {
+          name
+        }
+        labels(first: 10) {
           nodes {
             name
           }
@@ -62,7 +64,7 @@ if __name__ == "__main__":
             category = discussion["category"]
             labels = discussion.get("labels", {}).get("nodes", [])
             label_names = [label["name"] for label in labels]
-            if category == "Blogs":
+            if category["name"] == "Blogs":
                 md_path = f"source/_posts/{title}.md"
                 if "delete" in label_names:
                     if os.path.exists(md_path):
