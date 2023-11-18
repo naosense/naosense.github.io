@@ -65,13 +65,14 @@ def save_assets_img_substitute_url(markdown_content, title):
     return markdown_content
 
 
-def delete_all_about_title(title, md_file):
-    img_path = f"source/_posts/{title}"
+def delete_files_and_imgs_about_title(title):
+    md_file = f"source/_posts/{title}.md"
     if os.path.exists(md_file):
         os.remove(md_file)
         print(f"Delete {md_file}")
     else:
         print(f"{md_file} is not exist")
+    img_path = f"source/_posts/{title}"
     if os.path.exists(img_path):
         for img_file in os.listdir(img_path):
             os.remove(f"{img_path}/{img_file}")
@@ -124,9 +125,8 @@ if __name__ == "__main__":
             body = discussion["body"]
             category = discussion["category"]
             if category["name"] == "Blogs":
-                md_file = f"source/_posts/{title}.md"
                 if f"!go away, {title}" in body:
-                    delete_all_about_title(title, md_file)
+                    delete_files_and_imgs_about_title(title)
                 else:
                     body = save_assets_img_substitute_url(body, title)
                     labels = discussion.get("labels", {}).get("nodes", [])
@@ -137,6 +137,7 @@ if __name__ == "__main__":
                         discussion["createdAt"], "%Y-%m-%dT%H:%M:%SZ"
                     )
                     created_localized = created_at.astimezone(tz_east_8)
+                    md_file = f"source/_posts/{title}.md"
                     with open(md_file, "w+") as md:
                         md.write("---\n")
                         md.write(f"title: {title}\n")
