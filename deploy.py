@@ -21,6 +21,7 @@ def run_query(query, variables, token):
 
 
 def save_assets_img_substitute(markdown_content, title):
+    print("Going to save assets img")
     # 匹配 ![alt](url) 格式的图片
     markdown_img_pattern = (
         r"!\[(.*?)\]\((https://github\.com/naosense/naosense\.github\.io/assets.*?)\)"
@@ -33,6 +34,7 @@ def save_assets_img_substitute(markdown_content, title):
 
     # 合并两种格式的图片匹配结果
     image_matches = markdown_image_matches + html_image_matches
+    print(f"Found img {image_matches}")
 
     # 保存图片并替换Markdown文本中的URL为本地路径
     for alt_text, img_url in image_matches:
