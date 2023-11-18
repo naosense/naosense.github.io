@@ -72,12 +72,12 @@ def delete_files_and_imgs_about_title(title):
         print(f"Delete {md_file}")
     else:
         print(f"{md_file} is not exist")
-    img_path = f"source/_posts/{title}"
-    if os.path.exists(img_path):
-        for img_file in os.listdir(img_path):
-            os.remove(f"{img_path}/{img_file}")
-        os.rmdir(img_path)
-        print(f"Delete {img_path}")
+    img_dir = f"source/_posts/{title}"
+    if os.path.exists(img_dir):
+        for img_file in os.listdir(img_dir):
+            os.remove(f"{img_dir}/{img_file}")
+        os.rmdir(img_dir)
+        print(f"Delete {img_dir}")
 
 
 # 替换为你的 GitHub 用户名、仓库名和访问令牌
