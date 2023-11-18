@@ -49,6 +49,8 @@ def save_assets_img_substitute(markdown_content, title):
             with open(img_path, "wb+") as img_file:
                 print(f"Save img {img_path}")
                 img_file.write(response.content)
+        else:
+          print(f"Failed to get img {img_url}. Status code: {response.status_code}")
 
         # 替换Markdown中的URL为本地路径
         markdown_content = re.sub(
