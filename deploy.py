@@ -20,7 +20,7 @@ def run_query(query, variables, token):
         return None
 
 
-def save_github_img(markdown_content, title):
+def save_assets_img_substitute(markdown_content, title):
     # 匹配 ![alt](url) 格式的图片
     markdown_img_pattern = (
         r"!\[(.*?)\]\((https://github\.com/naosense/naosense\.github\.io/assets.*?)\)"
@@ -47,7 +47,7 @@ def save_github_img(markdown_content, title):
         response = requests.get(img_url)
         if response.status_code == 200:
             with open(img_path, "wb+") as img_file:
-                print(f"Save {img_path}")
+                print(f"Save img {img_path}")
                 img_file.write(response.content)
 
         # 替换Markdown中的URL为本地路径
@@ -113,7 +113,7 @@ if __name__ == "__main__":
                         os.rmdir(md_path)
                         print(f"Delete {md_path}")
                 else:
-                    body = save_github_img(body, title)
+                    body = save_assets_img_substitute(body, title)
                     labels = discussion.get("labels", {}).get("nodes", [])
                     label_names = [label["name"] for label in labels]
                     label_str = f"[{', '.join(label_names)}]" if label_names else ""
