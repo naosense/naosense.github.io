@@ -20,7 +20,7 @@ def run_query(query, variables, token):
         return None
 
 
-def save_assets_img_substitute(markdown_content, title):
+def save_assets_img_substitute_url(markdown_content, title):
     print("Going to save assets img")
     # 匹配 ![alt](url) 格式的图片
     markdown_img_pattern = (
@@ -62,6 +62,7 @@ def save_assets_img_substitute(markdown_content, title):
         markdown_content = re.sub(
             re.escape(img_url), f"{img_basename}.{img_extension}", markdown_content
         )
+    return markdown_content
 
 
 def delete_all_about_title(title, md_file):
@@ -127,7 +128,7 @@ if __name__ == "__main__":
                 if f"!go away, {title}" in body:
                     delete_all_about_title(title, md_file)
                 else:
-                    body = save_assets_img_substitute(body, title)
+                    body = save_assets_img_substitute_url(body, title)
                     labels = discussion.get("labels", {}).get("nodes", [])
                     label_names = [label["name"] for label in labels]
                     label_str = f"[{', '.join(label_names)}]" if label_names else ""
