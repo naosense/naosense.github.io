@@ -36,6 +36,10 @@ def save_assets_img_substitute(markdown_content, title):
     image_matches = markdown_image_matches + html_image_matches
     print(f"Found img {image_matches}")
 
+    img_dir_for_title = f"source/_posts/{title}"
+    if image_matches and not os.path.exists(img_dir_for_title):
+        os.makedirs(img_dir_for_title)
+
     # 保存图片并替换Markdown文本中的URL为本地路径
     for alt_text, img_url in image_matches:
         img_name = alt_text if alt_text else img_url.split("/")[-1]
@@ -43,7 +47,7 @@ def save_assets_img_substitute(markdown_content, title):
         img_extension = (
             img_name.split(".")[-1] if "." in img_name else "jpeg"
         )  # 提取图片后缀
-        img_path = f"source/_posts/{title}/{img_basename}.{img_extension}"
+        img_path = f"{img_dir_for_title}/{img_basename}.{img_extension}"
 
         # 下载图片
         response = requests.get(img_url)
@@ -52,12 +56,26 @@ def save_assets_img_substitute(markdown_content, title):
                 print(f"Save img {img_path}")
                 img_file.write(response.content)
         else:
-          print(f"Failed to get img {img_url}. Status code: {response.status_code}")
+            print(f"Failed to get img {img_url}. Status code: {response.status_code}")
 
         # 替换Markdown中的URL为本地路径
         markdown_content = re.sub(
             re.escape(img_url), f"{img_basename}.{img_extension}", markdown_content
         )
+
+
+def delete_all_about_title(title, md_file):
+    img_path = f"source/_posts/{title}"
+    if os.path.exists(md_file):
+        os.remove(md_file)
+        print(f"Delete {md_file}")
+    else:
+        print(f"{md_file} is not exist")
+    if os.path.exists(img_path):
+        for img_file in os.listdir(img_path):
+            os.remove(f"{img_path}/{img_file}")
+        os.rmdir(img_path)
+        print(f"Delete {img_path}")
 
 
 # 替换为你的 GitHub 用户名、仓库名和访问令牌
@@ -105,17 +123,9 @@ if __name__ == "__main__":
             body = discussion["body"]
             category = discussion["category"]
             if category["name"] == "Blogs":
-                md_path = f"source/_posts/{title}"
                 md_file = f"source/_posts/{title}.md"
                 if f"!go away, {title}" in body:
-                    if os.path.exists(md_file):
-                        os.remove(md_file)
-                        print(f"Delete {md_file}")
-                    else:
-                        print(f"{md_file} is not exist")
-                    if os.path.exists(md_path):
-                        os.rmdir(md_path)
-                        print(f"Delete {md_path}")
+                    delete_all_about_title(title, md_file)
                 else:
                     body = save_assets_img_substitute(body, title)
                     labels = discussion.get("labels", {}).get("nodes", [])
