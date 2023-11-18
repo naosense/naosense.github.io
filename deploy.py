@@ -29,7 +29,7 @@ def save_assets_img_substitute(markdown_content, title):
     markdown_image_matches = re.findall(markdown_img_pattern, markdown_content)
 
     # 匹配 <img src="url"> 格式的图片
-    html_img_pattern = r'<img(?: alt="(.*?)")? src="(https://github\.com/naosense/naosense\.github\.io/assets[^"]*)">'
+    html_img_pattern = r'<img(?: alt="(.*?)")? src="(https://github\.com/naosense/naosense\.github\.io/assets[^"]*)"'
     html_image_matches = re.findall(html_img_pattern, markdown_content)
 
     # 合并两种格式的图片匹配结果
@@ -39,7 +39,7 @@ def save_assets_img_substitute(markdown_content, title):
     # 保存图片并替换Markdown文本中的URL为本地路径
     for alt_text, img_url in image_matches:
         img_name = alt_text if alt_text else img_url.split("/")[-1]
-        img_basename = img_name.split(".")[0]
+        img_basename = img_name.split(".")[0].replace(" ", "_")
         img_extension = (
             img_name.split(".")[-1] if "." in img_name else "jpeg"
         )  # 提取图片后缀
