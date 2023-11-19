@@ -68,6 +68,7 @@ jobs:
           git add source/_posts
           git commit -m 'sync from discussion' \
           && git push \
+          && hexo douban \
           && hexo deploy -g \
           && echo "Done, congrats!" \
           || echo "Oops, something wrong!"

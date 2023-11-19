@@ -125,7 +125,8 @@ if __name__ == "__main__":
             body = discussion["body"]
             category = discussion["category"]
             if category["name"] == "Blogs":
-                if f"!go away, {title}" in body:
+                if title.startswith("~"):
+                    title = title[1:]
                     delete_files_and_imgs_about_title(title)
                 else:
                     body = save_assets_img_substitute_url(body, title)
