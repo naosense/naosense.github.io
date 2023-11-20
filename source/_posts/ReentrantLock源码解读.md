@@ -2,7 +2,7 @@
 title: ReentrantLock源码解读
 date: 2023-09-04 11:20:09
 categories:
-tags: [Java, 并发, JUC]
+tags: [java, 并发, juc]
 ---
 根据Javadoc的说法，
 

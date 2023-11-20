@@ -2,7 +2,7 @@
 title: 当Python和R遇上北京二手房（下）
 date: 2015-09-05 11:47:00
 categories:
-tags: [Python, R, 统计]
+tags: [python, r, 统计]
 ---
 
 ## 四、各区情况

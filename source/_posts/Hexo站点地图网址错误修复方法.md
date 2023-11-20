@@ -2,7 +2,7 @@
 title: Hexo站点地图网址错误修复方法
 date: 2022-10-19 15:12:01
 categories:
-tags: [Hexo, hexo-generator-sitemap]
+tags: [hexo]
 ---
 最近升级了下hexo，部署的时候发现`sitemap.xml`全失效了，每个网址都增加了一个`%25`字符，比如原本应该是`https://naosense.github.io/2016/08/22/%E5%8A%A0%E5%AF%86%E5%92%8C%E8%A7%A3%E5%AF%86/`变成了如下所示网址，
 

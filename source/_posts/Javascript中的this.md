@@ -2,7 +2,7 @@
 title: Javascript中的this
 date: 2016-03-27 23:07:42
 categories:
-tags: Javascript
+tags: javascript
 ---
 对于js的函数有两个特殊的关键字，this和arguments，后者存储的是函数的参数，类似于一个数组。例如如下的函数，
 

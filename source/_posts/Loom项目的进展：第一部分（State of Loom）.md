@@ -2,7 +2,7 @@
 title: 'Loom项目的进展：第一部分（State of Loom）'
 date: 2020-10-11 13:27:24
 categories:
-tags: Java
+tags: [java, loom]
 ---
 
 本文是[State of Loom](https://cr.openjdk.java.net/~rpressler/loom/loom/sol1_part1.html)的翻译。

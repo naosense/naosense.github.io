@@ -2,7 +2,7 @@
 title: 从乐高玩具到Parser Combinator
 date: 2023-01-01 16:17:23
 categories:
-tags: [Parser Combinator, Rust, Scala]
+tags: [parser combinator, rust, scala]
 ---
 ## 什么是Parser Combinator
 
