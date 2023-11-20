@@ -20,7 +20,7 @@ def run_query(query, variables, token):
         return None
 
 
-def save_assets_img_substitute_url(markdown_content, title):
+def replace_asset_imgs(markdown_content, title):
     print("Going to save assets img")
     # 匹配 ![alt](url) 格式的图片
     markdown_img_pattern = (
@@ -28,8 +28,8 @@ def save_assets_img_substitute_url(markdown_content, title):
     )
     markdown_image_matches = re.findall(markdown_img_pattern, markdown_content)
 
-    # 匹配 <img src="url"> 格式的图片
-    html_img_pattern = r'<img(?: alt="(.*?)")? src="(https://github\.com/naosense/naosense\.github\.io/assets[^"]*)"'
+    # 匹配 <img alt="alt" src="url"> 格式的图片
+    html_img_pattern = r'<img(?:\s+alt="(.*?)")?\s+src="(https://github\.com/naosense/naosense\.github\.io/assets[^"]*)"'
     html_image_matches = re.findall(html_img_pattern, markdown_content)
 
     # 合并两种格式的图片匹配结果
@@ -65,7 +65,7 @@ def save_assets_img_substitute_url(markdown_content, title):
     return markdown_content
 
 
-def delete_files_and_imgs_about_title(title):
+def delete_article(title):
     md_file = f"source/_posts/{title}.md"
     if os.path.exists(md_file):
         os.remove(md_file)
@@ -127,9 +127,9 @@ if __name__ == "__main__":
             if category["name"] == "Blogs":
                 if title.startswith("~"):
                     title = title[1:]
-                    delete_files_and_imgs_about_title(title)
+                    delete_article(title)
                 else:
-                    body = save_assets_img_substitute_url(body, title)
+                    body = replace_asset_imgs(body, title)
                     labels = discussion.get("labels", {}).get("nodes", [])
                     label_names = [label["name"] for label in labels]
                     label_str = f"[{', '.join(label_names)}]" if label_names else ""
