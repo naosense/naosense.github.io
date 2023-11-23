@@ -1,11 +1,14 @@
 import os
 import re
+import textwrap
 from datetime import datetime, timedelta, timezone
 
 import requests
 
 
-def run_query(query, variables, token):
+def run_query(
+    query: str, variables: dict[str, any], token: str
+) -> dict[str, any] | None:
     url = "https://api.github.com/graphql"
     headers = {"Authorization": f"Bearer {token}"}
     json_data = {"query": query, "variables": variables}
@@ -20,8 +23,9 @@ def run_query(query, variables, token):
         return None
 
 
-def replace_asset_imgs(markdown_content, title):
-    print("Going to save assets img")
+def replace_asset_imgs(markdown_content: str, title: str) -> str:
+    """将Markdown文本中的图片URL保存在本地并将url替换为本地路径，
+    因为github assets的图片链接常规情况是无法访问的"""
     # 匹配 ![alt](url) 格式的图片
     markdown_img_pattern = (
         r"!\[(.*?)\]\((https://github\.com/naosense/naosense\.github\.io/assets.*?)\)"
@@ -32,7 +36,6 @@ def replace_asset_imgs(markdown_content, title):
     html_img_pattern = r'<img(?:\s+alt="(.*?)")?\s+src="(https://github\.com/naosense/naosense\.github\.io/assets[^"]*)"'
     html_image_matches = re.findall(html_img_pattern, markdown_content)
 
-    # 合并两种格式的图片匹配结果
     image_matches = markdown_image_matches + html_image_matches
     print(f"Found img {image_matches}")
 
@@ -40,16 +43,14 @@ def replace_asset_imgs(markdown_content, title):
     if image_matches and not os.path.exists(img_dir_for_title):
         os.makedirs(img_dir_for_title)
 
-    # 保存图片并替换Markdown文本中的URL为本地路径
     for alt_text, img_url in image_matches:
         img_name = alt_text if alt_text else img_url.split("/")[-1]
         img_basename = img_name.split(".")[0].replace(" ", "_")
         img_extension = (
             img_name.split(".")[-1] if "." in img_name else "jpeg"
-        )  # 提取图片后缀
+        )  # github assets为jpeg格式
         img_path = f"{img_dir_for_title}/{img_basename}.{img_extension}"
 
-        # 下载图片
         response = requests.get(img_url)
         if response.status_code == 200:
             with open(img_path, "wb+") as img_file:
@@ -58,14 +59,13 @@ def replace_asset_imgs(markdown_content, title):
         else:
             print(f"Failed to get img {img_url}. Status code: {response.status_code}")
 
-        # 替换Markdown中的URL为本地路径
         markdown_content = re.sub(
             re.escape(img_url), f"{img_basename}.{img_extension}", markdown_content
         )
     return markdown_content
 
 
-def delete_article(title):
+def delete_article(title: str) -> None:
     md_file = f"source/_posts/{title}.md"
     if os.path.exists(md_file):
         os.remove(md_file)
@@ -140,13 +140,18 @@ if __name__ == "__main__":
                     created_localized = created_at.astimezone(tz_east_8)
                     md_file = f"source/_posts/{title}.md"
                     with open(md_file, "w+") as md:
-                        md.write("---\n")
-                        md.write(f"title: {title}\n")
-                        md.write(f"date: {created_localized:%Y-%m-%d %H:%M:%S}\n")
-                        md.write("categories: \n")
-                        md.write(f"tags: {label_str}\n")
-                        md.write("---\n")
-                        md.write(f"{body}\n")
+                        md_content = textwrap.dedent(
+                            f"""\
+                            ---
+                            title: {title}
+                            date: {created_localized:%Y-%m-%d %H:%M:%S}
+                            categories: 
+                            tags: {label_str}
+                            ---
+                            {body}
+                            """
+                        )
+                        md.write(md_content)
                         print(f"Create or Update {title}")
             else:
                 print(f"{title} is not blog.")
