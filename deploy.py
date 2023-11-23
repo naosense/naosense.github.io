@@ -140,7 +140,7 @@ if __name__ == "__main__":
                     created_localized = created_at.astimezone(tz_east_8)
                     md_file = f"source/_posts/{title}.md"
                     with open(md_file, "w+") as md:
-                        md_content = textwrap.dedent(
+                        header = textwrap.dedent(
                             f"""\
                             ---
                             title: {title}
@@ -148,10 +148,10 @@ if __name__ == "__main__":
                             categories: 
                             tags: {label_str}
                             ---
-                            {body}
                             """
                         )
-                        md.write(md_content)
+                        md.write(header)
+                        md.write(f"{body}\n")
                         print(f"Create or Update {title}")
             else:
                 print(f"{title} is not blog.")
