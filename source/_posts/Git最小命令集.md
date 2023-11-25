@@ -81,6 +81,13 @@ git reset HEAD~1
 git reset HEAD~2
 ```
 
+回退到某个commit
+
+```bash
+# commit id前7位
+git reset 69fde2c
+```
+
 ### 美化commit记录
 
 如果写着写着，突然发现有个代码在上一commit中忘了添加了，想追加进去，那可以使用
