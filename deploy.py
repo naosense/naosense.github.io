@@ -176,7 +176,7 @@ if __name__ == "__main__":
                         )
                         md.write(header)
                         md.write(header_extra)
-                        md.write("---")
+                        md.write("---\n")
                         md.write(f"{body}\n")
                         print(f"Create or Update {title}")
             else:
