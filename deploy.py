@@ -40,7 +40,11 @@ def replace_asset_imgs(markdown_content: str, title: str) -> str:
     print(f"Found img {image_matches}")
 
     img_dir_for_title = f"source/_posts/{title}"
-    if image_matches and not os.path.exists(img_dir_for_title):
+    if image_matches:
+        # 重新创建目录，因为有时候可能会有图片重命名的情况，
+        # 如果不重新创建目录，会导致有多份图片
+        if os.path.exists(img_dir_for_title):
+            rm_dir(img_dir_for_title)
         os.makedirs(img_dir_for_title)
 
     for alt_text, img_url in image_matches:
@@ -74,10 +78,18 @@ def delete_article(title: str) -> None:
         print(f"{md_file} is not exist")
     img_dir = f"source/_posts/{title}"
     if os.path.exists(img_dir):
-        for img_file in os.listdir(img_dir):
-            os.remove(f"{img_dir}/{img_file}")
-        os.rmdir(img_dir)
+        rm_dir(img_dir)
         print(f"Delete {img_dir}")
+
+
+def rm_dir(dir: str) -> None:
+    for file in os.listdir(dir):
+        file_path = os.path.join(dir, file)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+        else:
+            rm_dir(file_path)
+    os.rmdir(dir)
 
 
 # 替换为你的 GitHub 用户名、仓库名和访问令牌
