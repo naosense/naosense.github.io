@@ -140,19 +140,13 @@ if __name__ == "__main__":
                 if "**!!go away**" in body:
                     delete_article(title)
                 else:
-                    header_body_pattern = r"^---\n(.+?)\n---\n(.+)"
+                    header_body_pattern = r"^---(.+?)---\n(.+)"
                     header_extra = "\n"
                     if re.match(header_body_pattern, body, re.DOTALL):
-                        header = re.sub(
+                        header_extra = re.sub(
                             header_body_pattern, r"\1", body, flags=re.DOTALL
                         )
                         body = re.sub(header_body_pattern, r"\2", body, flags=re.DOTALL)
-                        header_lines = header.splitlines()
-                        for line in header_lines:
-                            if line.startswith("subtitle:") or line.startswith(
-                                "thumbnail:"
-                            ):
-                                header_extra += line + "\n"
 
                     body = replace_asset_imgs(body, title)
                     labels = discussion.get("labels", {}).get("nodes", [])
