@@ -40,10 +40,10 @@
         thumbnail = page.permalink + img_link;
       }
     } else {
-      const regex = /!\[[^\]]*\]\((.*?)\s*("(?:.*[^"])")?\s*\)/i;
+      const regex = /!\[[^\]]*\]\(\s*(.*?)\s*\)|<img[^>]*?src\s*=\s*['"]?([^'"\s>]+)[^>]*?>/i;
       const matches = regex.exec(page.raw);
-      if (matches && matches[1]) {
-        const img_link = matches[1];
+      if (matches && (matches[1] || matches[2])) {
+        const img_link = matches[1] || matches[2];
         if (img_link.startsWith('http')) {
           thumbnail = img_link;
         } else {
