@@ -141,7 +141,7 @@ if __name__ == "__main__":
                     delete_article(title)
                 else:
                     header_body_pattern = r"^---(.+?)---\n(.+)"
-                    header_extra = "\n"
+                    header_extra = ""
                     if re.match(header_body_pattern, body, re.DOTALL):
                         header_extra = re.sub(
                             header_body_pattern, r"\1", body, flags=re.DOTALL
