@@ -1,4 +1,4 @@
-name: deploy discussion to hexo blog
+name: deploy on discussion created or edited
 
 on:
   # init workflow

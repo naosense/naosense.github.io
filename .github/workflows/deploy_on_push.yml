@@ -1,0 +1,43 @@
+name: deploy on push source branch
+
+on:
+  push:
+   branches:
+     - source
+
+env:
+  # change env here
+  GITHUB_NAME: naosense
+  GITHUB_EMAIL: pingao777@gmail.com
+  ACTION_DEPLOY_KEY: ${{ secrets.HEXO_DEPLOY_SECRET }}
+
+jobs:
+  sync:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: 'source'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16.19.0
+          cache: 'npm'
+      - name: Install hexo and dependencies
+        run: |
+          npm install -g hexo-cli
+          npm install
+      - name: Hexo deploy and Commit md file
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$ACTION_DEPLOY_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git config --global user.email "${{ env.GITHUB_EMAIL }}"
+          git config --global user.name "${{ env.GITHUB_NAME }}"
+          hexo douban \
+          && hexo deploy -g \
+          && echo "Done, congrats!" \
+          || echo "Oops, something wrong!"
