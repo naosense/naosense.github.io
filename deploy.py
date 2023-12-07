@@ -135,18 +135,17 @@ if __name__ == "__main__":
         for discussion in discussions:
             title = discussion["title"]
             body = discussion["body"]
+            body = body.replace("\r\n", "\n")  # github discussion的换行符是\r\n
             category = discussion["category"]
             if category["name"] == "Blogs":
                 if "**!!go away**" in body:
                     delete_article(title)
                 else:
-                    header_body_pattern = r"^---(.+?)---\n(.+)"
+                    header_body_pattern = r"---\n(.+?)---\n(.+)"
                     header_extra = ""
-                    if re.match(header_body_pattern, body, re.DOTALL):
-                        header_extra = re.sub(
-                            header_body_pattern, r"\1", body, flags=re.DOTALL
-                        )
-                        body = re.sub(header_body_pattern, r"\2", body, flags=re.DOTALL)
+                    if res := re.search(header_body_pattern, body, re.DOTALL):
+                        header_extra = res.group(1)
+                        body = res.group(2)
 
                     body = replace_asset_imgs(body, title)
                     labels = discussion.get("labels", {}).get("nodes", [])
@@ -164,14 +163,14 @@ if __name__ == "__main__":
                             ---
                             title: {title}
                             date: {created_localized:%Y-%m-%d %H:%M:%S}
-                            categories: 
+                            categories:
                             tags: {label_str}
                             """
                         )
                         md.write(header)
                         md.write(header_extra)
                         md.write("---\n")
-                        md.write(f"{body}\n")
+                        md.write(body)
                         print(f"Create or Update {title}")
             else:
                 print(f"{title} is not blog.")

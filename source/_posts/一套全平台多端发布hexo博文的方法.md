@@ -1,7 +1,7 @@
 ---
 title: 一套全平台多端发布hexo博文的方法
 date: 2023-11-21 18:51:10
-categories: 
+categories:
 tags: [hexo, github]
 ---
 hexo博客建了好久了，一直以来都有几个痛点：
@@ -82,7 +82,7 @@ jobs:
         run: |
           npm install -g hexo-cli
           npm install
-      - name: Hexo deploy and Commit md file 
+      - name: Hexo deploy and Commit md file
         run: |
           mkdir -p ~/.ssh/
           echo "$ACTION_DEPLOY_KEY" > ~/.ssh/id_rsa
@@ -105,4 +105,3 @@ jobs:
 2. 需要生成一个ssh key，用来部署hexo，配置方法参考[ssh配置](https://makefile.so/2021/11/28/use-github-actions-to-deploy-hexo-blog/)。
 
 这样，你就可以愉快地在地铁里，在被窝里……等任何地方写博客了。
-
