@@ -65,6 +65,7 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           git config --global user.email "${{ env.GITHUB_EMAIL }}"
           git config --global user.name "${{ env.GITHUB_NAME }}"
+          git config --global core.autocrlf input
           git add source/_posts
           git commit -m 'sync from discussion' \
           && git push \
