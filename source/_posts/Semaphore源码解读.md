@@ -2,7 +2,7 @@
 title: Semaphore源码解读
 date: 2023-08-27 11:12:54
 categories:
-tags: [java, 并发, juc]
+tags: [Java, 并发, JUC]
 ---
 根据Java Doc的说法，`Semaphore`是一个控制访问某种资源并发量的组件。
 

@@ -2,7 +2,7 @@
 title: HTTPS为什么是安全的
 date: 2016-08-23 17:08:28
 categories:
-tags: [http, https]
+tags: [HTTP, HTTPS]
 ---
 
 HTTP我们都知道是超文本传输协议，HTTPS与HTTP一字之差，它到底是什么呢？引用《HTTP权威指南》的介绍：

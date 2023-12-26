@@ -2,7 +2,7 @@
 title: Java“锁”记
 date: 2019-03-07 14:12:29
 categories:
-tags: [并发, 分布式, java]
+tags: [并发, 分布式, Java]
 ---
 ## 内置锁和显示锁
 

@@ -1,8 +1,8 @@
 ---
 title: Git最小命令集
 date: 2023-11-24 18:51:18
-categories: 
-tags: [github, git]
+categories:
+tags: [Github, Git]
 ---
 ## 背景
 
@@ -62,7 +62,7 @@ git push
 # 删除本地分支
 git branch -d branch_name
 # 忽略未合并的commit强制删除本地分支
-git branch -D branch_name 
+git branch -D branch_name
 # 删除远端分支
 git push origin :branch_name
 ```
@@ -115,4 +115,3 @@ git push --force-with-lease
 git log -p -- src/main.cpp
 git log -p -- src/some_path
 ```
-

@@ -2,7 +2,7 @@
 title: Maven插件屏蔽第三方包日志的方法
 date: 2018-06-01 15:23:04
 categories:
-tags: [maven, 日志]
+tags: [Maven, 日志]
 ---
 
 这几天写了一个Maven插件，里面用到了Zookeeper（下面简称ZK），里面打印出了很多“Client environment...”字样的info信息，看着挺闹心，就想着怎么屏蔽掉，让世界清净点。

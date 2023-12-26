@@ -2,7 +2,7 @@
 title: 强烈推荐Andrew Ng的机器学习课程
 date: 2019-01-21 18:11:07
 categories:
-tags: [机器学习, coursera]
+tags: [机器学习, Coursera]
 ---
 
 从12.30到1.17修完了Coursera上的Andrew Ng的机器学习课程，计划上又可以划掉一件事了。

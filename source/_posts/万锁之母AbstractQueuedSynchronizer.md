@@ -2,7 +2,7 @@
 title: 万锁之母AbstractQueuedSynchronizer
 date: 2019-03-12 15:55:02
 categories:
-tags: [并发, 分布式, java]
+tags: [并发, 分布式, Java]
 ---
 翻看[Java“锁”记](https://naosense.github.io/2019/03/07/Java%E2%80%9C%E9%94%81%E2%80%9D%E8%AE%B0/)中提到的各种“锁”，其内部同步实现大多数都和一个类`AbstractQueuedSynchronizer`相关，这个类称得上“万锁之母”，所以今天就来扒一扒这个类。
 

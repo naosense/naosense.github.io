@@ -2,7 +2,7 @@
 title: Vim Markdown预览插件markdown-preview-sync
 date: 2018-07-29 10:24:06
 categories:
-tags: [vim, markdown]
+tags: [Vim, Markdown]
 ---
 
 花了大概两个星期整了个Vim预览插件[markdown-preview-sync](https://github.com/naosense/markdown-preview-sync)，主要参考了[Markdown Viewer](https://chrome.google.com/webstore/detail/markdown-viewer/ckkdlimhmcjmikdlpkmbgfkaikojcbjk)和[markdown-preview.vim](https://github.com/iamcco/markdown-preview.vim)这两款插件，感谢这两款插件的作者。

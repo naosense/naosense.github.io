@@ -2,7 +2,7 @@
 title: Javascript中的原型
 date: 2016-03-20 13:28:20
 categories:
-tags: javascript
+tags: Javascript
 ---
 首先要明确的是，
 

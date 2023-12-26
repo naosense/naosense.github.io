@@ -2,7 +2,7 @@
 title: Awesome Rust Software
 date: 2023-02-11 14:13:45
 categories:
-tags: [rust, fd, ripgrep, zellij, tmux]
+tags: [Rust, fd, ripgrep, Zellij, Tmux]
 ---
 
 > 本文将会持续推荐一些我使用过感觉不错的rust软件，尽情期待！
