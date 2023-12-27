@@ -33,7 +33,7 @@ def replace_asset_imgs(markdown_content: str, title: str) -> str:
     markdown_image_matches = re.findall(markdown_img_pattern, markdown_content)
 
     # 匹配 <img alt="alt" src="url"> 格式的图片
-    html_img_pattern = r'<img(?:\s+alt="(.*?)")?\s+src="(https://github\.com/naosense/naosense\.github\.io/assets[^"]*)"'
+    html_img_pattern = r'<img[^>]*?(?:\s+alt="(.*?)")?\s+src="(https://github\.com/naosense/naosense\.github\.io/assets[^"]*)"'
     html_image_matches = re.findall(html_img_pattern, markdown_content)
 
     image_matches = markdown_image_matches + html_image_matches
