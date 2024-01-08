@@ -2,7 +2,7 @@
 title: Java多线程交替打印字符
 date: 2019-06-05 10:13:15
 categories:
-tags: [Java, 多线程]
+tags: [java, 多线程]
 ---
 > 有这样一个面试题：多线程打印AB字符
 

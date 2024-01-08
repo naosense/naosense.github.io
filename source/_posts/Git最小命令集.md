@@ -2,7 +2,7 @@
 title: Git最小命令集
 date: 2023-11-24 18:51:18
 categories:
-tags: [Github, Git]
+tags: [github, git]
 ---
 ## 背景
 

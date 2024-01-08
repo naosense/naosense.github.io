@@ -2,7 +2,7 @@
 title: 谁说大象不能跳舞：基于Java的Markdown预览插件
 date: 2018-08-04 11:49:59
 categories:
-tags: [Markdown, Java, Vim, Python]
+tags: [markdown, java, vim, python]
 ---
 
 Java一直以来都给人留下了笨重的印象，按说插件这种轻量的任务根本和Java没啥关系，但是这次我要霸王硬上弓，让大象跳次舞。

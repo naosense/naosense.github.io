@@ -2,7 +2,7 @@
 title: "Loom项目的进展：第二部分（State of Loom）"
 date: 2020-10-31 12:11:39
 categories:
-tags: [Java, Loom]
+tags: [java, loom]
 ---
 
 [第一部分](https://naosense.github.io/2020/10/11/Loom%E9%A1%B9%E7%9B%AE%E7%9A%84%E8%BF%9B%E5%B1%95%EF%BC%9A%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%88State%20of%20Loom%EF%BC%89/)介绍了虚拟线程并解释了JDK如何适配的去使用它们。随着线程的数量越来越多，生命周期越来越短，管理它们和在它们之间分配工作的新方法属于 Project Loom 的范畴: 在线程之间传递数据的新的灵活机制(比如通道)可能是可取的; 聚集大量线程可以受益于一种被称为**结构化并发(structured concurrency)**的组织和监督方法; 最后，我们正在探索一种比线程局部变量更方便、更有效的构造，用于我们暂时称为**作用域变量(scope variables)**的上下文数据。

@@ -2,7 +2,7 @@
 title: 一套全平台多端发布hexo博文的方法
 date: 2023-11-21 18:51:10
 categories:
-tags: [Hexo, Github]
+tags: [hexo, github]
 ---
 hexo博客建了好久了，一直以来都有几个痛点：
 
