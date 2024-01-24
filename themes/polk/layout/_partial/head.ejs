@@ -81,15 +81,16 @@
   %>
   <meta name="keywords" content=<%= keywords %>>
   <% if (config.description){ %>
-    <meta name="description" content="<%= config.description %>">
+  <meta name="description" content="<%= config.description %>">
   <% } %>
   <% if (theme.favicon){ %>
-    <link rel="shortcut icon" type="image/x-icon" href="<%= url_for(theme.favicon) %>?v=1.02">
+  <link rel="shortcut icon" type="image/x-icon" href="<%= url_for(theme.favicon) %>?v=1.02">
   <% } %>
   <% if (theme.rss){ %>
-    <link rel="alternate" href="<%= url_for(theme.rss) %> " title="<%= config.title %>" type="application/atom+xml">
+  <link rel="alternate" href="<%= url_for(theme.rss) %> " title="<%= config.title %>" type="application/atom+xml">
   <% } %>
   <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
@@ -109,15 +110,6 @@
         messageStyle: "none"
     });
   </script>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44085500-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'UA-44085500-1');
-  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
   <script>
@@ -126,6 +118,27 @@
     gtag('js', new Date());
 
     gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
   </script>
 
   <%- css('/css/style.css') %>
