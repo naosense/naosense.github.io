@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>二叉树的最近公共父节点 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="二叉树的最近公共父节点 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/default.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="二叉树的最近公共父节点 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/default.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=leetcode,hot100>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">二叉树的最近公共父节点</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2023-11-19</span>
+  </div>
+  <div class="post-content">
+    <blockquote>
+<p>leetcode 235<br>
+给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。</p>
+</blockquote>
+<blockquote>
+<p>leetcode 236<br>
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。</p>
+</blockquote>
+<p>这两个题二字之差，一个是二叉搜索树，另一个是二叉树，搜索树是有序的，二叉树是无序的。</p>
+<p>二叉搜索树还是比较好写的，我当时很快就写出来了。思路就是根据<code>root</code>与<code>p</code>和<code>q</code>的大小比较，递归的选择一边，直到<code>root</code>介于<code>p</code>和<code>q</code>之间。</p>
+<pre><code class="language-java">class Solution &#123;
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) &#123;
+        if (root == null) &#123;
+            return root;
+        &#125;
+
+        // 因为是有序的，所以只需要查找一边
+        if (p.val &lt; root.val &amp;&amp; q.val &lt; root.val) &#123;
+            return lowestCommonAncestor(root.left, p, q);
+        &#125;
+
+        if (p.val &gt; root.val &amp;&amp; q.val &gt; root.val) &#123;
+            return lowestCommonAncestor(root.right, p, q);
+        &#125;
+
+        return root;
+    &#125;
+&#125;
+</code></pre>
+<p>但是轮到二叉树就没写对， <strong>我清楚二叉树相比搜索树是无序的，因此需要遍历两个分支，但是依然没写对</strong> ，它的正确代码如下。</p>
+<pre><code class="language-java">class Solution &#123;
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) &#123;
+        if (root == null) &#123;
+            return root;
+        &#125;
+
+        // p或q在另一个的子树上
+        if (root == p || root == q) &#123;
+            return root;
+        &#125;
+
+        // 由于二叉树是无序的，需要遍历左右子树
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        if (left != null &amp;&amp; right != null) &#123;
+            return root;
+        &#125;
+
+        return left == null ? right : left;
+    &#125;
+&#125;
+</code></pre>
+<p>可以看到两个代码结构基本上是等效的，都对<code>root</code>是否为空判断，一个只需要查一边，一个需要查两边，<code>root</code>如果在<code>p</code>和<code>q</code>之间都返回<code>root</code>，但是后者base条件多了一种对如下情况的判断，我当时没有写。</p>
+<pre><code class="language-java">if (root == p || root == q) &#123;
+    return root;
+&#125;
+</code></pre>
+<p>为啥额外增加这样一种判断呢？或者说搜索树为啥不用专门做这种判断？</p>
+<p>对于二叉树来说这个判断避免一旦<code>p</code>和<code>q</code>其中之一为父节点继续往下递归，因为再往下寻找肯定返回<code>null</code>。而对于搜索树，因为有序，只有父节点同时严格小于或大于<code>p</code>和<code>q</code>才会往下递归，二叉树因为无序所以没有这种条件限制它，因此需要单独加上这个条件。</p>
+<p>本以为这样就结束了，这时突然一个问题出现在我的脑海，那就是为啥<code>root</code>在<code>p</code>和<code>q</code>之间时就是最近的公共父节点？换句话说，当<code>root</code>在<code>p</code>和<code>q</code>之间时，继续往下找有没有可能出现更近的公共父节点？各位可能觉得这是一个明摆着的事情，可是当时我把自己问住了，好多事情就怕多问一个为什么🙃。是啊，感觉不太可能，可是为什么不可能呢？</p>
+<p>对付这种杠精问题，最拿手的应该就是反证法了。我们假设<code>root</code>在<code>p</code>和<code>q</code>之间，<code>p</code>在左，<code>q</code>在右，在<code>root</code>的左子树上有一个更近的节点<code>root'</code>，那它必定不是<code>q</code>的父节点，如果<code>root'</code>在右子树，那它必定不是<code>p</code>的父节点，因此<code>root</code>的子树上不可能出现更近的公共父节点了。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/hot100/" rel="tag">hot100</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/leetcode/" rel="tag">leetcode</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2024
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2023/11/19/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%9C%80%E8%BF%91%E5%85%AC%E5%85%B1%E7%88%B6%E8%8A%82%E7%82%B9/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2023/11/19/二叉树的最近公共父节点/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '二叉树的最近公共父节点';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>
