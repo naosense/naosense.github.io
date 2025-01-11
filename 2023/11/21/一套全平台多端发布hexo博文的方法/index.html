@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>一套全平台多端发布hexo博文的方法 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="一套全平台多端发布hexo博文的方法 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/default.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="一套全平台多端发布hexo博文的方法 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/default.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=github,hexo>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">一套全平台多端发布hexo博文的方法</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2023-11-21</span>
+  </div>
+  <div class="post-content">
+    <p>hexo博客建了好久了，一直以来都有几个痛点：</p>
+<ul>
+<li>只能电脑发布。在手机日期流行的今天还挺要命的，有时候上一天班真心不想开电脑，电脑不能随时随地使用，比如地铁上。</li>
+<li>图片的插入不方便。需要找图床，或者保存在同名文件夹中，然后手动再插入markdown文档。</li>
+<li>换电脑需要重复配置hexo环境，每次都要安装一次nodejs以及一堆依赖，特别是后端程序员，使用nodejs不多，时间一长都忘了咋配置，每次都得百度一番。</li>
+</ul>
+<p>最近在twitter上受@lencx_启发，发现一套可以全平台多端发布hexo博文的方法，方案如下：</p>
+<ol>
+<li>使用github discussion作为数据源，天然支持分类和tag，还有天生的版本管理功能，如果注重隐私，还可以选择私密仓库。</li>
+<li>当发布或修改discussion时，使用github api将discussion同步下来，生成markdown文档。</li>
+<li>使用github action创建hexo部署环境，将markdown发布成博文。</li>
+</ol>
+<p>github有手机端，支持ios和android，支持上传图片，网页端也是相当的好用，github action透明发布，不用再关心部署环境。</p>
+<p>大家也可以举一反三，使用这种方式，同步发布公众号什么的。</p>
+<p>整体github action配置为</p>
+<pre><code class="language-yml">name: deploy discussion to hexo blog
+
+on:
+  # init workflow
+  # push:
+  #  branches:
+  #    - source
+  discussion:
+    types: [created, edited]
+
+env:
+  # change env here
+  GITHUB_NAME: naosense
+  GITHUB_EMAIL: pingao777@gmail.com
+  GH_TOKEN: $&#123;&#123; secrets.GH_TOKEN &#125;&#125;
+  ACTION_DEPLOY_KEY: $&#123;&#123; secrets.HEXO_DEPLOY_SECRET &#125;&#125;
+
+jobs:
+  sync:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: 'source'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11.4
+      - name: Get pip cache dir
+        id: pip-cache
+        run: |
+          echo &quot;dir=$(pip cache dir)&quot; &gt;&gt; $GITHUB_OUTPUT
+      - name: pip cache
+        uses: actions/cache@v3
+        with:
+          path: $&#123;&#123; steps.pip-cache.outputs.dir &#125;&#125;
+          key: $&#123;&#123; runner.os &#125;&#125;-pip-$&#123;&#123; hashFiles('**/requirements.txt') &#125;&#125;
+          restore-keys: |
+            $&#123;&#123; runner.os &#125;&#125;-pip-
+      - name: Install python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if: steps.pip-cache.outputs.cache-hit != 'true'
+      - name: Check discussion if is ready
+        id: check_discussion
+        run: |
+          python deploy.py
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16.19.0
+          cache: 'npm'
+      - name: Install hexo and dependencies
+        run: |
+          npm install -g hexo-cli
+          npm install
+      - name: Hexo deploy and Commit md file
+        run: |
+          mkdir -p ~/.ssh/
+          echo &quot;$ACTION_DEPLOY_KEY&quot; &gt; ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com &gt;&gt; ~/.ssh/known_hosts
+          git config --global user.email &quot;$&#123;&#123; env.GITHUB_EMAIL &#125;&#125;&quot;
+          git config --global user.name &quot;$&#123;&#123; env.GITHUB_NAME &#125;&#125;&quot;
+          git add source/_posts
+          git commit -m 'sync from discussion' \
+          &amp;&amp; git push \
+          &amp;&amp; hexo douban \
+          &amp;&amp; hexo deploy -g \
+          &amp;&amp; echo &quot;Done, congrats!&quot; \
+          || echo &quot;Oops, something wrong!&quot;
+</code></pre>
+<p>有几点需要注意：</p>
+<ol>
+<li>需要使用secret配置一个token，变量名为<code>GH_TOKEN</code>，用来调用github api。</li>
+<li>需要生成一个ssh key，用来部署hexo，配置方法参考<a target="_blank" rel="noopener" href="https://makefile.so/2021/11/28/use-github-actions-to-deploy-hexo-blog/">ssh配置</a>。</li>
+</ol>
+<p>这样，你就可以愉快地在地铁里，在被窝里……等任何地方写博客了。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2023/11/21/%E4%B8%80%E5%A5%97%E5%85%A8%E5%B9%B3%E5%8F%B0%E5%A4%9A%E7%AB%AF%E5%8F%91%E5%B8%83hexo%E5%8D%9A%E6%96%87%E7%9A%84%E6%96%B9%E6%B3%95/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2023/11/21/一套全平台多端发布hexo博文的方法/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '一套全平台多端发布hexo博文的方法';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

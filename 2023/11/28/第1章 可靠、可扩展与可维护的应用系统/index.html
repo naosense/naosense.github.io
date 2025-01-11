@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>第1章 可靠、可扩展与可维护的应用系统 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="第1章 可靠、可扩展与可维护的应用系统 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/2023/11/28/%E7%AC%AC1%E7%AB%A0%20%E5%8F%AF%E9%9D%A0%E3%80%81%E5%8F%AF%E6%89%A9%E5%B1%95%E4%B8%8E%E5%8F%AF%E7%BB%B4%E6%8A%A4%E7%9A%84%E5%BA%94%E7%94%A8%E7%B3%BB%E7%BB%9F/image.jpeg"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="第1章 可靠、可扩展与可维护的应用系统 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/2023/11/28/%E7%AC%AC1%E7%AB%A0%20%E5%8F%AF%E9%9D%A0%E3%80%81%E5%8F%AF%E6%89%A9%E5%B1%95%E4%B8%8E%E5%8F%AF%E7%BB%B4%E6%8A%A4%E7%9A%84%E5%BA%94%E7%94%A8%E7%B3%BB%E7%BB%9F/image.jpeg"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=分布式,读书笔记,ddia,系统设计,大数据>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">第1章 可靠、可扩展与可维护的应用系统</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2023-11-28</span>
+  </div>
+  <div class="post-content">
+    <p>当前的许多系统都是<strong>数据密集型应用</strong>（data-intensive），已经不再受限于CPU，关键在于数据量、数据的复杂度以及数据的快速多变为特性。比如大型电商如淘宝、京东，新闻推送如腾讯、凤凰网，社交平台如twitter、facebook等等，都属于这一类型。</p>
+<p><img src="image.jpeg" alt="image"></p>
+<p>基本构成组件：</p>
+<ul>
+<li>数据库</li>
+<li>高速缓存</li>
+<li>索引：根据关键字快速检索</li>
+<li>流式处理：比如一些flink任务，或者自定义的worker承接来自MQ的消息，进行相关的数据处理</li>
+<li>批处理：定时任务</li>
+</ul>
+<p>数据系统的三个方面：</p>
+<ul>
+<li>可靠性</li>
+<li>可扩展性</li>
+<li>可维护性</li>
+</ul>
+<h2 id="可靠性">可靠性</h2>
+<p>可靠性大家天天挂到嘴边，用大白话说其实就是有点小风小浪，甚至中风中浪，系统是否稳定，书面一点，就是系统在遇到局部故障时，仍能维持服务的能力。</p>
+<p>比如一些典型的场景：</p>
+<ul>
+<li>参数输入错误</li>
+<li>流量突然增加了一倍</li>
+<li>分布式部署的某个机房突然挂掉了</li>
+<li>黑客入侵</li>
+</ul>
+<p>遇到这些情况，系统能不能很好的应对。</p>
+<blockquote>
+<p>故障（fault）和失效（failure）</p>
+<p>前者强调组件偏离规格，强调单体和局部，后者强调整体和全局，也就是说整个服务已经没法提供服务了。但事实上，大家在日常工作中区分不了那么精细，而且说法也不尽相同，书中提出这一概念，是为了说明<strong>100%可靠的系统是不存在的</strong>，系统的容错是有限度的，并不是所有的故障系统都能够容忍。</p>
+</blockquote>
+<p>故障应对措施：</p>
+<ul>
+<li>硬件故障：冗余备份，比如RAID、UPS电源。</li>
+<li>软件错误：难以预料，更加隐蔽，只能充分的测试，报警和可观测系统。</li>
+</ul>
+<p>可靠性很重要，但并不是绝对的。比如银行和普通的web服务对可靠性要求肯定不一样，甚至同一个系统的不同模块对可靠性要求也不尽相同，通常在线的可靠性要求要高于离线系统。</p>
+<h2 id="可扩展性">可扩展性</h2>
+<p>系统规模的增长，比如流量、数据量，相应的系统资源如何增加。</p>
+<p>在日常工作中很常见，比如阿里、京东这样的电商公司在大促的时候面对流量激增通常的方案就是扩容，那到底扩多少呢？在降本增效的背景下，老板经常会问“能不能优化下，不用增加机器”，因为机器都是实实在在的钱呢。这个说起来容易，其实挺难的，因为系统资源增长并不一定是线性的，但实际工作中都是按照线性来评估，或者使用压测来决定。</p>
+<p><strong>负载</strong>通常使用<strong>吞吐量</strong>进行描述，在线系统常用QPS来衡量，离线系统可能是单位时间处理的<strong>数据量</strong>来衡量。</p>
+<p>性能的话，使用性能指标的分位值来衡量，比如avg、p50、p99。书中说“avg掩盖了一些信息，无法告诉有多少用户实际经历了多少延迟”，实际上大部分情况下，avg和p50是非常接近的，avg的缺点是容易受异常值影响。比如100个请求，99个请求的延时都是50ms左右，剩下一个请求5000ms，那么平均下来，延时接近100ms。</p>
+<p>通常衡量性能时，会同时使用avg和p99，一个说明平均情况，一个说明长尾情况。</p>
+<blockquote>
+<p>长尾效应</p>
+<p>一个服务涉及多个不同的后端调用，则最慢的调用会拖累整个服务相应时间。</p>
+<p>比如分布式部署的服务，可能会涉及多个机器的相应，这些机器有快又慢。又比如推荐系统中不同用户的画像有多有少，多的自然相应就慢一些。这些都有可能造成长尾效应。</p>
+</blockquote>
+<p>关于分位值的两种解释，以p99为例：</p>
+<ol>
+<li>将延时按照从小到大排列，第99%*n（n为请求数）的延时大小。</li>
+<li>100个请求中，有99个请求的延迟是小于p99的，也就是一个请求小于p99的概率是99%。</li>
+</ol>
+<blockquote>
+<p>延迟（latency）和响应时间（response time）</p>
+<p>延迟是系统服务的时间。响应时间是客户端看到的时间，除了服务时间，还有网络来回的延迟。平常上下游服务指标对不上，可能就是没有区分延迟和响应时间，但通常内网里延迟也就毫秒级。</p>
+</blockquote>
+<p>扩容方式：</p>
+<ul>
+<li>垂直扩容：使用更好的机器</li>
+<li>水平扩容：使用更多的机器</li>
+</ul>
+<p>一般小公司或初创公司倾向于使用垂直扩容，而中大型公司倾向于使用水平扩容，或者二者兼而有之，具体还是得看成本、业务增长速度等因素。</p>
+<h2 id="可维护性">可维护性</h2>
+<p>一说维护，首先想到的可能就是运维，其实这里的维护性是指系统容不容易改，新功能容不容易上，出了问题容不容易排查和解决，不光涉及运维。</p>
+<p>涉及到三个原则：</p>
+<ul>
+<li>可运维性</li>
+<li>简单性</li>
+<li>可演化性</li>
+</ul>
+<h3 id="可运维性">可运维性</h3>
+<p>运营团队能够方便的保持系统平稳运行。</p>
+<h3 id="简单性">简单性</h3>
+<p>简而言之，就是<strong>控制复杂度</strong>。</p>
+<p>对于自己的小项目，你可以把代码写的简洁而优美，对于多人参与的公司级项目，复杂度常常会超出控制，相信大家都见识过这种“屎山”代码。</p>
+<p>作者列举了几种表现形式，说的太好了，我必须全文摘录下来：</p>
+<ul>
+<li>状态空间的膨胀：这种情况很好理解，随着代码越来越多，所要处理的情况越来越多，状态空间肯定越来越多。</li>
+<li>模块紧耦合：比如随着人员的流动，最初的设计原则已经无人知晓，导致原本不该依赖的模块依赖了。</li>
+<li>令人纠结的相互依赖关系</li>
+<li>不一致的命名和术语：比如有的使用英文命名，有的使用拼音，即便有时候都使用英文大家翻译的也是五花八门。</li>
+<li>为了性能而采取的特殊处理：这一条和下一条差不多，都是一些特例处理，如果你不是当事人，不了解背景，就很难了解代码的逻辑。</li>
+<li>为了解决特定问题而引入的特殊框架：比如为什么有了grpc还要引入brpc，为什么有了protobuffer还要引入thrift，类似的框架同时出现在系统中</li>
+</ul>
+<p>作者给出了解决复杂度的方法是<strong>抽象</strong>。但真正想做好并不那么容易，会受人员经验、需求紧迫度、公司政策等因素影响。</p>
+<blockquote>
+<p>一个真实的例子</p>
+<p>公司一名同学修改别人的代码导致线上出现错误，并因此复盘，后来，再遇到这种情况，这名同学都是复制一份代码再改，这样至少不会影响线上现有功能，但是代码的冗余度增加了。</p>
+</blockquote>
+<h3 id="可演化性">可演化性</h3>
+<p>是不是容易改变，比如容易修改原来的老功能，容易添加新功能。</p>
+<p>这一点和简单性密切相关，因为简单的系统更容易修改。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/ddia/" rel="tag">ddia</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag">大数据</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" rel="tag">系统设计</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2023/11/28/%E7%AC%AC1%E7%AB%A0%20%E5%8F%AF%E9%9D%A0%E3%80%81%E5%8F%AF%E6%89%A9%E5%B1%95%E4%B8%8E%E5%8F%AF%E7%BB%B4%E6%8A%A4%E7%9A%84%E5%BA%94%E7%94%A8%E7%B3%BB%E7%BB%9F/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2023/11/28/第1章 可靠、可扩展与可维护的应用系统/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '第1章 可靠、可扩展与可维护的应用系统';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

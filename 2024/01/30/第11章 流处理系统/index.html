@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>第11章 流处理系统 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="第11章 流处理系统 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/default.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="第11章 流处理系统 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/default.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=读书笔记,ddia,系统设计,大数据>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">第11章 流处理系统</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2024-01-30</span>
+  </div>
+  <div class="post-content">
+    <blockquote>
+<p>一个可用的复杂系统总是从可用的简单系统演进来的。反过来这话也是正确的：从零开始设计的复杂系统从来都用不了，也没办法把它变成可用。</p>
+<p>——John Gal，《系统学》（1975）</p>
+</blockquote>
+<h2 id="发送事件流">发送事件流</h2>
+<h3 id="消息系统">消息系统</h3>
+<p>发送事件通知的常用方式。</p>
+<ul>
+<li>如果生产者发送消息的速度快于消费者处理，会发生什么？</li>
+<li>如果节点崩溃或暂时离线，是否会有消息丢失？</li>
+</ul>
+<h4 id="生产者与消费者直接消息传递">生产者与消费者直接消息传递</h4>
+<p>即无代理的方式。这种方式当消费者离线时会丢失消息。</p>
+<p>常见场景：</p>
+<ul>
+<li>UDP组播广泛应用在金融行业，比如股票市场等低延迟场景。</li>
+<li>无代理的消息库，如ZeroMQ和nanomsg，通过TCP或IP多播实现发布/订阅消息传递。</li>
+<li>StatsD和Brubeck使用UDP手机网络中所有机器的指标并进行监控。</li>
+<li>网络上公开服务，生产者直接发出HTTP或RPC请求将消息推送给消费者。</li>
+</ul>
+<h4 id="消息代理（无日志）">消息代理（无日志）</h4>
+<p>本质上是一种针对消息流处理而优化的数据库。常见产品Rabbit MQ、ActiveMQ等。</p>
+<p>只能消费订阅之后的消息，也就是历史的消息已经不能消费了。</p>
+<h4 id="基于日志的消息存储">基于日志的消息存储</h4>
+<p>将历史的消息存储为日志形式。代表产品Kafka、Twitter DistrbutedLog。</p>
+<h2 id="数据库与流">数据库与流</h2>
+<p>事件是成功的命令。一个请求到来时最初是一个命令，它可能失败，或违反某种约束。一旦它成功，它就是一个事件了。</p>
+<p>变更数据捕获（changed data capture，CDC）是一种设计理念。不是记录数据的当前状态，而是数据变化的过程。</p>
+<p>事件溯源（event source）是一种强大的数据建模技术，是对CDC思想的一种应用。事件溯源使得应用程序随着时间的推移更容易演化，更安全，杜绝了直接覆盖数据的情形，更容易理解发生了什么来帮助调试分析。比如用户加购一个商品后又删除，使用事件溯源就会捕获到更多的细节，用户可能将来会买，或者找到了替代品。</p>
+<h2 id="流处理">流处理</h2>
+<h3 id="流处理的使用场景">流处理的使用场景</h3>
+<p>复杂事件处理（Complex Event Processing，CEP）可以在流中搜索特定的模式，类似于正则表达式。查询和数据的关系在CEP和普通数据库是反过来的。在普通数据库中，数据是长期存储的，查询是临时的，一旦查询完，查询就没了。而在CEP中，查询是长期的，输入流中的事件不断流过匹配查询。常见实现Esper、IBM Info Sphere Streams、Apama等。</p>
+<p>流分析与CEP界限有些模糊。作为一般规则，分析往往不太关心找到特定的事件序列，而更多地面向大量事件的累积效果和统计指标。例如：</p>
+<ul>
+<li>测量某种类型事件的速率。</li>
+<li>计算一段时间内某个值的滚动平均值。</li>
+<li>将当前的统计数据与之前的时间间隔进行比较。</li>
+</ul>
+<p>流分析有时使用概率算法，比如布隆过滤器，基数统计的HyperLogLog，但是流不等于就是概率的，不精确的。</p>
+<p>Actor与流：</p>
+<ul>
+<li>Actor是管理通信模块的并发和分布式执行的机制，而流处理是数据管理技术。</li>
+<li>Actor之间交流往往是短暂的，并且一对一，而事件日志是持久的，多用户的。</li>
+<li>Actor可以以任意方式进行通信（包括循环请求/响应模式），但流处理器通常设置在非循环流水线中，其中每个流是一个特定作业的输出，并且从一组定义明确的输入流派生而来。</li>
+</ul>
+<h3 id="流的时间问题">流的时间问题</h3>
+<p>事件时间与处理时间</p>
+<p>使用事件时间得确定什么时候结束，使用处理事件可能导致事件错乱，处理事件的顺序和事件时间不一样。</p>
+<p>窗口类型：</p>
+<ul>
+<li>
+<p>轮转窗口</p>
+<p>长度固定，每个事件都属于一个窗口。比如一个一分钟窗口，10:03:00~10:03:59分到一个窗口，10:04:00~10:04:59是下一个窗口。</p>
+</li>
+<li>
+<p>跳跃窗口</p>
+<p>也具有固定长度，但是允许重叠。例如一个五分钟窗口，设定跳跃值为一分钟，10:03:00～10:07:59为一个窗口，下一个窗口为10:04:00～10:08:59，以此类推。</p>
+</li>
+<li>
+<p>滑动窗口</p>
+<p>包含某个间隔内发生地所有事件。例如，一个五分钟的滑动窗口将包括10:03:39～10:08:12的事件，因为他们相距不到五分钟。可以通过保留按时间排序的事件缓冲区并从移除旧事件来实现。</p>
+</li>
+<li>
+<p>会话窗口</p>
+<p>没有固定的持续时间，而是通过将同一用户在时间上紧密相关的所有事件分组在一起而定义的，一旦用户在一段事件内处于非活动状态，则窗口结束。</p>
+</li>
+</ul>
+<h3 id="流式join">流式join</h3>
+<ul>
+<li>流和流join</li>
+<li>流和表join</li>
+<li>表和表join</li>
+</ul>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/ddia/" rel="tag">ddia</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag">大数据</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" rel="tag">系统设计</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2024/01/30/%E7%AC%AC11%E7%AB%A0%20%E6%B5%81%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2024/01/30/第11章 流处理系统/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '第11章 流处理系统';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>
