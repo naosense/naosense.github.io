@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Windows用户Ocaml入坑指南 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="Windows用户Ocaml入坑指南 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/2019/11/02/Windows%E7%94%A8%E6%88%B7Ocaml%E5%85%A5%E5%9D%91%E6%8C%87%E5%8D%97/vscode.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="Windows用户Ocaml入坑指南 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/2019/11/02/Windows%E7%94%A8%E6%88%B7Ocaml%E5%85%A5%E5%9D%91%E6%8C%87%E5%8D%97/vscode.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=ocaml,函数式>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Windows用户Ocaml入坑指南</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2019-11-02</span>
+  </div>
+  <div class="post-content">
+    <p>第一次听说Ocaml是看到Ocaml写的quicksort算法：</p>
+<pre><code class="language-ocaml">let rec quicksort = function
+  | [] -&gt; []
+  | x::xs -&gt;
+    let smaller, larger = List.partition (fun y -&gt; y &lt; x) xs
+    in quicksort smaller @ (x::quicksort larger);;
+
+List.iter (fun x -&gt; Printf.printf &quot;%d &quot; x) (quicksort [2; 3; 1; 1; 7; 10])
+</code></pre>
+<p>Java语言的实现相信大家都看过，这里我把<em>Algorithms 4th</em>中的源码贴一下：</p>
+<pre><code class="language-java">public class Quick &#123;
+
+    public static void sort(Comparable[] a) &#123;
+        StdRandom.shuffle(a);
+        sort(a, 0, a.length - 1);
+    &#125;
+
+    private static void sort(Comparable[] a, int lo, int hi) &#123;
+        if (hi &lt;= lo) return;
+        int j = partition(a, lo, hi);
+        sort(a, lo, j-1);
+        sort(a, j+1, hi);
+    &#125;
+
+    private static int partition(Comparable[] a, int lo, int hi) &#123;
+        int i = lo;
+        int j = hi + 1;
+        Comparable v = a[lo];
+        while (true) &#123;
+            while (less(a[++i], v)) &#123;
+                if (i == hi) break;
+            &#125;
+            while (less(v, a[--j])) &#123;
+                if (j == lo) break;
+            &#125;
+            if (i &gt;= j) break;
+            exch(a, i, j);
+        &#125;
+        exch(a, lo, j);
+        return j;
+    &#125;
+
+    private static boolean less(Comparable v, Comparable w) &#123;
+        if (v == w) return false;
+        return v.compareTo(w) &lt; 0;
+    &#125;
+
+    private static void exch(Object[] a, int i, int j) &#123;
+        Object swap = a[i];
+        a[i] = a[j];
+        a[j] = swap;
+    &#125;
+&#125;
+</code></pre>
+<p>两下一对比，被震撼到了。这么说吧，看Ocaml写的快排算法很容易看到算法的本质，而Java的实现则是“一团糟”，算法的本质隐藏到琐碎的细节中了，通篇都是<code>if</code>分支和数组索引。Ocaml强大的模式匹配和immunable数据结构可以让你写出清晰简洁的代码。难能可贵的是，和曲高和寡的Lisp不同，Ocaml虽然崇尚函数式编程，但并不排斥命令式编程。另外，Ocaml是一门非常实用的语言，尤其适合编译方面的工作，所以如果你对DSL感兴趣，相信Ocaml会是你的菜，要知道大名鼎鼎的Rust语言在自举前编译器就是用Ocaml写的。</p>
+<p>怀着激动的心情一通谷歌，发现只支持Linux和OSX，这就蛋疼了。尝试了官网<a target="_blank" rel="noopener" href="https://ocaml.org/docs/install.html">安装说明</a>中几种Windows安装方式，效果都不理想，顶多就一个黑框框，毕竟自己不是大神，还是需要代码提示和代码格式化这样的功能的，所以尝试了几次，只好忍痛割爱。一个偶然的机会，接触了Windows上的Wsl系统，感觉不错，又想起心心念念的Ocaml了，自然就想到了结合Wsl是否可以搭建一个理想的Ocaml环境？摸索了一段时间，终于找到一种比较理想的方法。</p>
+<p>首先安装Wsl，在Windows开始中搜索：“程序与功能”，勾选“适用于Linux的Windows子系统”。下载<a target="_blank" rel="noopener" href="https://github.com/yuk7/ArchWSL/">Archlinux镜像</a>，解压到文件夹，打开Arch.exe，等待安装完成。</p>
+<p>Archlinux刚开始只有一个root，我习惯先新建一个用户，你也可以直接使用root。新建用户命令如下：</p>
+<pre><code class="language-shell">useradd -m -G wheel -s /bin/bash  [用户名]
+passwd [用户名]
+visudo
+</code></pre>
+<p>找到这么一行<code>#%wheel ALL=(ALL) ALL</code>，将全面的#去掉，用户就创建好了，然后使用下面的命令切换到此用户的主目录：</p>
+<pre><code class="language-shell">su [用户名]
+cd ~
+</code></pre>
+<p>下面配置pacman，</p>
+<pre><code class="language-shell">sudo pacman-key --init
+sudo pacman-key --populate
+sudo vim /etc/pacman.d/mirrorlist
+</code></pre>
+<p>找到mirrorlist里China那一组，找几个离你比较近的源，把前面的#去掉，然后用下面的命令更新软件包缓存：</p>
+<pre><code class="language-shell">sudo pacman -Syy
+</code></pre>
+<p>下面安装Ocaml必须的软件，</p>
+<pre><code class="language-shell">sudo pacman -S ocaml
+# opam是ocaml的包管理工具，类似python的pip，java的maven
+sudo pacman -S opam
+sudo pacman -S patch
+sudo pacman -S m4
+sudo pacman -S make
+sudo pacman -S gcc
+</code></pre>
+<p>接着，初始化opam，</p>
+<pre><code class="language-shell"># wsl系统需要加上--disable-sandboxing选项
+opam init --disable-sandboxing
+# 可以将下面的命令加到.bashrc文件中，不用每次手动执行了
+eval $(opam env)
+# 下面是ocaml格式化和代码提示所需的工具
+opam install merlin
+opam user-setup install
+opam install ocp-indent
+opam user-setup install
+opam install utop
+</code></pre>
+<p>这些都成功后下载vscode，在Windows上安装，完成后回到Linux执行下面的命令：</p>
+<pre><code class="language-shell">code .
+</code></pre>
+<p>下面推荐一下几个插件：</p>
+<ul>
+<li>OCaml and Reason IDE，注意还有一个插件叫OCaml and Reason IDE For Wsl，选那个不带For Wsl</li>
+<li>Code Runner插件可以方便的运行单文件程序，推荐大家装一下。</li>
+<li>ocaml-reason-format，用来格式化代码，OCaml and Reason IDE本身的格式化不太好。</li>
+</ul>
+<p>最终的settings.json如下：</p>
+<pre><code class="language-json">&quot;editor.fontSize&quot;: 18,
+&quot;reason.path.ocamlmerlin&quot;: &quot;/home/user/.opam/default/bin/ocamlmerlin&quot;,
+&quot;reason.path.ocpindent&quot;: &quot;/home/user/.opam/default/bin/ocp-indent&quot;,
+&quot;editor.formatOnType&quot;: true,
+&quot;reason.codelens.enabled&quot;: false,  // 不显示类型提示
+&quot;ocaml-reason-format.ocamlformat&quot;: &quot;/home/user/.opam/default/bin/ocamlformat&quot;,
+&quot;[ocaml]&quot;: &#123;
+    &quot;editor.defaultFormatter&quot;: &quot;rustykey.vscode-ocaml-reason-format&quot;
+&#125;,
+</code></pre>
+<p><img src="vscode.png" alt="vscode"></p>
+<p>最后一步了，大家加油！新建一个文件<code>test.ml</code>，将开头的那段Ocaml代码拷进去，新建另一个文件<code>dune</code>，输入下面的内容：</p>
+<pre><code class="language-ocaml">(executables
+ (names test))
+</code></pre>
+<p>在vscode的terminal中执行<code>dune exec ./test.bc</code>，如果看到<code>1 1 2 3 7 10</code>，就说明配置成功了，接下来尽情享受Ocaml带给你不一样的感觉吧！</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/ocaml/" rel="tag">ocaml</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%87%BD%E6%95%B0%E5%BC%8F/" rel="tag">函数式</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2019/11/02/Windows%E7%94%A8%E6%88%B7Ocaml%E5%85%A5%E5%9D%91%E6%8C%87%E5%8D%97/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2019/11/02/Windows用户Ocaml入坑指南/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = 'Windows用户Ocaml入坑指南';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

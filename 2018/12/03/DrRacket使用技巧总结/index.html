@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>DrRacket使用技巧总结 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="DrRacket使用技巧总结 - 扯淡有理"/>
+  <meta name="twitter:description" content="&lt;h2 id=&#34;引用其他文件的函数&#34;&gt;引用其他文件的函数&lt;/h2&gt;
+&lt;p&gt;假设test.scm想引用max-two.scm中的一个函数max-two，可以这样，&lt;/p&gt;
+&lt;p&gt;test.scm&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-scheme&#34;&gt;#lang sicp
+
+(#%require rackunit)
+(#%require &amp;quot;max-two.scm&amp;quot;)
+
+(max-two 2 3 4)
+&lt;/code&gt;&lt;/pre&gt;"/>
+  <meta name="twitter:image" content="https://naosense.github.io/default.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="DrRacket使用技巧总结 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="&lt;h2 id=&#34;引用其他文件的函数&#34;&gt;引用其他文件的函数&lt;/h2&gt;
+&lt;p&gt;假设test.scm想引用max-two.scm中的一个函数max-two，可以这样，&lt;/p&gt;
+&lt;p&gt;test.scm&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-scheme&#34;&gt;#lang sicp
+
+(#%require rackunit)
+(#%require &amp;quot;max-two.scm&amp;quot;)
+
+(max-two 2 3 4)
+&lt;/code&gt;&lt;/pre&gt;"/>
+  <meta property="og:image" content="https://naosense.github.io/default.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=racket,lisp>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">DrRacket使用技巧总结</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2018-12-03</span>
+  </div>
+  <div class="post-content">
+    <h2 id="引用其他文件的函数">引用其他文件的函数</h2>
+<p>假设test.scm想引用max-two.scm中的一个函数max-two，可以这样，</p>
+<p>test.scm</p>
+<pre><code class="language-scheme">#lang sicp
+
+(#%require rackunit)
+(#%require &quot;max-two.scm&quot;)
+
+(max-two 2 3 4)
+</code></pre>
+<span id="more"></span>
+<p>max-two.scm</p>
+<pre><code class="language-scheme">#lang sicp
+
+;; 千万别忘了这一句
+(#%provide (all-defined))
+
+(define (max-two x y z)
+  (define (min-three x y z)
+    (cond ((&gt;= x y) (if (&gt;= y z) z y))
+          (else (if (&gt;= x z) z x))))
+  (- (+ x y z) (min-three x y z)))
+</code></pre>
+<h2 id="Window10安装sicp包">Window10安装sicp包</h2>
+<p>7.1版本ui界面安装pkg报错cadr: contract violation，可以使用命令行安装，命令如下：</p>
+<pre><code class="language-scheme">raco pkg install --auto sicp
+</code></pre>
+<h2 id="从Vim中运行scheme程序">从Vim中运行scheme程序</h2>
+<p>可以做如下配置：</p>
+<pre><code class="language-scheme">augroup scheme
+    autocmd!
+    &quot; 加上&lt;esc&gt;可以避免弹出命令行必须按两次enter才能回到代码
+    autocmd filetype scheme nnoremap &lt;F9&gt; :w&lt;cr&gt;:! racket %&lt;cr&gt;&lt;esc&gt;
+augroup end
+</code></pre>
+<p>这样直接按下<code>F9</code>就能运行了</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/lisp/" rel="tag">lisp</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/racket/" rel="tag">racket</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2018/12/03/DrRacket%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2018/12/03/DrRacket使用技巧总结/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = 'DrRacket使用技巧总结';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

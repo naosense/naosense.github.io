@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>CountDownLatch源码解读 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="CountDownLatch源码解读 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/default.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="CountDownLatch源码解读 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/default.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=java,并发,juc>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">CountDownLatch源码解读</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2023-08-05</span>
+  </div>
+  <div class="post-content">
+    <p>之前写过一篇关于<a href="https://naosense.github.io/2019/03/12/%E4%B8%87%E9%94%81%E4%B9%8B%E6%AF%8DAbstractQueuedSynchronizer/">AQS的源码分析</a>的文章，介绍了AQS是Java并发组件的基础，基础的介绍了，我们再看看它的应用，因此从这一篇开始我将依次介绍下AQS在Java各个并发组件如何应用的，先从<code>CountDownLatch</code>开始。</p>
+<p><code>CountDownLatch</code>，有时也叫闭锁，它的作用就像一个大门，初始是关着的，线程在“门外”等候通过，在某一时刻大门打开，线程一起通过，大门打开后一直会保持打开状态，不会再关闭。它用在什么场景呢？一个典型的场景是JVM的warmup，我们都知道JVM刚启动时，由于JIT还没介入，系统的响应是比较慢的，需要发送一些请求让JVM快速“热”起来，即所谓的warmup。这个过程需要确保warmup的请求处理完，才能去接线上的正常请求，这个场景就可以用<code>CountDownLatch</code>来实现。也就是<code>CountDownLatch</code>源码中抽象出的代码示例，</p>
+<pre><code class="language-java"> class Driver &#123; // ...
+   void main() throws InterruptedException &#123;
+     CountDownLatch startSignal = new CountDownLatch(1);
+     CountDownLatch doneSignal = new CountDownLatch(N);
+
+     for (int i = 0; i &lt; N; ++i) // create and start threads
+       new Thread(new Worker(startSignal, doneSignal)).start();
+
+     doSomethingElse();            // don't let run yet
+     startSignal.countDown();      // let all threads proceed
+     doSomethingElse();
+     doneSignal.await();           // wait for all to finish
+   &#125;
+ &#125;
+
+ class Worker implements Runnable &#123;
+   private final CountDownLatch startSignal;
+   private final CountDownLatch doneSignal;
+   Worker(CountDownLatch startSignal, CountDownLatch doneSignal) &#123;
+     this.startSignal = startSignal;
+     this.doneSignal = doneSignal;
+   &#125;
+   public void run() &#123;
+     try &#123;
+       startSignal.await();
+       doWork();
+       doneSignal.countDown();
+     &#125; catch (InterruptedException ex) &#123;&#125; // return;
+   &#125;
+
+   void doWork() &#123; ... &#125;
+ &#125;
+</code></pre>
+<p>可以看到上面的源码有两个闭锁，一个用来开始，一个用来结束，N个线程执行某种任务，比如发送warmup请求，<code>startSignal</code>可以确保这些请求一起发送，请求有的响应快，有的响应慢，<code>doneSignal</code>可以确保那些快的慢的一起结束。那么它是怎么做到的呢？我们一起看下源码。</p>
+<pre><code class="language-java">private static final class Sync extends AbstractQueuedSynchronizer &#123;
+    private static final long serialVersionUID = 4982264981922014374L;
+
+    Sync(int count) &#123;
+        setState(count);
+    &#125;
+
+    int getCount() &#123;
+        return getState();
+    &#125;
+
+    protected int tryAcquireShared(int acquires) &#123;
+        return (getState() == 0) ? 1 : -1;
+    &#125;
+
+    protected boolean tryReleaseShared(int releases) &#123;
+        // Decrement count; signal when transition to zero
+        for (;;) &#123;
+            int c = getState();
+            if (c == 0)
+                return false;
+            int nextc = c - 1;
+            if (compareAndSetState(c, nextc))
+                return nextc == 0;
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p><code>CountDownLatch</code>里有一个<code>Sync</code>类，看懂这个类，其实闭锁的原理就懂了。</p>
+<p>还记得之前AQS那篇文章里说：</p>
+<blockquote>
+<p>AQS其实就是一个由状态变量和CLH虚拟队列组成的一个基础并发组件，它维护了一套线程阻塞、排队、唤醒的机制。它可以工作在共享和非共享两种模式下，共享模式下允许多个线程一起运行，非共享模式只允许一个线程运行。</p>
+</blockquote>
+<p><code>count</code>就是这个状态变量，我们知道，AQS的<code>tryAcquireShared</code>如果返回正数表示当前线程可以执行，并且后续其他线程也可以继续执行；如果返回0，表示当前线程可以执行，但是后续线程就好好的待着吧；如果返回负数，连当前线程也不能继续执行了，会进入休眠状态等待唤醒，<code>tryReleaseShared</code>方法如果成功会唤醒休眠中的线程，看起来闭环了。</p>
+<p><strong>因为闭锁可能需要唤醒多个线程，因此AQS工作在共享模式下</strong>。<code>Sync</code>重写了<code>tryAcquireShared</code>，使得<code>count</code>为0时，大门已开，畅通无阻，当前及后续线程继续执行，否则当前线程进入休眠，等待大门打开的那一刻，同时重写了<code>tryReleaseShared</code>使得下一个<code>count</code>为0时才能唤醒休眠的线程，也就是<strong>唤醒只发生在<code>count</code>从1到0发生变化的那一刻，在这之前和在这之后都不会唤醒线程</strong>，在这之前是<code>count</code>还没数到0，大门是关闭的，在这之后是<code>count</code>已经数到0了，大门已经开了，并且一直是打开的，不会关闭。</p>
+<p>下面是<code>CountDownLatch</code>的两个核心方法<code>await</code>（一个不带超时，一个带超时）和<code>countDown</code>，前者用来拦住某些线程，后者倒计时控制闭锁打开，里面的核心就是上面介绍的两个方法，不再赘述。</p>
+<pre><code class="language-java">public void await() throws InterruptedException &#123;
+    sync.acquireSharedInterruptibly(1);
+&#125;
+
+public boolean await(long timeout, TimeUnit unit)
+    throws InterruptedException &#123;
+    return sync.tryAcquireSharedNanos(1, unit.toNanos(timeout));
+&#125;
+
+public void countDown() &#123;
+    sync.releaseShared(1);
+&#125;
+</code></pre>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/juc/" rel="tag">juc</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2023/08/05/CountDownLatch%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2023/08/05/CountDownLatch源码解读/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = 'CountDownLatch源码解读';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

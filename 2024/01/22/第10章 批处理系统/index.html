@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>第10章 批处理系统 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="第10章 批处理系统 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/default.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="第10章 批处理系统 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/default.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=分布式,读书笔记,ddia,系统设计,大数据>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">第10章 批处理系统</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2024-01-22</span>
+  </div>
+  <div class="post-content">
+    <blockquote>
+<p>通过弄清数据的来龙去脉，来理清复杂的系统架构，是本书的宗旨。</p>
+</blockquote>
+<p>三种系统：</p>
+<ul>
+<li>
+<p>在线服务（或称在线系统）</p>
+<p>服务等待客户端请求或指令的到达。当收到请求或指令时，服务试图尽快的处理它，并发挥响应。响应时间和可用性是衡量标准。</p>
+</li>
+<li>
+<p>批处理（或称离线系统）</p>
+<p>接收大量的输入数据，运行一个作业来处理数据，并产生输出数据。衡量标准是吞吐量。</p>
+</li>
+<li>
+<p>流处理（或称近实时系统）</p>
+<p>流处理介于在线与离线之间。与批处理类似，流处理处理输入并产生输出。但是，流处理作业在事件发生不久就可对事件进行处理。</p>
+</li>
+</ul>
+<p>linux命令是单机版的批处理，map-reduce是分布式的批处理。unix工具使用stdin和stdout作为输入输出，MapReduce作业使用HDFS（Hadoop Distributed File System）分布式文件系统读写文件。</p>
+<p>除HDFS外，还有GlusterFS和Quantcast File System（QFS）。注入Amazon S3，Azure Blob存储和Open Swift对象存储服务也有相似之处。</p>
+<p>HDFS在每台机器上都有一个守护进程，并开放一个网络服务以便其他节点访问存储在该机器上的文件。名为NameNode的中央服务器会跟踪哪个文件存储在哪台机器上。</p>
+<p>批处理的输出：</p>
+<ul>
+<li>生成搜索索引。尽管如今Google不再使用MapReduce构建索引，但是MapReduce仍是构建Lucene和Solr的好方法。</li>
+<li>构建机器学习系统。比如分类器（如垃圾邮件过滤，异常检测，图像识别）和推荐系统（可能认识的人，可能感兴趣的产品）。</li>
+</ul>
+<p>MapReduce虽然在模型抽象上比较简单，但是使用起来却很不方便。例如，你需要从头开始实现全部join算法。</p>
+<p>MapReduce在物化（将中间状态写入文件的过程）的过程中存在如下问题：</p>
+<ul>
+<li>前面的作业完成之后，后面的作业才能开始。</li>
+<li>Mapper通常是冗余的。它们通常是读取前一个reducer写入的文件，并为下一个分区和排序阶段做准备。通常可以和reducer放在一起。</li>
+<li>中间状态会复制到多个节点。</li>
+</ul>
+<p>为了解决这些问题，Spark、Tez和Flink等数据流引擎应运而生。它们有一个共同点：将整个工作流作为一个作业完成，而不是把它分解为独立的子作业。同时也不严格区分map和reduce角色，而是以函数运算符进行组合。优点：</p>
+<ul>
+<li>排序等昂贵的操作只在需要的地方进行，而不是在map和reduce之间默认发生。</li>
+<li>没有不必要的map，可以合并到前一个reduce中。</li>
+<li>所有join和数据依赖都是明确声明的，调度器知道哪些是必需的，因此可以进行本地优化。比如将使用某些数据的任务放在生成数据的机器上，避免网络复制。</li>
+<li>将中间状态保存在内存或本地磁盘就够了，比写入HDFS更省IO。</li>
+<li>运算符在输入准备就绪后立即开始，不用等待上一阶段全部完成。</li>
+<li>MapReduce每个任务启动一个JVM，现在可以重用JVM。</li>
+</ul>
+<p>Spark、Flink和Tez为了避免写入中间状态，同时失败了能够重新开始计算，必须在框架层追踪给定数据是如何计算的，使用了哪个输入分区以及应用了哪个运算符。Spark使用弹性分布式数据集（Resilient Distributed Dataset，RDD）来追踪数据的祖先，Flink对运算符状态建立检查点。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/ddia/" rel="tag">ddia</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag">大数据</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" rel="tag">系统设计</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2024/01/22/%E7%AC%AC10%E7%AB%A0%20%E6%89%B9%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2024/01/22/第10章 批处理系统/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '第10章 批处理系统';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

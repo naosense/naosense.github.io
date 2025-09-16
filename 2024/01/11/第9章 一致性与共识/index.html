@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>第9章 一致性与共识 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="第9章 一致性与共识 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/2024/01/11/%E7%AC%AC9%E7%AB%A0%20%E4%B8%80%E8%87%B4%E6%80%A7%E4%B8%8E%E5%85%B1%E8%AF%86/nonlinear_sport_website.jpeg"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="第9章 一致性与共识 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/2024/01/11/%E7%AC%AC9%E7%AB%A0%20%E4%B8%80%E8%87%B4%E6%80%A7%E4%B8%8E%E5%85%B1%E8%AF%86/nonlinear_sport_website.jpeg"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=分布式,读书笔记,ddia,系统设计,大数据>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">第9章 一致性与共识</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2024-01-11</span>
+  </div>
+  <div class="post-content">
+    <h2 id="一致性保证">一致性保证</h2>
+<p>分布式一致性与事务隔离级别有相似之处。但总体有着显著区别：事务隔离是为了处理并发执行事务时的各种临界条件，而分布式一致性则主要针对延迟和故障等问题来协调副本之间的状态。</p>
+<h2 id="可线性化">可线性化</h2>
+<p><strong>所谓线性化，就是让一个系统看起来好像只有一个数据副本，且所有操作都是原子的</strong>。可线性化是最强的一致性保证。</p>
+<p>例如一个非线性化的体育网站。Alice和Bob坐在同一个房间里各自观看自己的手机，焦集的等待2014年FIFA世界杯决赛的结果。Alice率先看到了比赛结果，然后兴奋地告诉了Bob。结果，Bob刷新之后发现比赛还没有结束。</p>
+<p><img src="nonlinear_sport_website.jpeg" alt="nonlinear sport website"></p>
+<p>对于Dynamo风格的数据库，即时使用了严格的quorum（法定人数），在网络条件不好的情况下仍然不满足线性化。比如x初始值为0，写客户端向三个副本（n=3，w=3）发送写请求将x更新为1。客户端A在一个节点读到了新值1，客户端B在A读取之后读取，反而收到的都是旧值0。</p>
+<p><img src="only_quorum_is_not_enough.jpeg" alt="only quorum is not enough"></p>
+<h3 id="CAP理论">CAP理论</h3>
+<p>不仅仅主从复制和多主复制，即使在一个数据中心内部，只要有不可靠的网络，都会发生违背线性化的风险。</p>
+<p>CAP理论由Eric Brewer于2000年正式命名，最初是作为一个经验法则被提出，并没有准确的定义，它的含义是“在网络分区的情况下，选择一致性还是可用性”，目的是帮助大家探讨数据库设计的权衡之道，对于具体的系统设计来说意义不大。</p>
+<ul>
+<li>如果要求线性化，由于网络方面的问题，某些副本断开之后，就必须等待网络修复，或者直接返回错误。无论哪种方式，服务都是不可用。</li>
+<li>如果不要求线性化，断开连接后，每个副本可以独立处理请求例如写操作（多主复制）。此时服务可用，但结果行为不符合线性化。</li>
+</ul>
+<h3 id="可线性化与网络延迟">可线性化与网络延迟</h3>
+<p>当前很少有系统真正满足线性化，原因是性能。比如现在多核CPU上的内存：如果某个CPU核上运行的线程修改了一个内存地址，紧接着另一个CPU上的线程尝试读取，则系统无法保证可以读到刚刚写入的值，除非使用了内存屏障或fence指令。</p>
+<p>Attiya和Welch证明了如果想要满足线性化，那么读、写请求的响应时间至少与网络中延迟成正比。</p>
+<h2 id="顺序保证">顺序保证</h2>
+<h3 id="顺序与因果关系">顺序与因果关系</h3>
+<p>如果系统服从因果关系所规定的顺序，称之为<strong>因果一致性</strong>。</p>
+<p><strong>全序</strong>关系支持任意两个元素之间进行比较。比如自然数符合全序关系。还有一些元素在某些情况下可以比较，在某些情况下不可比较，称之为<strong>偏序</strong>。比如集合，当集合有包含关系时，可以比较，否则不可比较。</p>
+<p>因果关系并非全序，可线性化强于因果一致性。</p>
+<h3 id="序列号排序">序列号排序</h3>
+<p>虽然因果关系很重要，但是在实际系统中跟踪这种关系却不切实际。在许多系统中，在写入之前会先读取大量的数据，系统无法了解之后的写入是依赖全部读取内容，还是部分。</p>
+<p>一个更好的方法：使用序列号或时间戳（可以是逻辑时间戳）。这样所有的操作可以进行全序排序，从而捕获了所有的因果关系，同时强加了比因果关系更为严格的顺序性。</p>
+<h4 id="非因果序列发生器">非因果序列发生器</h4>
+<ul>
+<li>每个节点都独立产生自己的一组序列号。比如一个产生奇数，一个产生偶数。</li>
+<li>物理时钟。</li>
+<li>给每个节点分配序列号区间范围。比如节点A为0~1000，节点B是1001~2000。</li>
+</ul>
+<h4 id="Lamport时间戳">Lamport时间戳</h4>
+<p>每个节点都有一个唯一的标识符，且每个节点都有有一个计数器记录请求总数。它的形式是一个键值对：（计数器，节点ID）。可以解决上面三种序列号都可能与因果不一致的情况。</p>
+<p>假设事件A和事件B的计数器为C(A)和C(B)，那么如果A在B之前发生，那么必有C(A) &lt; C(B)，反过来，如果C(A) &lt; C(B)，A并不一定发生在B之前。也就是说，时间戳与因果关系是必要不充分的。注意这里说的A发生在B之前是在说因果关系，来自于happen-before的直译，并不是现实中物理时间上发生的意义。</p>
+<p>比如下面图中节点1事件(1, 1)小于节点2的事件(2, 2)，但是二者并没有因果关系，而是一种并行关系。</p>
+<p><img src="lamport_timestamp.jpeg" alt="lamport timestamp"></p>
+<p>如果C(A) = C(B)，A和B是什么关系呢？答案是并行关系。比如上面的(1, 1)和(1, 2)、(6, 1)和(6, 2)。</p>
+<p>也就是说，Lamport时间戳使得所有的事件都能比较，即全序，包括那些并行的事件，以及具有因果关系的事件。这样的结果是因果关系的事件先后顺序确实都没问题，但是并行事件实际发生顺序可能是错的。比如节点1事件(1, 1)的lamport时间戳小于节点2的事件(2, 2)，但是在物理时间上，后者可能先于前者发生。</p>
+<h4 id="时间戳排序依然不够">时间戳排序依然不够</h4>
+<p>为了实现用户名唯一性约束这样的目标，仅仅对操作进行全序排列还是不够的，还需要知道这些操作是否发生、发生时间等。因为操作是分布式的，在当前节点用户名创建的这一瞬间，你需要收集到在其他节点上是否有其他请求也在创建同一个用户。</p>
+<p>要想知道什么时候全序关系已经确定就需要“全序关系广播”。</p>
+<h3 id="全序关系广播">全序关系广播</h3>
+<p>全序关系广播常指节点之间交换消息的某种协议。它要求满足两个基本安全属性：</p>
+<ul>
+<li>可靠发送：没有消息丢失，如果消息发送到了某一个节点，则它一定要发送到所有节点。</li>
+<li>严格有序：消息总是以相同的顺序发送到每个节点。</li>
+</ul>
+<p>像ZooKeeper和etcd这样的共识服务实际上就实现了全关系序广播。</p>
+<h4 id="采用全序关系广播实现线性化存储">采用全序关系广播实现线性化存储</h4>
+<p>全序关系与线性化并不等同，但是关系密切。全序广播是异步的，保证以固定的顺序可靠的传递，但不能保证何时传递。相反，线性化是一种最近的保证，读取保证看到最新写入的值。</p>
+<p>理解全序关系广播的一种方式是将其看作日志。传递消息就像追加方式更新日志。以全序关系广播以追加日志的方式来实现原子比较-设置操作（创建用户）：</p>
+<ol>
+<li>在日志中追加一条消息，并指明想要的用户名。</li>
+<li>读取日志，将其广播给所有节点，并等待回复。</li>
+<li>检查是否有任何消息生成用户名已被占用。如果是中止操作，否则成功获得该用户名。</li>
+</ol>
+<p>此过程实现了线性化写入，却无法保证线性化读取，即读取时可能是旧值。具体来说，这里只提供了顺序一致性，也称为时间一致性，弱于线性化保证。为了同时满足线性化读取，有以下几个方案：</p>
+<ul>
+<li>可以采用追加的方式将读请求排序、广播，然后各个节点获取该日志，当本节点收到消息时才执行真正的读操作。消息在日志中的位置已经决定了读取发生的时间点。etcd的quorum读取和这个思路相似。</li>
+<li>如果日志允许你以线性化的方式获取最新日志的位置，则查询该位置，等待直到该位置之前的所有条目都已经发送给你，接下来再执行读取。这与ZooKeeper的sync()操作思路相同。</li>
+<li>可以从同步更新的副本上进行读取，这样确保总是读到最新值。这种技术可以用于<strong>链式复制</strong>。</li>
+</ul>
+<p>（没看懂前面两点的不同）</p>
+<h4 id="采用线性化存储实现全序关系广播">采用线性化存储实现全序关系广播</h4>
+<p>也可以反过来，通过线性化实现全序广播。</p>
+<p>最简单的方法是假设有一个线性化的寄存器来存储一个计数，然后使其支持原子自增-读取操作或者原子比较设置操作。</p>
+<p>与Lamport时间戳不同，线性寄存器的数字不会存在间隙，因此如果节点完成了消息4的发送，且接收了序列6的消息，那么它对消息6回复之前必须等待消息5。Lamport时间戳规则不是这样，这是区别全序关系广播与时间戳排序的关键。</p>
+<p>如果不存在失效，实现线性寄存器不难，否则就等同于分布式共识算法。可以证明，<strong>线性化存储、全序广播、分布式共识三者是等价的</strong>。</p>
+<h2 id="分布式事务与共识">分布式事务与共识</h2>
+<h3 id="2PC">2PC</h3>
+<p>两阶段提交（two-phase commit，2PC）是一种在多节点之间实现事务原子提交的算法，用来确保所有节点要么全部提交，要么全部中止。2PC在某些数据库内部使用，或者以XA事务形式（例如Java Transaction API）或SOAP Web服务WS-AtomicTransaction的形式提供给应用程序。</p>
+<blockquote>
+<p>2PC在分布式数据库中负责原子提交，2PL提供可串行化的隔离。</p>
+</blockquote>
+<p>2PC引入了一个角色：协调者（也称事务管理器），普通节点称为参与者。常见的协调者包括Narayana，JOTM，BTM或MSDTC。</p>
+<p>2PC包括两个阶段：</p>
+<ul>
+<li>阶段1：协调者询问所有参与者是否准备好？如果都回答“是”则进入阶段2，否则中止。</li>
+<li>阶段2：协调者向所有参与者发送提交请求。如果有参与者超时或失败，协调者会一直重试，直到成功为止。</li>
+</ul>
+<p>更详细的步骤：</p>
+<ol>
+<li>当应用程序启动一个分布式事务时，首先向协调者请求事务ID。该ID是全局唯一的。</li>
+<li>应用程序在每个节点上执行单结点事务，并将全局唯一事务ID附加到事务上。如果这个阶段出现问题，协调者和其他参与者都可以安全中止。</li>
+<li>当应用程序准备提交时，协调者向所有参与者发送准备请求。如果任何一个参与者失败或超时，协调者通知所有参与者放弃事务。</li>
+<li>参与者收到准备请求后，确保在<strong>任何情况下</strong>都可以提交事务（包括系统崩溃，电源故障或磁盘空间不足），包括安全地将事务数据写入磁盘，并检查是否存在冲突或约束违规。</li>
+<li>如果所有参与者都返回是，那么协调者将发送提交请求，并将决定写入磁盘的事务日志中。这个时刻称为<strong>提交点</strong>。</li>
+<li>协调者发送提交请求。如果有参与者超时或失效，协调者将会一直重试，直到成功。</li>
+</ol>
+<p>类比结婚的例子，神父要问双方是否愿意嫁（娶）给对方，双方都回答“是”，神父才会宣布双方结为夫妻。并且，一旦说出“我愿意”就没有反悔的余地，即使之后马上晕倒了。</p>
+<p>如果在参与者发送了准备好的回复后，协调者如果崩溃，参与者只能等待。因此2PC也被称为阻塞式原子提交协议。</p>
+<h3 id="实践中的分布式事务">实践中的分布式事务</h3>
+<p>分布式事务有严重的性能问题。例如，MySQL的分布式事务比单结点事务慢10倍以上。2PC性能下降的主要原因是事务日志以及额外的网络往返开销。</p>
+<p>两类分布式事务：</p>
+<ul>
+<li>数据库内部：VoltDB和MySQL Cluster的NDB存储引擎就支持这样的内部分布式事务。</li>
+<li>异构：存在两种或两种以上的不同的参与者实现技术。</li>
+</ul>
+<p>后者更具挑战。</p>
+<h4 id="XA交易">XA交易</h4>
+<p>X/Open XA（eXtended Architecture，XA）是异构环境下实施两阶段提交的一个工业标准，1991推出。目前许多传统关系数据库（包括PostgreSQL、MySQL、DB2、SQL Server和Oracle）和消息队列（包括ActiveMQ、HornetQ、MSMQ和IBM MQ）都支持XA。</p>
+<p>XA不是一个网络协议，而是一个与事务协调者进行通信的C API。也有其他语言的绑定，比如JTA（Java Transaction API），JTA支持非常多的JDBC（Java Database Connectivity）和消息队列驱动（JMS）。</p>
+<p>当参与者失效或协调者崩溃时，分布式事务陷入停顿，因为参与者有可能持有锁，比如数据库事务通常持有行级独占锁。可串行化隔离中两阶段锁的数据库还对曾经读取的行持有读-共享锁。参与者或协调者恢复可能也有意外发生，比如参与者重启也不会放弃锁（2PC正确实现要求），协调者丢失事务日志，这个时候就需要人工介入。</p>
+<h3 id="支持容错的共识">支持容错的共识</h3>
+<p>共识问题的形式化描述：一个或多个节点可以提议某些值，由共识算法来决定最终值。共识算法必须满足以下性质：</p>
+<ul>
+<li>
+<p>协商一致性（Uniform agreement）</p>
+<p>所有节点都接受相同的决议。</p>
+</li>
+<li>
+<p>诚实性（Integrity）</p>
+<p>所有节点不能反悔，即对一项提议不能有两次决定。</p>
+</li>
+<li>
+<p>合法性（Validity）</p>
+<p>如果决定了值v，则v一定是某个节点提议的。</p>
+</li>
+<li>
+<p>可终止性（Termination）</p>
+<p>节点如果不崩溃则最终一定可以达成决议。</p>
+</li>
+</ul>
+<p>协商一致性和诚实性定义了共识的核心思想：<strong>决定一经做出，就不能改变</strong>。有效性排除了一些无意义的方案。可终止性引入了容错的思想。它强调一个共识算法要有所作为，不能空转。可终止性是一种活性，其他三个特性是安全性。</p>
+<p>可终止性的前提是发生崩溃或不可用的节点必须小于半数节点。</p>
+<p>大多数共识算法都假定不存在拜占庭式错误。但是研究表明，只要发生拜占庭式故障的节点少于三分之一，也可以达成共识。</p>
+<h4 id="共识算法与全序广播">共识算法与全序广播</h4>
+<p>最著名的共识算法有VSR、Paxos、Raft和ZAB。这些算法其实并没有直接使用上面的形式化模型（四大属性）。相反，它们定义了一系列值，然后采用全序关系广播算法，这样更加高效。</p>
+<p>全序广播的要点是，消息按照相同的顺序到达所有节点，有且只有一次（不丢失，不重复）。相当于多轮共识：在每一轮，节点提出它们接下来想要发送的消息，然后决定下一个消息的全局顺序。</p>
+<ul>
+<li>由于协商一致性，所有节点决定以相同的顺序发送相同的消息（只是发送吗？）。</li>
+<li>由于诚实性，消息不能重复。</li>
+<li>由于合法性，消息不会被破坏，也不是凭空捏造。</li>
+<li>由于可终止性，消息不会丢失。</li>
+</ul>
+<p>VSR、Raft和Zab都直接采取了全序关系广播，这比重复性的一轮共识只解决一个提议更高效。</p>
+<h4 id="Epoch和Quorum">Epoch和Quorum</h4>
+<p>问题是想要达成决议，必须先有主节点，想要主节点得让所有节点达成某种共识，看起来这是一个死循环。解决之道就是本节的内容。</p>
+<p>协议定义了一个世代编号（epoch number），对应于Paxos中的ballot number，VSP中的view number，以及Raft中的term number，并保证在每个世代中，主节点是唯一的。</p>
+<p>两轮投票：第一轮决定谁是主节点，第二轮对主节点的决议进行投票。关键一点，参与两轮的quorum（法定人数）必须有重叠。这样可以确保：没有发生更高epoch的主节点选举，当前的主节点地位没有改变，可以安全地就提议进行投票。</p>
+<p>投票过程看起来很像2PC。区别在于，2PC协调者不是靠选举产生；容错共识算法只需要收集大部分节点的投票即可通过决议，而不像2PC收集全部的投票。</p>
+<h3 id="成员与协调服务">成员与协调服务</h3>
+<p>ZooKeeper和etcd被称为“分布式键值存储”或“协调与配置服务”。大多数情况下，可能不会直接使用这些服务，而是在中间件中间接的使用。功能包括：</p>
+<ul>
+<li>线性化原子操作：实现分布式锁。</li>
+<li>操作全序：对每个操作都赋予一个事务ID（zxid）和版本号（cversion）。</li>
+<li>故障检测：临时节点配合心跳检测。</li>
+<li>更改通知：节点数据变化可以发送通知。</li>
+</ul>
+<p>适用的场景：</p>
+<ul>
+<li>
+<p>节点任务分配</p>
+<p>如果系统有多个实例，需要一个充当主节点。当主节点失效时，由其他节点来接管。或者分区动态增删，决定哪些分区分配给哪些节点。都可以使用ZK的临时节点和通知机制实现。</p>
+</li>
+<li>
+<p>服务发现</p>
+<p>例如，需要某项服务时，应该连接哪些ip等。传统上，通过服务名称获取IP地址使用DNS，它使用多层缓存实现高性能与高可用性，但是不满足线性化。</p>
+</li>
+<li>
+<p>成员服务</p>
+<p>用于确定哪些节点处于活动状态并属于集群的有效成员。</p>
+</li>
+</ul>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/ddia/" rel="tag">ddia</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag">大数据</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" rel="tag">系统设计</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2024/01/11/%E7%AC%AC9%E7%AB%A0%20%E4%B8%80%E8%87%B4%E6%80%A7%E4%B8%8E%E5%85%B1%E8%AF%86/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2024/01/11/第9章 一致性与共识/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '第9章 一致性与共识';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>ReentrantLock源码解读 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="ReentrantLock源码解读 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/2023/09/04/ReentrantLock%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/performance.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="ReentrantLock源码解读 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/2023/09/04/ReentrantLock%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/performance.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=java,并发,juc>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">ReentrantLock源码解读</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2023-09-04</span>
+  </div>
+  <div class="post-content">
+    <p>根据Javadoc的说法，</p>
+<blockquote>
+<p>A reentrant mutual exclusion Lock with the same basic behavior and semantics as the implicit monitor lock accessed using synchronized methods and statements, but with extended capabilities.</p>
+</blockquote>
+<p><code>ReentrantLock</code>是一个类似<code>synchronized</code>的可重入互斥锁，拥有类似的行为和语义，以及一些扩展功能，比如公平锁、非阻塞尝试、可中断。</p>
+<p>早年间，有传言说<code>ReentrantLock</code>的性能不如<code>synchronized</code>，不过这一点Java的架构师Brian Goetz在《并发编程实战》中作了澄清：</p>
+<p><img src="performance.png" alt="performance"></p>
+<blockquote>
+<p>在Java 5.0中，当从单线程（无竞争）变化到多线程时，内置锁的性能急剧下降，而ReentrantLock的性能下降则更为平缓，因而它具有更好地可伸缩性。但在Java 6.0中，情况就完全不同了，内置锁的性能不会由于竞争而急剧下降，并且两者的可伸缩性也基本相当。</p>
+</blockquote>
+<p>可见，<code>ReentrantLock</code>在性能上一直都没有落后过，如果硬要说有，那也是领先。作者还告诫“像‘X比Y更快’这样的表述大多是短暂的”。</p>
+<p>回到正题，下面是<code>ReentrantLock</code>的一个典型用例。</p>
+<pre><code class="language-java">class X &#123;
+    private final ReentrantLock lock = new ReentrantLock(); // ...
+    public void m() &#123;
+        lock.lock();  // block until condition holds
+        try &#123;
+            // ... method body
+        &#125; finally &#123;
+            lock.unlock();
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>可以看到<code>ReentrantLock</code>需要手动显式地解锁，并且解锁要放在<code>finally</code>块中，确保锁得到释放。</p>
+<p>它的核心也是AQS，一起看看如何实现的，具体的代码如下。</p>
+<pre><code class="language-java">abstract static class Sync extends AbstractQueuedSynchronizer &#123;
+    final boolean tryLock() &#123;
+        Thread current = Thread.currentThread();
+        int c = getState();
+        if (c == 0) &#123;
+            if (compareAndSetState(0, 1)) &#123;
+                setExclusiveOwnerThread(current);
+                return true;
+            &#125;
+        &#125; else if (getExclusiveOwnerThread() == current) &#123;
+            if (++c &lt; 0) // overflow
+                throw new Error(&quot;Maximum lock count exceeded&quot;);
+            setState(c);
+            return true;
+        &#125;
+        return false;
+    &#125;
+
+    abstract boolean initialTryLock();
+
+    @ReservedStackAccess
+    final void lock() &#123;
+        if (!initialTryLock())
+            acquire(1);
+    &#125;
+
+    @ReservedStackAccess
+    final void lockInterruptibly() throws InterruptedException &#123;
+        if (Thread.interrupted())
+            throw new InterruptedException();
+        if (!initialTryLock())
+            acquireInterruptibly(1);
+    &#125;
+
+    @ReservedStackAccess
+    final boolean tryLockNanos(long nanos) throws InterruptedException &#123;
+        if (Thread.interrupted())
+            throw new InterruptedException();
+        return initialTryLock() || tryAcquireNanos(1, nanos);
+    &#125;
+
+    @ReservedStackAccess
+    protected final boolean tryRelease(int releases) &#123;
+        int c = getState() - releases;
+        if (getExclusiveOwnerThread() != Thread.currentThread())
+            throw new IllegalMonitorStateException();
+        boolean free = (c == 0);
+        if (free)
+            setExclusiveOwnerThread(null);
+        setState(c);
+        return free;
+    &#125;
+
+    // ...省略一些不重要的方法
+&#125;
+
+</code></pre>
+<p><code>Sync</code>继承自AQS，和<code>Semaphore</code>一样，也有两种工作模式：公平模式和非公平模式，<code>state</code>表示锁重入的次数。</p>
+<pre><code class="language-java">static final class NonfairSync extends Sync &#123;
+    private static final long serialVersionUID = 7316153563782823691L;
+
+    final boolean initialTryLock() &#123;
+        Thread current = Thread.currentThread();
+        if (compareAndSetState(0, 1)) &#123; // first attempt is unguarded
+            setExclusiveOwnerThread(current);
+            return true;
+        &#125; else if (getExclusiveOwnerThread() == current) &#123;
+            int c = getState() + 1;
+            if (c &lt; 0) // overflow
+                throw new Error(&quot;Maximum lock count exceeded&quot;);
+            setState(c);
+            return true;
+        &#125; else
+            return false;
+    &#125;
+
+    protected final boolean tryAcquire(int acquires) &#123;
+        if (getState() == 0 &amp;&amp; compareAndSetState(0, acquires)) &#123;
+            setExclusiveOwnerThread(Thread.currentThread());
+            return true;
+        &#125;
+        return false;
+    &#125;
+&#125;
+
+static final class FairSync extends Sync &#123;
+    private static final long serialVersionUID = -3000897897090466540L;
+
+    final boolean initialTryLock() &#123;
+        Thread current = Thread.currentThread();
+        int c = getState();
+        if (c == 0) &#123;
+            if (!hasQueuedThreads() &amp;&amp; compareAndSetState(0, 1)) &#123;
+                setExclusiveOwnerThread(current);
+                return true;
+            &#125;
+        &#125; else if (getExclusiveOwnerThread() == current) &#123;
+            if (++c &lt; 0) // overflow
+                throw new Error(&quot;Maximum lock count exceeded&quot;);
+            setState(c);
+            return true;
+        &#125;
+        return false;
+    &#125;
+
+    protected final boolean tryAcquire(int acquires) &#123;
+        if (getState() == 0 &amp;&amp; !hasQueuedPredecessors() &amp;&amp;
+            compareAndSetState(0, acquires)) &#123;
+            setExclusiveOwnerThread(Thread.currentThread());
+            return true;
+        &#125;
+        return false;
+    &#125;
+&#125;
+</code></pre>
+<p>我看这段源码时有两个疑问，<code>initialTryLock</code>的代码和<code>tryLock</code>非常像，为什么要单独设置一个<code>initialTryLock</code>方法？二是联系之前解读过的<a href="https://naosense.github.io/2023/08/05/CountDownLatch%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">CountdownLatch</a>和<a href="https://naosense.github.io/2023/08/27/Semaphore%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">Semaphore</a>，<code>tryAcquire*</code>和<code>tryRelease*</code>方法为什么一会有循环一会没循环？</p>
+<p>首先，第一个问题，为什么要单独设置一个<code>initialTryLock</code>方法？从代码上看，<code>initialTryLock</code>在公平模式和非公平模式下各有一个实现，而<code>tryLock</code>只有一个非公平实现，javadoc中还专门作了说明。</p>
+<blockquote>
+<p>…Also note that the untimed tryLock() method does not honor the fairness setting. It will succeed if the lock is available even if other threads are waiting.</p>
+</blockquote>
+<p>同时，在<code>tryLock</code>的方法中也作了注释。</p>
+<blockquote>
+<p>Acquires the lock if it is not held by another thread and returns immediately with the value true, setting the lock hold count to one. Even when this lock has been set to use a fair ordering policy, a call to tryLock() will immediately acquire the lock if it is available, whether or not other threads are currently waiting for the lock. This “barging” behavior can be useful in certain circumstances, even though it breaks fairness.</p>
+</blockquote>
+<p>大意是为了一些特殊的场景，<code>tryLock</code>有意设计成非公平的，即使<code>ReentrantLock</code>是工作在公平模式下。<code>initialTryLock</code>则不然，它需要在不同的模式下表现不同的行为，在<code>Sync</code>中，它充当<code>lock*</code>方法的前置判断逻辑，即如果成功抢到锁，那么获得运行权，否则，线程排队等待。话说回来，为什么要把<code>tryLock</code>设计成非公平的模式呢？这和<code>tryLock</code>的使用场景有关，<code>tryLock</code>一般用在高吞吐的无线程等待的场景，搭配<code>unlock</code>方法使用，加锁解锁仅仅只是一些CAS操作，避免了线程的切换和等待。</p>
+<p>第二个问题，为啥<code>tryAcquire*</code>方法和<code>tryRelease*</code>方法一会有循环，一会没循环呢？比如在<code>Semaphore</code>中，<code>tryAcquireShared</code>和<code>tryReleaseShared</code>都有循环，而在<code>ReentrantLock</code>中，<code>tryAcquire</code>和<code>tryRelease</code>都没循环。我觉得，原因和并发组件中的<code>Sync</code>工作模式有关。共享模式下，允许多个线程运行，因此在调用<code>tryAcquire*</code>争夺运行权时，势必有的线程失败，因为一次只有一个成功，但是失败了不要紧，还有机会，那些失败的可以紧接着再次尝试争夺，直到资源被争夺一空（<code>state</code>到达某个约定状态），那些仍然没有争夺成功的进入队伍排队。而独占模式下，因为只允许一个线程运行，大家在竞争这个资源时，失败的线程没必要再去尝试了，成功的就成功了，失败的也不要来回尝试了，因为仅有一次机会，<code>tryRelease*</code>同理。</p>
+<p>但是还需要明确一点，方法中到底有没有循环，还要根据组件的方法语义来决定，比如<code>CountdownLatch</code>的<code>tryAcquireShared</code>就没有循环，因为<code>tryAcquireShared</code>方法是在<code>await</code>方法调用的，它的语义是等待，而不是争夺资源，不需要修改<code>state</code>。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/juc/" rel="tag">juc</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2023/09/04/ReentrantLock%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2023/09/04/ReentrantLock源码解读/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = 'ReentrantLock源码解读';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>
