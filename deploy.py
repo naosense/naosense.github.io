@@ -27,9 +27,7 @@ def replace_asset_imgs(markdown_content: str, title: str) -> str:
     """将Markdown文本中的图片URL保存在本地并将url替换为本地路径，
     因为github assets的图片链接常规情况是无法访问的"""
     # 匹配 ![alt](url) 格式的图片
-    markdown_img_pattern = (
-        r"!\[(.*?)\]\((https?://.*?)\)"
-    )
+    markdown_img_pattern = r"!\[(.*?)\]\((https?://.*?)\)"
     markdown_image_matches = re.findall(markdown_img_pattern, markdown_content)
 
     # 匹配 <img alt="alt" src="url"> 格式的图片
@@ -48,25 +46,38 @@ def replace_asset_imgs(markdown_content: str, title: str) -> str:
         os.makedirs(img_dir_for_title)
 
     for alt_text, img_url in image_matches:
-        img_name = alt_text if alt_text else img_url.split("/")[-1]
-        img_basename = img_name.split(".")[0].replace(" ", "_")
-        img_extension = (
-            img_name.split(".")[-1] if "." in img_name else "jpeg"
-        )  # github assets为jpeg格式
-        img_path = f"{img_dir_for_title}/{img_basename}.{img_extension}"
-
         response = requests.get(img_url)
         if response.status_code == 200:
+            img_name = alt_text if alt_text else img_url.split("/")[-1]
+            img_basename = img_name.split(".")[0].replace(" ", "_")
+            img_extension = get_image_format(response.content)
+            img_path = f"{img_dir_for_title}/{img_basename}.{img_extension}"
             with open(img_path, "wb+") as img_file:
                 print(f"Save img {img_path}")
                 img_file.write(response.content)
+            markdown_content = re.sub(
+                re.escape(img_url), f"{img_basename}.{img_extension}", markdown_content
+            )
         else:
             print(f"Failed to get img {img_url}. Status code: {response.status_code}")
 
-        markdown_content = re.sub(
-            re.escape(img_url), f"{img_basename}.{img_extension}", markdown_content
-        )
     return markdown_content
+
+
+def get_image_format(img_data: bytes) -> str:
+    # 常见图片格式的魔数签名
+    signatures = {
+        b"\xff\xd8\xff": "jpeg",
+        b"\x89PNG\r\n\x1a\n": "png",
+        b"GIF8": "gif",
+        b"BM": "bmp",
+    }
+
+    for signature, format_name in signatures.items():
+        if img_data.startswith(signature):
+            return format_name
+
+    return "unknown"
 
 
 def delete_article(title: str) -> None:
