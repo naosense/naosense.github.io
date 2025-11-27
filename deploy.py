@@ -162,13 +162,20 @@ if __name__ == "__main__":
                             f"""\
                             ---
                             title: {title}
-                            date: {created_localized:%Y-%m-%d %H:%M:%S}
                             categories:
                             tags: {label_str}
                             """
                         )
                         md.write(header)
                         md.write(header_extra)
+                        # 用于指定创建时间
+                        if "date:" not in header_extra:
+                            tz_east_8 = timezone(timedelta(hours=8))
+                            created_at = datetime.strptime(
+                                discussion["createdAt"], "%Y-%m-%dT%H:%M:%SZ"
+                            )
+                            created_localized = created_at.astimezone(tz_east_8)
+                            md.write(f"date: {created_localized:%Y-%m-%d %H:%M:%S}")
                         md.write("---\n")
                         md.write(body)
                         print(f"Create or Update {title}")
