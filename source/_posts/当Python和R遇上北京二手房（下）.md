@@ -1,8 +1,8 @@
 ---
 title: 当Python和R遇上北京二手房（下）
-date: 2015-09-05 11:47:00
 categories:
-tags: [python, r, 统计, 北京, 二手房]
+tags: [r, 数据挖掘, python, 北京, 二手房]
+date: 2015-09-05 11:47:00
 ---
 
 ## 四、各区情况
@@ -13,7 +13,7 @@ tags: [python, r, 统计, 北京, 二手房]
 
 1.各区总价
 
-![](https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/2-1.png)
+<img alt="各区总价" src="各区总价.png" />
 
 （图中红点为本区域的均值）
 
@@ -23,13 +23,13 @@ tags: [python, r, 统计, 北京, 二手房]
 
 下面换个角度，以二维直方图来展示下
 
-![](https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/2-2.png)
+<img alt="总价热力图" src="总价热力图.png" />
 
 由于各区二手房总量差异较大，这里的颜色代表的是总价区间在本区的占比，从这张图上可以看到西城、东城、海淀、朝阳、顺义确实有一定数量的千万房产。
 
 2.各区单价
 
-![](https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/2-3.png)
+<img alt="各区单价" src="各区单价.png" />
 
 这张图很有意思，能发现很多东西。
 
@@ -39,29 +39,29 @@ tags: [python, r, 统计, 北京, 二手房]
 
 3.各区面积
 
-![](https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/2-4.png)
+<img alt="各区面积" src="各区面积.png" />
 
 （图中红点为本区域的均值）
 
 可以看出一个趋势，郊区的房子要比市区的房子大。例如东西城面积中位数在75平米左右，而昌平、亦庄等均在100平米左右。还有就是市区房子面积范围较大，而郊区可能起步较晚，基本上建筑年代都在同一时期，房子的面积也较为单一。
 
-![](https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/2-5.png)
+<img alt="各区面积热力图" src="各区面积热力图.png" />
 
 顺义200平米的房子比例不少，再结合其千万以上的总价，看来顺义卧虎藏龙。
 
 4.各区建筑年代
 
-![](https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/2-6.png)
+<img alt="各区建筑年代" src="各区建筑年代.png" />
 
 这张图上印证了上面的猜测，昌平、房山、亦庄、通州、燕郊等郊区房子建筑年代较为集中，尤其是燕郊，基本上都是2010年左右的房子，而最近因市政府东迁而大火的通州75%的房子是2000年后。而东西城、海淀等区域则是各个年代的房子都有。
 
-![](https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/2-7.png)
+<img alt="各区建筑年代热力图" src="各区建筑年代热力图.png" />
 
 从这张图似乎更能明显的看出，昌平、通州、亦庄、燕郊都有一些颜色较深的色块。大兴、房山、顺义、亦庄、燕郊均有超过20%的2010年后的房子，东城、石景山、西城则有20%的90年以前的老房子。
 
 5.各区学区
 
-![](https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/2-8.png)
+<img alt="各区学区" src="各区学区.png" />
 
 再来看一下喜闻乐见的学区房，不出所料，海淀区的学区房最多，朝阳区学区次之。由于没有对学区的质量进行分类，东西城这两区虽然数量不如前两者，但是从质量上这两区应该是不言而喻的。
 
@@ -71,7 +71,7 @@ tags: [python, r, 统计, 北京, 二手房]
 
 1.房子是不是随着时代的发展越来越大了呢？
 
-![](https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/2-9.png)
+<img alt="房子是不是随着时代的发展越来越大了呢" src="房子是不是随着时代的发展越来越大了呢.png" />
 
 因为大部分房子都在1985 ~ 2015这个时间段，我将视角集中在这个时间段。图中红线为均值，
 蓝线为中位数。
@@ -82,26 +82,26 @@ tags: [python, r, 统计, 北京, 二手房]
 
 2.学区房房价要比非学区贵多少呢？
 
-![](https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/2-10.png)
+<img alt="学区房房价要比非学区贵多少呢" src="学区房房价要比非学区贵多少呢.png" />
 
 数据显示，各个区学区房房价确实要比非学区贵一些，这个差距大概在5000 ~ 15000左右,石景山、西城这个差距
 较大，都在10000以上，昌平和海淀稍微低些，大约每平方相差8,9千，朝阳东城相差的不多，丰台通州几乎持平。
 
 3.那些地方房价最贵？
 
-![](https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/2-11.png)
+<img alt="那些地方房价最贵" src="那些地方房价最贵.png" />
 
 这些房价最贵的地方除万柳其余都在二环以里，基本上分布在北京最中心的地带，果然寸土寸金啊。
 
 4.哪些地方千万豪宅最多？
 
-![](https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/2-12.png)
+<img alt="哪些地方千万豪宅最多" src="哪些地方千万豪宅最多.png" />
 
 而一些豪宅就不一样了，除金融街其余都在三环以外。这也难怪，三环里面就那么点地方，早就占满了，想要豪宅就得往郊区盖，比如中央别墅区、西北旺都在五环以外。
 
 5.哪些地方学区最多呢？
 
-![](https://wocanmei-hexo.nos-eastchina1.126.net/%E5%BD%93Python%E5%92%8CR%E9%81%87%E4%B8%8A%E5%8C%97%E4%BA%AC%E4%BA%8C%E6%89%8B%E6%88%BF/2-13.png)
+<img alt="哪些地方学区最多呢" src="哪些地方学区最多呢.png" />
 
 学区最多的十个区域，朝阳四个，海淀两个，西城两个，东城两个。
 
