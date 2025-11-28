@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Java多线程交替打印字符 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="Java多线程交替打印字符 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/default.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="Java多线程交替打印字符 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/default.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=java,多线程>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Java多线程交替打印字符</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2019-06-05</span>
+  </div>
+  <div class="post-content">
+    <blockquote>
+<p>有这样一个面试题：多线程打印AB字符</p>
+</blockquote>
+<p>这玩意但凡有点Java基础的人，都会想到这是考察线程<code>wait</code>和<code>notify</code>，那么具体怎么做呢？如果长时间不写多线程程序，冷不丁的来一下，还真写不出。</p>
+<p>先来复习下<code>wait</code>、<code>notify</code>的概念：</p>
+<blockquote>
+<p>wait: Causes the current thread to wait until either another thread invokes the notify() method or the notifyAll() method for this object, or a specified amount of time has elapsed.<br>
+The current thread must own this object’s monitor.</p>
+</blockquote>
+<blockquote>
+<p>notify: Wakes up a single thread that is waiting on this object’s monitor. If any threads are waiting on this object, one of them is chosen to be awakened. The choice is arbitrary and occurs at the discretion of the implementation. A thread waits on an object’s monitor by calling one of the wait methods.This method should only be called by a thread that is the owner of this object’s monitor.</p>
+</blockquote>
+<blockquote>
+<p>notifyAll: Wakes up all threads that are waiting on this object’s monitor.</p>
+</blockquote>
+<p>根据Javadoc的注释，可以看出<code>wait</code>将会让出锁，进入<code>WAITING</code>状态，直到其他线程调用<code>notify(All)</code>，进入<code>AWAKENED</code>状态，在<code>wait</code>最终返回之前，需要获取锁。这意味着，<code>AWAKENED</code>的线程将和<code>BLOCKING</code>状态的线程一起竞争锁，如果竞争不过，继续待在<code>WAITING</code>状态。有几点需要注意：</p>
+<ul>
+<li>无论是<code>wait</code>，还是<code>notify(All)</code>，都必须在持有锁的状态下调用</li>
+<li><code>notify(All)</code>调用后不会释放锁，而是在离开<code>syntronized</code>区域后</li>
+<li><code>AWAKENED</code>线程在竞争锁时没有任何优势，和<code>BLOCKING</code>线程优先级一样</li>
+</ul>
+<p><code>wait</code>的使用范式如下：</p>
+<pre><code class="language-java">synchronized (obj) &#123;
+   while (&lt;condition does not hold&gt;)
+       obj.wait();
+   ... // Perform action appropriate to condition
+&#125;
+</code></pre>
+<p>之所以使用循环条件判断，是为了防止线程<strong>过早唤醒</strong>，也就是发出<code>notify(All)</code>时条件谓词为真，到<code>wait</code>返回时，谓词不为真了。另外Javadoc指出，<code>WAITING</code>线程会有一定的几率自己醒来，而不是收到<code>notify(All)</code>的通知，虽然这极少发生。</p>
+<p>回到最初的问题，可以启动两个线程，为他们分配一个名字<code>name</code>，分别为A和B，设置一个变量<code>ticket</code>保存着下一个可运行的线程名，只有<code>name == ticket</code>的线程才有权运行，这样只要改变<code>ticket</code>的值就可以控制线程的运行了，具体代码如下：</p>
+<pre><code class="language-java">public class Main &#123;
+    public static void main(String[] args) &#123;
+        new PrintChar('A').start();
+        new PrintChar('B').start();
+    &#125;
+
+    private static class PrintChar extends Thread &#123;
+        private static final Object lock = new Object();
+        private static char running = 'A';
+        private char name;
+
+        public PrintChar(char name) &#123;
+            this.name = name;
+        &#125;
+
+        @Override
+        public void run() &#123;
+            for (int i = 0; i&lt;10;i++) &#123;
+                synchronized (lock) &#123;
+                    while (name != running) &#123;
+                        try &#123;
+                            // System.out.print(&quot; &lt;&quot; + name + &quot; waiting&gt; &quot;);
+                            lock.wait();
+                        &#125; catch (InterruptedException e) &#123;
+                            e.printStackTrace();
+                        &#125;
+                    &#125;
+                    System.out.print(name);
+                    loop();
+                    lock.notify();
+                &#125;
+            &#125;
+        &#125;
+
+        private void loop() &#123;
+            if (running == 'B') &#123;
+                running = 'A';
+            &#125; else &#123;
+                running += 1;
+            &#125;
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>为了观察线程的运行等待状态，我们将注释放开，得到下面的结果，</p>
+<pre><code>A &lt;A waiting&gt; B &lt;B waiting&gt; A &lt;A waiting&gt; B &lt;B waiting&gt; A &lt;A waiting&gt; B ...
+</code></pre>
+<p>作为一个问题的延伸，考虑下面的问题：</p>
+<blockquote>
+<p>多线程打印ABCDE</p>
+</blockquote>
+<p>小伙伴们，你想到了吗？</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2019/06/05/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%BA%A4%E6%9B%BF%E6%89%93%E5%8D%B0%E5%AD%97%E7%AC%A6/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2019/06/05/Java多线程交替打印字符/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = 'Java多线程交替打印字符';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>第8章 分布式系统的挑战 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="第8章 分布式系统的挑战 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/2024/01/03/%E7%AC%AC8%E7%AB%A0%20%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%8C%91%E6%88%98/bad_timestamp.jpeg"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="第8章 分布式系统的挑战 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/2024/01/03/%E7%AC%AC8%E7%AB%A0%20%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%8C%91%E6%88%98/bad_timestamp.jpeg"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=分布式,读书笔记,ddia,系统设计,大数据>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">第8章 分布式系统的挑战</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2024-01-03</span>
+  </div>
+  <div class="post-content">
+    <p>对于大型分布式系统，部分组件失效几乎是一定的。</p>
+<h2 id="不可靠的网络">不可靠的网络</h2>
+<p>分布式系统故障或部分失效的一大原因。</p>
+<h3 id="检测故障">检测故障</h3>
+<p>检测故障没有什么万能的方法，如果能收到响应，通常使用各种状态码标识，另一些情况下通用的办法就是超时了。</p>
+<h3 id="超时与无限期的延迟">超时与无限期的延迟</h3>
+<p>超时成因：</p>
+<ul>
+<li>负载过重，排队。</li>
+<li>CPU繁忙。</li>
+<li>虚拟机环境切换。</li>
+<li>TCP流量控制（也称拥塞消除，或背压）。</li>
+</ul>
+<blockquote>
+<p>TCP与UDP</p>
+<p>UDP不支持流量控制也不支持重传丢失的数据包，速度较快。如果延迟或丢失的数据价值不大，UDP是一个不错的选择。比如IP电话，应用程序会采用静音填充丢失的位置（出现短暂声音中断）。</p>
+</blockquote>
+<p>超时设置长了或短了都不好。更好的方法是自动调整，比如Phi Accrual故障检测器，已经在Akka和Cassandra中使用。TCP重传也采用了类似的机制。</p>
+<h3 id="同步与异步网络">同步与异步网络</h3>
+<p>固定电话网在打电话时会动态建立一条电路：一个固定的、带宽有保证的通信链路，这种网络本质是同步的，不会受到排队的影响。由于没有排队，网络最大的端到端延迟是固定的。我们称之为<strong>有界延迟</strong>。</p>
+<p>究其根本是目地不同，电话网线路持续时间短，要求及时性，而以太网追求资源的最大化利用。有了这个目的以太网才采用了分组交换协议，这样可以最大化的利用带宽：带宽小的时候我就传少点，带宽大的时候我就传多点。</p>
+<blockquote>
+<p>简言之，网络中可变延迟并不是一种自然规律，只是成本与收益相互博奕的结果。</p>
+</blockquote>
+<h2 id="不可靠的时钟">不可靠的时钟</h2>
+<p>计算机内部至少有两种时钟：<strong>墙上时钟</strong>（或称钟表时间）和<strong>单调时钟</strong>。</p>
+<p>墙上时钟返回当前日期与时间。例如，Linux的<code>clock_gettime(CLOCK_REALTIME)</code>和Java中的<code>System.currentTimeMillis()</code>会返回子1970年1月1日（UTC）以来的秒数和毫秒数，不含闰秒。墙上时钟在和NTP同步的时候，可能会跳回先前的时间点，不适合测量时间间隔。</p>
+<p>单调时钟如Linux的<code>clock_gettime(CLOCK_MONOTONIC)</code>和Java中的<code>System.nanoTime()</code>。单调时钟保证总是向前。</p>
+<p>如果一些服务依赖时间戳，比如LWW系统，时间如果不准将会造成严重的后果。例如下面的例子，错误的时间戳导致客户端B的更新丢失。</p>
+<p><img src="bad_timestamp.jpeg" alt="bad timestamp"></p>
+<p>某些软件如果在指定时间内无法相应则会导致严重后果，比如飞机、火箭、机器人、汽车和其他需要对输入传感器快速做出响应的组件等。对于这些系统，软件有一个必须做出响应的上限：如果无法满足，会导致系统级故障，这就是所谓的<strong>硬实时系统</strong>。</p>
+<blockquote>
+<p>在嵌入式系统中，实时通常意味着系统经过了精心设计和测试，以满足各种情况下执行时间约束。Web中的实时则通常是指一种持续的流式处理方式，并没有强的时间约束。</p>
+</blockquote>
+<h2 id="知识，真相与谎言">知识，真相与谎言</h2>
+<h3 id="真相由多数决定">真相由多数决定</h3>
+<p>在很多情况下，系统范围内只能有一个实例。例如：</p>
+<ul>
+<li>只允许一个节点作为数据库分区的主节点，防止出现脑裂。</li>
+<li>只允许一个事务或客户端持有特定资源的锁，以防止同时写入从而导致数据破坏。</li>
+<li>只允许一个用户来使用特定的用户名，从而确保用户名可以唯一标识用户。</li>
+</ul>
+<p>在分布式系统中，某个节点自认为它是“唯一的那个”，但不一定获得了系统法定票数的统一！例如下面由于不正确加锁而导致数据破坏的例子。</p>
+<p><img src="fencing.jpeg" alt="fencing"></p>
+<p>一种简单的解决办法是使用<strong>栅栏</strong>（fencing）：每次锁服务在授予锁或租约时，还会同时返回一个fencing令牌，该令牌每授予一次都会递增。然后，要求客户端每次向存储系统发送写请求时，都必须包含所持有的fencing令牌。</p>
+<p>使用ZooKeeper作为锁服务时，事务标识zxid或节点版本cversion都可以充当令牌。</p>
+<h3 id="拜占庭故障">拜占庭故障</h3>
+<p>fencing令牌可以检测并阻止哪些无意的误操作。如果节点存在“撒谎”的情况（即故意发送错误或破坏性的响应），这种行为称为<strong>拜占庭故障</strong>，在这样的不信任环境钟需要达成共识的问题也被称为<strong>拜占庭将军问题</strong>。</p>
+<blockquote>
+<p>拜占庭将军问题指有n位将军需要达成共识，并且其中存在一些叛徒试图阻挠达成共识。大多数将军都是忠诚的，而且大家事先并不知道叛徒是谁。</p>
+</blockquote>
+<p>如果系统中部分节点故障，甚至不遵从协议，或者恶意估计、干扰网络，但仍可运行，那么我们称之为<strong>拜占庭式容错系统</strong>。这些担忧在某些特定场景是合理的。例如：</p>
+<ul>
+<li>航空航天领域，计算机内存或CPU寄存器受辐射影响，导致以不可预知的方式响应其他节点。</li>
+<li>在多个参与者的系统中，某些参与者可能会作弊或者欺骗他人。比如比特币或其他区块链一样的点对点网络就是让互不信任的双方就某项交易达成一致，且不依赖集中的机制。</li>
+</ul>
+<p>尽管我们假设节点通常是诚实的，但有必要防范一些不那么恶意的“谎言”。例如：</p>
+<ul>
+<li>由于硬件问题或操作系统、驱动程序、路由器等方面的错误，导致网络数据包又是出现损坏。可以借助校验和来校验和发现这类问题。</li>
+<li>对公众开放的应用必须仔细检查用户的所有输入。例如输入值是否在合理范围、有没有不合理的字符。</li>
+<li>NTP客户端最好配置多个时间服务器。</li>
+</ul>
+<h3 id="理论系统模型与现实">理论系统模型与现实</h3>
+<p>关于计时，有三种常见的系统模型：</p>
+<ul>
+<li>同步模型。假定有上界的网络延迟，有上界的进程暂停和有上界的时钟误差。</li>
+<li>部分同步模型。系统在大多数情况下像一个同步系统一样运行，但有时候会超出上界。这是一个比较现实的模型。</li>
+<li>异步模型。对时机没有任何假设，甚至里面根本没有时钟。</li>
+</ul>
+<p>节点失效，也有三种模型：</p>
+<ul>
+<li>崩溃-终止模型。一个节点只能以一种方式发生故障，即遭遇系统崩溃。</li>
+<li>崩溃-恢复模型。节点可能会在任何时候崩溃，且可能会在一段（未知的）时间之后恢复并再次响应。</li>
+<li>拜占庭（任意）失效模型。节点可能发生任何事情，包括试图作弊和欺骗其他节点。</li>
+</ul>
+<p>安全性通常可以理解为“没有发生意外”，活性则类似“预期的事情最终一定会发生”。比如，唯一性和单调递增属于安全性，可用性和一致性属于活性。区分安全性和活性的一个好处是可以帮助简化处理一些具有挑战性的系统模型。安全性是必须要满足的，活性的满足则需要一定的必要条件。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/ddia/" rel="tag">ddia</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag">大数据</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" rel="tag">系统设计</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2024/01/03/%E7%AC%AC8%E7%AB%A0%20%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%8C%91%E6%88%98/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2024/01/03/第8章 分布式系统的挑战/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '第8章 分布式系统的挑战';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

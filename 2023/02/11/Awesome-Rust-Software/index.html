@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Awesome Rust Software - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="Awesome Rust Software - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/2023/02/11/Awesome-Rust-Software/zellij_panes.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="Awesome Rust Software - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/2023/02/11/Awesome-Rust-Software/zellij_panes.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=rust,fd,ripgrep,zellij,tmux>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Awesome Rust Software</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2023-02-11</span>
+  </div>
+  <div class="post-content">
+    <blockquote>
+<p>本文将会持续推荐一些我使用过感觉不错的rust软件，尽情期待！</p>
+</blockquote>
+<h2 id="fd"><a target="_blank" rel="noopener" href="https://github.com/sharkdp/fd">fd</a></h2>
+<p>fd号称A simple, fast and user-friendly alternative to ‘find’。可见fd相比find一是快，二是使用友好。根据作者的benchmark，fd字面量搜索和正则表达式搜索分别是find的5倍和9倍，除了快，它的使用更简单，更符合直觉。</p>
+<p>说到find命令的功能强大，相信很少有人能够否认，但是要是说到它的用法难记，相信很多人都能感同身受。以大家使用find最多的场景为例，查找文件夹中某个名字的文件，通常这个名字也记不太完整，需要模糊搜索。在find中需要</p>
+<pre><code class="language-bash">find -iname '*PATTERN*'
+</code></pre>
+<p>而fd只需要</p>
+<pre><code class="language-bash">fd PATTERN
+</code></pre>
+<p>可以看到fd默认就是针对文件名的模糊搜索，可能看起来二者区别也没那么大，但是我每次用find都得百度一番，不知道我是不是个例，我觉得之所以这样就是因为find缺少符合直觉的默认选项，一个工具如果你时时刻刻都在用，它繁琐一些可能不是个事，但是如果你只是偶尔或者不那么经常用，一个符合直觉的默认选项就显得尤为重要了。</p>
+<p>其他一些常用方法：</p>
+<p>1、使用正则表达式</p>
+<pre><code class="language-bash">fd '^x.*rc$'
+</code></pre>
+<p>2、默认搜索当前文件夹，可以这样指定文件夹</p>
+<pre><code class="language-bash">fd passwd /etc
+</code></pre>
+<p>3、使用<code>-e</code>指定文件类型</p>
+<pre><code class="language-bash">fd -e md
+fd -e rs mod
+</code></pre>
+<p>4、使用<code>-g</code>精确匹配</p>
+<pre><code class="language-bash">fd -g libc.so /usr
+</code></pre>
+<p>5、使用<code>-H</code>和<code>-I</code>包含隐藏和忽略的文件。默认fd是不搜索隐藏文件和.gitignore忽略的文件的，可以同时启用两者<code>-HI</code></p>
+<pre><code class="language-bash">fd -H pre-commit
+fd -I num_cpu
+</code></pre>
+<p>6、使用<code>-p</code>匹配路径。默认fd只匹配文件名</p>
+<pre><code class="language-bash">fd -p -g '**/.git/config'
+fd -p '.*/lesson-\d+/[a-z]+.(jpg|png)'
+</code></pre>
+<p>7、使用<code>-x</code>对单个匹配结果执行命令，<code>-X</code>对所有结果批量执行命令</p>
+<pre><code class="language-bash">fd -e zip -x unzip
+fd -g 'test_*.py' -X vim
+</code></pre>
+<p>8、使用<code>-E</code>排除某些文件</p>
+<pre><code class="language-bash">fd -H -E .git …
+fd -E '*.bak' …
+</code></pre>
+<h2 id="ripgrep"><a target="_blank" rel="noopener" href="https://github.com/BurntSushi/ripgrep">ripgrep</a></h2>
+<blockquote>
+<p>ripgrep recursively searches directories for a regex pattern while respecting your gitignore</p>
+</blockquote>
+<p>ripgrep的优势之一也是快，根据作者自己的benchmark，在小文件上是grep快8倍，在大文件上是grep的3倍。更加重要的是，它和fd一样，也有一个更符合直觉的默认选项。</p>
+<p>先来个quick start，使用rg搜索自己工程的README，</p>
+<pre><code class="language-bash">&gt; rg fast README.md
+90:  because it contains most of their features and is generally faster. (See
+105:  color and full Unicode support. Unlike GNU grep, ripgrep stays fast while
+154:### Is it really faster than everything else?
+159:Summarizing, ripgrep is fast because:
+164:  optimizations to make searching very fast. (PCRE2 support can be opted into
+</code></pre>
+<p>而grep的输出是这样的，</p>
+<pre><code class="language-bash">&gt; grep fast README.md
+  because it contains most of their features and is generally faster. (See
+  color and full Unicode support. Unlike GNU grep, ripgrep stays fast while
+### Is it really faster than everything else?
+Summarizing, ripgrep is fast because:
+  optimizations to make searching very fast. (PCRE2 support can be opted into
+</code></pre>
+<p>可以看到，和fd一样，ripgrep默认也是模糊搜索，打印匹配的行，同时还会带上行数。</p>
+<p>rg大部分请求使用起来和grep差不多，一些常用的选项如下：</p>
+<p>1、正则表达式</p>
+<pre><code class="language-bash">rg 'fast\w+' README.md
+</code></pre>
+<p>2、递归搜索当前文件夹中的所有文件</p>
+<pre><code class="language-bash">rg 'fast'
+</code></pre>
+<p>3、使用<code>-t</code>指定文件类型</p>
+<pre><code class="language-bash">rg 'fn run' -trust
+</code></pre>
+<p>4、使用<code>-w</code>精确搜索word</p>
+<pre><code class="language-bash">rg fast -w README.md
+</code></pre>
+<p>5、使用<code>--no-ignore</code>搜索.gitignore忽略的文件，<code>-.</code>搜索隐藏文件，<code>-a</code>搜索二进制文件，还有一个更简化的选项<code>-u</code>，<code>-u</code>包含所有被忽略的文件，<code>-uu</code>会再加上隐藏文件，<code>-uuu</code>会再加上二进制文件</p>
+<p>6、使用<code>-g</code>设置文件过滤规则</p>
+<pre><code class="language-bash"># 只搜索toml文件
+rg clap -g '*.toml'
+# 搜索除toml之外的文件
+rg clap -g '!*.toml'
+# -g可以出现多次
+rg clap -g '!*.toml' -g '*.rust'
+</code></pre>
+<p>7、使用<code>-r</code>进行替换</p>
+<pre><code class="language-bash">rg fast README.md -r FAST
+</code></pre>
+<p>8、使用<code>-c</code>只打印匹配次数</p>
+<pre><code class="language-bash">rg -c fast
+</code></pre>
+<h2 id="zellij"><a target="_blank" rel="noopener" href="https://github.com/zellij-org/zellij">zellij</a></h2>
+<p>相信很多人之前都用过tmux，我自己也尝试过，但是被它繁琐的快捷键劝退。后来也忘了从哪里听说了zellij，尝试之后发现最吸引我的一点是它有个功能QuickNav，会根据你所处的上下文，将可能的快捷键展示出来，非常适合忘性比较高的人。另外，zellij的面板可以无限切分，你甚至可以切分出来下面这种不规则的界面，</p>
+<p><img src="zellij_panes.png" alt="panes"></p>
+<p>它还支持浮动面板，非常适合一些临时的、一次性的命令运行，</p>
+<p><img src="zellij_float_pane.png" alt="float pane"></p>
+<p>习惯tmux的人也不用担心，它有个tmux模式，快捷键和tmux里基本相同。它是用rust软件开发的，得益于rust语言本身的安全性，高性能，以及活跃的社区，这些特性可以说是唾手可得的free lunch。相比tmux，它的界面更年轻，更现代，开发更活跃，当然这并不意味着zellij还处于“蛮荒”时期，相反它已经具有相当的可用性，支持tmux类似的session、tab、pane、plugin概念，基本可以作为tmux的平替软件。</p>
+<p>zellij的维护者都非常nice，择善而从又不失自己的原则，特别是<a target="_blank" rel="noopener" href="https://github.com/imsnif">Aram Drevekenin</a>、<a target="_blank" rel="noopener" href="https://github.com/har7an">har7an</a>，zellij更年轻，更活跃，意味着你有机会和它一起成长，一起见证、推动、或者参与一些激动人心的功能的加入，尝试一下，你不会后悔！</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/fd/" rel="tag">fd</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/ripgrep/" rel="tag">ripgrep</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/rust/" rel="tag">rust</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/tmux/" rel="tag">tmux</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/zellij/" rel="tag">zellij</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2023/02/11/Awesome-Rust-Software/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2023/02/11/Awesome-Rust-Software/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = 'Awesome Rust Software';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

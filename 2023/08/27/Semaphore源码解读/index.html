@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>Semaphore源码解读 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="Semaphore源码解读 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/default.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="Semaphore源码解读 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/default.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=java,并发,juc>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">Semaphore源码解读</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2023-08-27</span>
+  </div>
+  <div class="post-content">
+    <p>根据Java Doc的说法，<code>Semaphore</code>是一个控制访问某种资源并发量的组件。</p>
+<blockquote>
+<p>Semaphores are often used to restrict the number of threads than can access some (physical or logical) resource.</p>
+</blockquote>
+<p>例如，下面是一个使用信号量来控制对<code>Item</code>池访问的类：</p>
+<pre><code class="language-java">class Pool &#123;
+    private static final int MAX_AVAILABLE = 100;
+    private final Semaphore available = new Semaphore(MAX_AVAILABLE, true);
+
+    public Object getItem() throws InterruptedException &#123;
+        available.acquire();
+        return getNextAvailableItem();
+    &#125;
+
+    public void putItem(Object x) &#123;
+        if (markAsUnused(x)) &#123;
+            available.release();
+        &#125;
+    &#125;      // Not a particularly efficient data structure; just for demo
+
+    protected Object[] items = ... // whatever kindsof items being managed
+    protected boolean[] used = new boolean[MAX_AVAILABLE];
+
+    protected synchronized Object getNextAvailableItem() &#123;
+        for (int i = 0; i &lt; MAX_AVAILABLE; ++i) &#123;
+            if (!used[i]) &#123;
+                used[i] = true;
+                return items[i];
+            &#125;
+        &#125;
+        return null; // not reached
+    &#125;
+
+    protected synchronized boolean markAsUnused(Object item) &#123;
+        for (int i = 0; i &lt; MAX_AVAILABLE; ++i) &#123;
+            if (item == items[i]) &#123;
+                if (used[i]) &#123;
+                    used[i] = false;
+                    return true;
+                &#125; else &#123;return false;&#125;
+            &#125;
+        &#125;
+        return false;
+    &#125;
+&#125;
+</code></pre>
+<p>这个例子，<code>available</code>是一个信号量，最大并发数是100，用这个信号量来控制调用<code>getItem</code>的并发数。我初看这个例子时，有个疑问，<strong>那就是虽说信号量限制了并发访问数，但是<code>getNextAvailableItem</code>不是加锁了吗，最终不还是只有一个线程才能访问吗？</strong> 后面想了想，这个例子的信号量用来控制的不是最终拥有访问权限的并发数，而是争夺这个权限的候选者的个数。就好比选举中，当选者和候选者的关系，在这两者之外，还有广大的普罗大众。</p>
+<p>下面看看AQS在Semaphore是怎么使用的。</p>
+<pre><code class="language-java">abstract static class Sync extends AbstractQueuedSynchronizer &#123;
+    private static final long serialVersionUID = 1192457210091910933L;
+
+    Sync(int permits) &#123;
+        setState(permits);
+    &#125;
+
+    final int getPermits() &#123;
+        return getState();
+    &#125;
+
+    final int nonfairTryAcquireShared(int acquires) &#123;
+        for (;;) &#123;
+            int available = getState();
+            int remaining = available - acquires;
+            if (remaining &lt; 0 ||
+                compareAndSetState(available, remaining))
+                return remaining;
+        &#125;
+    &#125;
+
+    protected final boolean tryReleaseShared(int releases) &#123;
+        for (;;) &#123;
+            int current = getState();
+            int next = current + releases;
+            if (next &lt; current) // overflow
+                throw new Error(&quot;Maximum permit count exceeded&quot;);
+            if (compareAndSetState(current, next))
+                return true;
+        &#125;
+    &#125;
+
+    final void reducePermits(int reductions) &#123;
+        for (;;) &#123;
+            int current = getState();
+            int next = current - reductions;
+            if (next &gt; current) // underflow
+                throw new Error(&quot;Permit count underflow&quot;);
+            if (compareAndSetState(current, next))
+                return;
+        &#125;
+    &#125;
+
+    final int drainPermits() &#123;
+        for (;;) &#123;
+            int current = getState();
+            if (current == 0 || compareAndSetState(current, 0))
+                return current;
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>这是<code>Semaphore</code>的核心代码。<code>Sync</code>继承了AQS，通过<code>state</code>状态变量维护最大并发许可数<code>permits</code>，获取许可就减去一定的许可，释放就增加一定的许可，最终通过<code>compareAndSetState</code>完成修改。</p>
+<pre><code class="language-java">/**
+ * NonFair version
+ */
+static final class NonfairSync extends Sync &#123;
+    private static final long serialVersionUID = -2694183684443567898L;
+
+    NonfairSync(int permits) &#123;
+        super(permits);
+    &#125;
+
+    protected int tryAcquireShared(int acquires) &#123;
+        return nonfairTryAcquireShared(acquires);
+    &#125;
+&#125;
+
+/**
+ * Fair version
+ */
+static final class FairSync extends Sync &#123;
+    private static final long serialVersionUID = 2014338818796000944L;
+
+    FairSync(int permits) &#123;
+        super(permits);
+    &#125;
+
+    protected int tryAcquireShared(int acquires) &#123;
+        for (;;) &#123;
+            if (hasQueuedPredecessors())
+                return -1;
+            int available = getState();
+            int remaining = available - acquires;
+            if (remaining &lt; 0 ||
+                compareAndSetState(available, remaining))
+                return remaining;
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p><code>Semaphore</code>可以设置成公平和非公平模式，二者唯一的差别就是公平模式会调用<code>hasQueuedPredecessors</code>判断前面是否还有等待的线程。如果前面还有排队的线程，直接返回失败，否则，和非公平逻辑一样。</p>
+<p>Semaphore api看着不少，核心其实就两个<code>acquire</code>和<code>release</code>，都是围绕着<code>Sync</code>中的方法进行调用，就不赘述了。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/java/" rel="tag">java</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/juc/" rel="tag">juc</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%B9%B6%E5%8F%91/" rel="tag">并发</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2023/08/27/Semaphore%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2023/08/27/Semaphore源码解读/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = 'Semaphore源码解读';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

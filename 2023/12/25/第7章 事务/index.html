@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>第7章 事务 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="第7章 事务 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/2023/12/25/%E7%AC%AC7%E7%AB%A0%20%E4%BA%8B%E5%8A%A1/race_condition.jpeg"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="第7章 事务 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/2023/12/25/%E7%AC%AC7%E7%AB%A0%20%E4%BA%8B%E5%8A%A1/race_condition.jpeg"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=分布式,读书笔记,ddia,系统设计,大数据>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">第7章 事务</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2023-12-25</span>
+  </div>
+  <div class="post-content">
+    <h2 id="深入理解事务">深入理解事务</h2>
+<p>事务将多个读写操作捆绑成一个逻辑整体，要么都成功，要么都失败。</p>
+<h3 id="ACID">ACID</h3>
+<p>原子性（Atomicity）、一致性（Consistency）、隔离性（Isolation）、持久性（Durability）。</p>
+<p>BASE</p>
+<p>基本可用性(Basically Available)，软状态（Soft state）和最终一致性（Eventual consistency）。</p>
+<blockquote>
+<p>各家数据库所实现的ACID并不尽相同，更像是一个市场营销用语。BASE是另一套标准，同样模棱两可，唯一可以确定的是“它不是ACID”。</p>
+</blockquote>
+<h4 id="原子性">原子性</h4>
+<p>要么成功，要么失败，不能部分成功部分失败。</p>
+<p>在ACID的语境中，指的是出错时终止事务，并将部分完成的写入丢弃。</p>
+<h4 id="一致性">一致性</h4>
+<p>一致性是指对数据有特定的预期状态（满足特定的约束），比如银行贷款和借款余额保持相等。</p>
+<p>一致性是<strong>应用层提供的属性</strong>，其他三个是数据库应提供的属性。</p>
+<h4 id="隔离性">隔离性</h4>
+<p>并发执行的多个事务互相隔离，不能交叉。多个事务执行的效果和串行执行一样，但内部实现不要求一定串行执行。</p>
+<p>下面的例子中，用户1和用户2分别更新同一个对象，最终结果本来应该为44，现在是43。由于没有隔离，导致用户1的更新丢失。</p>
+<p><img src="race_condition.jpeg" alt="race condition"></p>
+<h4 id="持久性">持久性</h4>
+<p>提供一个安全可靠的地方存储数据而不用担心数据丢失。在计算机语境下常常指写入磁盘。</p>
+<h3 id="单对象与多对象事务操作">单对象与多对象事务操作</h3>
+<p>单对象事务，比如向数据库写入20KB的JSON文档，多对象事务，比如外键的更新，二级索引的更新等。</p>
+<h2 id="弱隔离级别">弱隔离级别</h2>
+<p>所谓弱隔离级别在这里的意思是非串行化。</p>
+<blockquote>
+<p>MySQL等数据库的四种隔离级别：读未提交，读提交，可重复读，串行化。</p>
+</blockquote>
+<h3 id="读-提交">读-提交</h3>
+<p>读-提交是最基本的隔离级别，它指提供如下两个保证：</p>
+<ol>
+<li>读数据时，只能看到已成功提交的数据（防止“脏读”）。</li>
+<li>写数据时，只会覆盖已成功提交的数据（防止“脏写”）。</li>
+</ol>
+<p>读-提交非常流行，它是Oracle 11g、PostgreSQL、SQL Server 2012、MemSQL以及许多其他数据库的默认配置。</p>
+<p>脏写一般通过行级锁来实现，当事务想修改某个对象，它必须先获取该对象的锁。</p>
+<p>脏读的话，理论上也可以这么做，但是这样做性能太差。因此，实际一般都是维护旧值和当前事务设置的新值两个版本。在事务提交前，读取旧版本，事务提交后，才读取新版本。</p>
+<h3 id="快照级别隔离与可重复读">快照级别隔离与可重复读</h3>
+<p>读-提交有不可重复读（nonrepeatable read）或读倾斜（read skew）<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>的问题。</p>
+<p>转帐者从账户1转帐100块到账户2，初始时两个账户都是500块钱，由于发生了脏读，Alice看到了转帐事务的中间状态，她看到账户1是500块，账户2是400块，少了100块。</p>
+<p><img src="read_skew.jpeg" alt="read skew"></p>
+<p>这种问题，在一些场景是不可接受的：</p>
+<ul>
+<li>备份场景：备份里可能含有新旧两个版本的数据，如果从这样的备份恢复，最终就会导致永久的不一致。</li>
+<li>分析查询与完整性检查：这种查询可能会扫描大半个数据库，亦或定期的数据完整性检查。如果这些查询在不同的时间点观察数据库，可能会返回无意义的结果。</li>
+</ul>
+<p>快照级别隔离是最常见的解决方法。它的想法是，每个事务都从数据库的一致性快照中读取，事务一开始锁看到的是最近提交的数据，即使数据随后被其他事务修改，但保证每个事务都只能看到特定时间点的旧数据。</p>
+<p>基本上常见数据库都实现了这种隔离级别。</p>
+<p>采用一种类似于读-提交中防止脏读但更通用的方案，保留对象的多个不同的提交版本，这种技术称为<strong>多版本并发控制</strong>（Multi-Version Concurrency Control，MVCC）。</p>
+<p>既然是更通用的方案，因此在实现读-提交时，干脆也用MVCC，通过维护对象的两个版本就够了：一个已提交的旧版本和尚未提交的新版本。典型做法是，在读-提交级别下，对每一个不同的查询创建一个快照；在快照隔离级别下，则使用一个快照来运行整个事务。</p>
+<blockquote>
+<p>前面不是说两个版本就够了，为啥后面又说一个查询一个快照呢？</p>
+<p>我个人理解，在读-提交级别下，事务中每个查询都创建一个快照是为了反映最新的提交。虽然是每次查询都创建一个新的快照，但是新的快照是覆盖旧的快照得来的，在每一个时刻，系统始终只有两个版本。因此前文说只需要两个版本，后面又说一个查询一个快照，不矛盾。</p>
+</blockquote>
+<p><img src="mvcc.jpeg" alt="mvcc"></p>
+<h4 id="一致性快照的可见性规则">一致性快照的可见性规则</h4>
+<ol>
+<li>每笔事务开始时，列出所有当时尚未提交的其他事务，忽略这些事务的部分写入。</li>
+<li>所有中止事务所做的修改全部不可见。</li>
+<li>较晚事务所做的修改不可见。</li>
+<li>除此之外，其他所有写入都可见。</li>
+</ol>
+<p>换句话说，仅当以下两个条件都成立，则改数据对象对事务可见：</p>
+<ul>
+<li>事务开始的时刻，创建该对象的事务已经完成了提交。</li>
+<li>对象没有被标记删除，或者即使标记了，但删除事务在事务开始时还没有完成提交。</li>
+</ul>
+<p>一句话，就是<strong>一个事务只能看到它开始之前已经提交的事务所做的修改。</strong></p>
+<h4 id="索引与快照级别隔离">索引与快照级别隔离</h4>
+<p>多版本数据库如何支持索引：</p>
+<ol>
+<li>将索引指向对象的所有版本，然后想办法过滤对当前事务不可见的那些版本。典型如PostgreSQL。</li>
+<li>采用追加式的BTree，更新时，不是原地修改，而是创建一个修改副本，拷贝必要内容。</li>
+</ol>
+<h3 id="防止更新丢失">防止更新丢失</h3>
+<p>读提交和快照隔离没有解决两个写事务并发，而脏写只是写并发的一个特例。最著名就是更新丢失问题，比如：</p>
+<ul>
+<li>read-modify-write场景。</li>
+<li>对复杂对象的一部分内容执行修改，再写回。</li>
+<li>两个用户同时编辑wiki页面，覆盖现有内容。</li>
+</ul>
+<p>解决方案：</p>
+<ul>
+<li>原子写操作。类似于Java语言中的CAS操作，比如下面指令<pre><code class="language-sql">UPDATE counters SET value = value + 1 WHERE key = 'foo';
+</code></pre>
+从实现上一是加独占锁，二是强制在单线程上运行。</li>
+<li>显式加锁。如果数据库不支持原子操作，可以显式锁定待更新的对象。<pre><code class="language-sql">BEGIN TRANSACTION;
+
+SELECT * FROM figures
+WHERE name = 'robot' AND game_id = 222
+FOR UPDATE;
+
+-- Check whether move is valid, then update the
+-- position of the piece that was returned by the previous SELECT.
+UPDATE figures SET position C4 WHERE id = 1234;
+
+COMMIT;
+</code></pre>
+<code>FOR UPDATE</code>对返回的所有结果行加锁。</li>
+<li>自动检测更新丢失。属于一种乐观锁机制，也就是先并发执行，如果事务管理器检测到了更新丢失的风险，回退到安全的“读-修改-写回”方式。可惜的是并不是所有的数据库都实现了这种机制。</li>
+</ul>
+<h3 id="写倾斜与幻读">写倾斜与幻读</h3>
+<p>一个例子，正在开发一个程序帮助医生管理轮班。通常，会安排多个医生值班，医生也可以调整班次，但得确保至少一位医生值班。</p>
+<p>现在Alice和Bob两位值班医生，碰巧都感觉身体不适，在同一时刻点击调班按钮。在快照隔离级别，前置检查都返回两位医生，所以两个事务都进入下一阶段，最终导致没有任何医生值班。</p>
+<p><img src="write_skew.jpeg" alt="write skew"></p>
+<p>这种异常称之为<strong>写倾斜</strong>。它不是脏写，也不是更新丢失。可以将其看作一种更广义的更新丢失问题。即两个事务先读取相同的一组对象，更新其中的一部分：不同的事务可能更新不同的对象，则可能发生写倾斜；如果更新同一个对象，则可能发生脏写或更新丢失。</p>
+<p>更多例子：</p>
+<ul>
+<li>会议系统，多人抢占一个会议室。</li>
+<li>多人游戏。</li>
+<li>声明一个用户名，保证唯一性。</li>
+<li>防止双重开支，避免同时插入两个开支项目。</li>
+</ul>
+<p>在一个事务中的写入改变了另一个事务查询结果的现象，称为幻读。快照级别的隔离可以避免只读查询时的幻读，但是无法解决写倾斜。</p>
+<h2 id="串行化">串行化</h2>
+<p>写倾斜的解决方法是串行化。即事务可以并行执行，但是执行结果必须和串行执行相同。</p>
+<h3 id="实际串行执行">实际串行执行</h3>
+<p>使用存储过程单线程运行。但有一下限制：</p>
+<ul>
+<li>事务必须简短而高效，否则一个慢事务会影响所有其他事务的性能（和异步化类似）。</li>
+<li>仅限于活动数据集完全可以加载到内存的场景。访问磁盘会严重拖累性能。</li>
+<li>写入吞吐量必须足够低，才能在单个CPU上处理；否则就需要分区，最好没有跨分区事务。</li>
+<li>跨分区事务虽然也可以支持，但是占比必须很小。</li>
+</ul>
+<h3 id="两阶段加锁">两阶段加锁</h3>
+<p>快照隔离级别“读写互不干扰”，2PL读写是互斥的。它的想法是：</p>
+<ul>
+<li>如果事务A已经读取了某个对象，此时事务B想写入该对象，那么B必须等到A提交或中止才能继续。</li>
+<li>如果事务A已经修改了对象，事务B想要读取该对象，则B必须等到A提交或中止才能继续。</li>
+</ul>
+<blockquote>
+<p>两阶段加锁（2PL）听起来和两阶段提交（2-phrase commit，2PC）很相近，但它们是完全不同的东西。</p>
+</blockquote>
+<p>目前2PL已经用在了MySQL（InnoDB）和SQL Server的“可串行化隔离”，以及DB2中的“可重复读隔离”。</p>
+<p>实现方案为为每个对象都维护一个<strong>读写锁</strong>来隔离读写操作。即锁可以处于共享模式或独占模式，运行机制如下：</p>
+<ul>
+<li>如果事务要读取对象，必须获得共享锁。多个事务可以同时获得一个共享锁，但是如果某个事务已经获得了独占锁，则所有事务必须等待。</li>
+<li>如果事务要修改对象，必须以独占模式获得锁。不允许多个事务同时持有该锁（包括共享或独占模式）。</li>
+<li>如果事务首先读取对象，后面想尝试写入，则需要将共享锁升级为独占锁。</li>
+<li>事务获得锁之后，一直持有锁直到事务结束。这也是“两阶段”的来由，在第一阶段即事务执行之前获取锁，第二阶段即事务结束时释放锁。</li>
+</ul>
+<p>也就是只有共享-共享可以共存，独占-独占，共享-独占都是互斥的。</p>
+<p>锁的实现：</p>
+<ul>
+<li>谓词锁。也就是符合某种搜索条件的所有查询对象共同持有一个锁。</li>
+<li>索引区间锁。谓词锁性能较差，索引区间锁是谓词锁的简化版，实现原理是将保护的对象扩大化，也就是锁粗化。比如谓词条件是：房间123，时间段是中午到下午1点，索引区间锁即只保护房间123的所有时间段。如果没有合适的索引可以施加区间锁，会回退到整条加共享锁。</li>
+</ul>
+<p>2PL自1970年提出后不被广泛接纳的原因是相比弱隔离级别吞吐量和查询响应下降的非常多。</p>
+<h3 id="可串行化的快照隔离">可串行化的快照隔离</h3>
+<p>SSI（Serializable Snapshot Isolation），在2008年被首次提出，提供了完整的串行化保证，性能比快照隔离损失很小。</p>
+<p>目前用在了PostgreSQL9.1之后的可串行化隔离和分布式数据库如FoundationDB。</p>
+<p>它的想法是让事务并发执行，寄希望于相安无事，当事务提交时，数据库检查是否确实发生了冲突，如果是的话，中止事务并接下来重试。</p>
+<p>2PL是一种悲观并发控制机制，SSI是一种乐观并发控制机制。</p>
+<p>为了实现串行化的隔离，数据库必须检测事务是否会修改其他事务的查询结果，并在此情况下，中止事务。也就是SSI等于快照隔离+修改检测机制。</p>
+<p>数据库如何知道查询结果是否发生改变？分两种情况<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>：</p>
+<ul>
+<li>读取之前是否有未提交的写入。</li>
+<li>读取之后是否又有新的写入。</li>
+</ul>
+<h4 id="检测是否都去了过期的MVCC对象">检测是否都去了过期的MVCC对象</h4>
+<p>为防止这种异常，数据库会跟踪那些由于MVCC可见性规则被忽略的写操作。当事务提交时，数据库会检查是否存在一些当初被忽略的写操作现在已经完成了提交，如果是必须中止当前事务。</p>
+<p>事务43在开始之前有一个未提交的事务42，事务43读取之后，事务42修改了值班人，这导致事务43之前的读取过期了，事务管理器注意到这种情况，及时中止了事务43，并重试。</p>
+<p><img src="read_outdate_mvcc.jpeg" alt="read outdate mvcc"></p>
+<p>为什么要等到提交才检测？因为无法预测当前事务是否有写动作，也无法预料写事务是否成功。</p>
+<h4 id="检测写是否影响了之前的读">检测写是否影响了之前的读</h4>
+<p>第二种要考虑的情况是，在读取数据之后，另一个事务修改了数据。</p>
+<p>和上面类似，事务43在开始之前有一个未提交的事务42，和之前不同的是，之前事务42的修改发生在事务43的读取之前，现在是读取之后，但效果是类似的，事务管理器注意到事务43的读取结果已经发生了改变，只好中止事务并重试。</p>
+<p><img src="read_affected_by_late_write.jpeg" alt="read affected by late write"></p>
+<h4 id="可串行化快照隔离的性能">可串行化快照隔离的性能</h4>
+<p>和2PL相比，SSI不需要加锁。和快照隔离一样，读写不会互相阻塞。使查询延迟更加稳定、可预测。</p>
+<p>与串行化相比，SSI可以突破单个CPU的限制。FoundationDB将冲突检测分布在多台机器上，从而提高总体吞吐量。</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>二者是一个意思。 <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>我感觉这两种情况是一回事啊。 <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/ddia/" rel="tag">ddia</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag">大数据</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" rel="tag">系统设计</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2023/12/25/%E7%AC%AC7%E7%AB%A0%20%E4%BA%8B%E5%8A%A1/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2023/12/25/第7章 事务/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '第7章 事务';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

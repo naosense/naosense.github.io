@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>终于修完Algorithm了 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="终于修完Algorithm了 - 扯淡有理"/>
+  <meta name="twitter:description" content="&lt;p&gt;磕磕绊绊，终于把Coursera上的Algorithm课修完了，中间有段时间中断了，因为工作太累，下班或者周末实在不愿意面对电脑了。Algorithm这门课整体难度不大，但是课时较长，所以需要能坚持下来。老师在理论和应用上做了比较好的平衡，不会太枯燥，不少习题也都是为了解决现实中的实际问题设计的，这点我非常喜欢，技术最终是为实际应用服务的，纯理论的东西确实提不起兴趣。&lt;/p&gt;"/>
+  <meta name="twitter:image" content="https://naosense.github.io/default.png"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="终于修完Algorithm了 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="&lt;p&gt;磕磕绊绊，终于把Coursera上的Algorithm课修完了，中间有段时间中断了，因为工作太累，下班或者周末实在不愿意面对电脑了。Algorithm这门课整体难度不大，但是课时较长，所以需要能坚持下来。老师在理论和应用上做了比较好的平衡，不会太枯燥，不少习题也都是为了解决现实中的实际问题设计的，这点我非常喜欢，技术最终是为实际应用服务的，纯理论的东西确实提不起兴趣。&lt;/p&gt;"/>
+  <meta property="og:image" content="https://naosense.github.io/default.png"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=coursera,算法>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">终于修完Algorithm了</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2018-12-16</span>
+  </div>
+  <div class="post-content">
+    <p>磕磕绊绊，终于把Coursera上的Algorithm课修完了，中间有段时间中断了，因为工作太累，下班或者周末实在不愿意面对电脑了。Algorithm这门课整体难度不大，但是课时较长，所以需要能坚持下来。老师在理论和应用上做了比较好的平衡，不会太枯燥，不少习题也都是为了解决现实中的实际问题设计的，这点我非常喜欢，技术最终是为实际应用服务的，纯理论的东西确实提不起兴趣。</p>
+<span id="more"></span>
+<p>下面是本次课程的10次作业，</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week1">Percolation</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week2">Deques and Randomized Queues</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week3">Collinear Points</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week4">8 Puzzle</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week5">Kd-Trees</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week6">WordNet</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week7">Seam Carving</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week8">Baseball Elimination</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week9">Boggle</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/naosense/Algorithms/tree/master/src/main/java/com/pingao/assignment/week10">Burrows–Wheeler</a></li>
+</ul>
+<p>给我印象最深刻的是第八周的Baseball Elimination，这个作业的大概意思是根据棒球联赛积分表找出哪些球队已经被淘汰，说实话看过体育比赛的对这一点都是有感触的，有时候找出这样的球队不是那么容易，没想到在这里可以使用这么巧妙的一种方法解决，具体方法我就不剧透了。</p>
+<p>这门课虽说修完了，但是自我感觉并不是里面的东西都理解了，甚至可以说是大部分都没有理解，或者说理解的不够深刻，那是不是白学了？肯定不是，我觉得最大的收获就是学到了一些问题有更好的解决方法这个事实，而不是解决方法本身，在上课之前可能某些问题我也知道一些方法，但都是一些笨办法，上完这门课相当于给了我一个更低的上界。总之，用大白话说就是增长了眼界。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/coursera/" rel="tag">coursera</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%AE%97%E6%B3%95/" rel="tag">算法</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2018/12/16/%E7%BB%88%E4%BA%8E%E4%BF%AE%E5%AE%8CAlgorithm%E4%BA%86/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2018/12/16/终于修完Algorithm了/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '终于修完Algorithm了';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

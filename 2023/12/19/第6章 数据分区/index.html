@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>第6章 数据分区 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="第6章 数据分区 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/2023/12/19/%E7%AC%AC6%E7%AB%A0%20%E6%95%B0%E6%8D%AE%E5%88%86%E5%8C%BA/replication_and_partition.jpeg"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="第6章 数据分区 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/2023/12/19/%E7%AC%AC6%E7%AB%A0%20%E6%95%B0%E6%8D%AE%E5%88%86%E5%8C%BA/replication_and_partition.jpeg"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=分布式,读书笔记,ddia,系统设计,大数据>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">第6章 数据分区</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2023-12-19</span>
+  </div>
+  <div class="post-content">
+    <p>面对海量数据集或非常高的查询压力，光有副本还不行，还需要将数据拆分为分区，也称为分片。事实上，分区和副本常常结合起来使用，来提高系统的扩展性和可用性。</p>
+<p><img src="replication_and_partition.jpeg" alt="replication and partition"></p>
+<h2 id="分区方式">分区方式</h2>
+<p>分区的目标是将数据和查询负载均匀分布在所有节点上。</p>
+<p>如果分区不均匀，那就会出现某些分区比其他分区承担更多的数据量或查询负载的情况，称之为<strong>倾斜</strong>。极端情况下，所有的负载可能集中在一个分区上，这种严重不成比例的分区即成为<strong>系统热点</strong>。</p>
+<p>避免热点的一个简单方法是随机分配，但是它的缺点是读取数据时，只能并行查询所有节点。</p>
+<h3 id="基于关键字区间分区">基于关键字区间分区</h3>
+<p>为每个分区分配一段连续的关键字或关键字范围。</p>
+<p><img src="partition_by_range.jpeg" alt="partition by range"></p>
+<p>比如对于一个保存网络传感器数据的应用系统，选择测量的时间戳（年-月-日-时-分-秒）作为关键字，此时区间查询非常有用，可以快速查询某个月份的所有数据。</p>
+<p>缺点是某些访问模式会导致热点。比如上面的例子，每天对应一个分区，数据写入时，所有的写入都会集中在一个分区，而其他分区处于空闲状态。</p>
+<p>解决方案可以在时间戳前面加上传感器名称为前缀。</p>
+<h3 id="基于关键字哈希值分区">基于关键字哈希值分区</h3>
+<p>一个好的哈希函数可以处理数据倾斜。一旦找到合适的哈希函数，就可以为每个分区分配一个哈希范围。</p>
+<p><img src="partition_by_hash.jpeg" alt="partition by hash"></p>
+<p>Cassandra和MongoDB使用MD5，Voldmort使用Fowler-Noll-Vo。许多语言也内置简单的哈希函数，比如Java的<code>hashCode</code>，但是要谨慎使用，因为同一键在不同进程中可能返回不同的哈希值。</p>
+<p>哈希分区的缺点是丧失了区间查询特性。因为即使关键字相邻，哈希之后也是千差万别。</p>
+<p>在MongoDB中，如果启用了哈希分片模式，区间查询会发送到所有的分片上，而Riak、Couchbase和Voldmort干脆就不支持区间查询。</p>
+<p>Cassandra支持多个列组成复合主键，复合主键只有第一部分用于哈希分区，其他列可以区间查询。这种特性对于社交网站上，一个用户可能会发布多个消息更新，关键字为(user_id, update_timestamp)的组合，可以高效的查询。</p>
+<h2 id="二级索引">二级索引</h2>
+<p>二级索引主要挑战是它们不能规整的映射到分区中。</p>
+<h3 id="基于文档分区的二级索引">基于文档分区的二级索引</h3>
+<p>这种方法，每个分区完全独立，各自维护自己的二级索引，且只负责自己分区内的文档而不关心其他分区中的数据。因此文档分区索引也被称为<strong>本地索引</strong>。</p>
+<p><img src="second_index_by_doc.jpeg" alt="second index by doc"></p>
+<p>这种索引查询代价高昂，尽管如此，它还是广泛用于实践：MongoDB、Riak、Cassandra、Elasticsearch、Solr、Voldmort都支持。</p>
+<h3 id="基于词条的二级索引分区">基于词条的二级索引分区</h3>
+<p>对索引数据建立全局索引，为了避免成为瓶颈，全局索引也必须进行分区，但是可以采用与关键词不同的分区策略。</p>
+<p><img src="second_index_by_term.jpeg" alt="second index by term"></p>
+<p>好处是查询更高效，坏处是写入较慢且复杂，因为单个文档更新时，可能会涉及多个二级索引的更新，二级索引的分区又可能在不同的节点上，会引入显著的写放大。因此，现有实现都不支持同步更新，更新往往都是异步的。例如Dynamo二级索引通常可以在1秒内完成更新，但是故障时，可能时间会更长。</p>
+<h2 id="分区再平衡">分区再平衡</h2>
+<p>也就是大家常说的rebalance。这是一项比较昂贵的操作，通常在下面的情况下才做：</p>
+<ul>
+<li>查询压力增加，需要更多的CPU来处理负载。</li>
+<li>数据规模增加，需要更多的内存和磁盘存储数据。</li>
+<li>节点可能出现故障，需要其他机器取接管失效的节点。</li>
+</ul>
+<h3 id="动态再平衡的策略">动态再平衡的策略</h3>
+<p>之所以不用取模的方式分区，是因为节点数量的轻微变化，将会引起分区映射关系的剧烈变动。</p>
+<h4 id="固定数量的分区">固定数量的分区</h4>
+<p>创建远超节点的分区数，然后为每个节点分配多个分区。例如，对于一个10个节点的集群，一开始就划分为1000个分区，每个节点承担100个分区。如果增加了一个新的节点，从现有的节点上匀走一些分区即可，如果删除一个节点，采用相反的均衡措施。</p>
+<p><img src="partition_with_fix_number.jpeg" alt="partition with fix number"></p>
+<p>目前，Riak、Elasticsearch、Couchbase和Voldmort都支持这种方式。</p>
+<p>分区数量一经确定，就不会改变，通常已经考虑到扩容需求。这种分区方式不能适应数据集总规模高度不确定或可变的情况。</p>
+<h4 id="动态分区">动态分区</h4>
+<p>一些数据库，如HBase和RethinkDB采用的方式，当分区数据超过一个可配的阈值（HBase默认是10GB），它就拆分为两个分区，每个承担一半的数据量。相反，会进行分区合并。类似于BTree的分裂和合并操作。</p>
+<p>优点是可以自动适配数据总量。缺点是分区的大小参差不齐，可能会导致长尾效应。</p>
+<p>不仅适用关键字区间分区，还适用于哈希分区。MongoDB从2.4版本，同时支持两者。</p>
+<h4 id="按节点比例分区">按节点比例分区</h4>
+<p>前两种方式分区的数据量与数据集大小成正比。Cassandra和Ketama采用第三种方式，使分区数与节点数成正比，也就是每个节点有固定的分区数。这种方法使分区的大小保持稳定。</p>
+<h4 id="自动与手动再平衡操作">自动与手动再平衡操作</h4>
+<ul>
+<li>全自动，即由系统自动决定何时从一个节点迁移到另一个节点。</li>
+<li>纯手动，即分区到节点的映射由管理员显式配置。</li>
+<li>半自动，由系统自动生成一个分区建议方案，管理员确认。</li>
+</ul>
+<p>无疑，全自动再平衡会更加方便，但是再平衡是一项比较昂贵的操作，操作不当的话会影响某些节点的请求，甚至导致级联式失效，因此让管理员介入可能是个更好地选择。</p>
+<h2 id="请求路由">请求路由</h2>
+<p>这其实属于一类典型的服务发现问题。</p>
+<p>概括来讲，有三种方式：</p>
+<ol>
+<li>客户端请求任意节点。如果节点恰好有需要的分区，直接处理，否则，将请求转发到合适的节点，并将回复转发给客户端。</li>
+<li>客户端请求一个路由层，由后者将请求转发到合适的节点上。</li>
+<li>客户端感知分区和节点分配关系，直接请求某个节点。</li>
+</ol>
+<p><img src="request_route.jpeg" alt="request route"></p>
+<p>Cassandra和Riak节点之间使用gossip协议同步集群状态的变化，类似于上面第1种方式。</p>
+<p>Couchbase采用第2种方式，通过一个名为moxi的路由层，向集群节点学习最新的路由变化。</p>
+<p>LinkedIn的Espresso使用Helix（底层是ZK）进行集群管理，实现了下图所示的请求路由层。HBase、Solr和Kafka也使用ZK来跟踪分区分配情况。MongoDB有类似的设计，但它依赖自己的配置服务器和mongos守护进程来充当路由层。</p>
+<p><img src="request_route_with_zookeeper.jpeg" alt="request route with zookeeper"></p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/ddia/" rel="tag">ddia</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag">大数据</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" rel="tag">系统设计</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2023/12/19/%E7%AC%AC6%E7%AB%A0%20%E6%95%B0%E6%8D%AE%E5%88%86%E5%8C%BA/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2023/12/19/第6章 数据分区/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '第6章 数据分区';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

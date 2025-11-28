@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>第4章 数据编码与演化 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="第4章 数据编码与演化 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/2023/12/13/%E7%AC%AC4%E7%AB%A0%20%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E4%B8%8E%E6%BC%94%E5%8C%96/pb_encode.jpeg"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="第4章 数据编码与演化 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/2023/12/13/%E7%AC%AC4%E7%AB%A0%20%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E4%B8%8E%E6%BC%94%E5%8C%96/pb_encode.jpeg"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=分布式,读书笔记,ddia,系统设计,大数据>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">第4章 数据编码与演化</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2023-12-13</span>
+  </div>
+  <div class="post-content">
+    <p>本章对比了JSON、Thrift、Protocol Buffer、Avro几种编码方式在模式演进时如何保持兼容性，更好的支持程序滚动升级。随后列举了几种进程间数据交互的方式，这些交互方式利用之前介绍的数据编码方案保持服务的兼容性。</p>
+<ul>
+<li>向后兼容：较新的代码可以读取较旧的代码编写的数据，新代码兼容旧数据</li>
+<li>向前兼容：旧代码兼容新数据</li>
+</ul>
+<p>一般而言，向后兼容比较容易，因为编写新代码时，清楚旧数据的格式。</p>
+<h2 id="数据编码格式">数据编码格式</h2>
+<p>程序数据两种表示形式：</p>
+<ul>
+<li>内存中的数据结构。</li>
+<li>为了写入文件或网络传输的字节序列。</li>
+</ul>
+<p>前者转为后者称为<strong>编码</strong>（也称序列化），后者转为前者称为<strong>解码</strong>（也称反序列化）。</p>
+<h3 id="语言特定的格式">语言特定的格式</h3>
+<h3 id="JSON和XML">JSON和XML</h3>
+<pre><code class="language-json">&#123;
+    &quot;userName&quot;: &quot;Martin&quot;,
+    &quot;favoriteNumber&quot;: 1337,
+    &quot;interests&quot;: [&quot;daydreaming&quot;, &quot;hacking&quot;]
+&#125;
+</code></pre>
+<p>文本形式，易读性强，开发调试友好，数字编码有模糊之处，缺少模式，占用空间大。</p>
+<h3 id="Thrift和Protocol-Buffer">Thrift和Protocol Buffer</h3>
+<p>Thrift有两种编码格式，为BinaryProtocol和CompactProtocol。Protocol Buffer常被称为pb，只有一种编码方式，和Thrift的CompactProtocol非常类似。由于Thrift和Protocol Buffer二者非常类似，因此下面只介绍pb。</p>
+<p>接口定义语言（IDL）描述模式</p>
+<pre><code>message Person &#123;
+    required string user_name       = 1;
+    optional int64 favorite_number  = 2;
+    repeated string interests       = 3;
+&#125;
+</code></pre>
+<p><img src="pb_encode.jpeg" alt="pb encode"></p>
+<p>模式随着时间不断变化，称为<strong>模式演化</strong>。</p>
+<p>添加新字段时，向前兼容通过忽略不认识的字段实现，向后兼容不能添加必填（required）字段。删除字段时向前和向后兼容性和添加字段时相反。这意味着只能删除非必填字段，而且之前的字段标签不能再用，免得老代码写入的数据被够被新代码忽略。</p>
+<p>数据类型改变在某些方式是支持的，比如pb的单值到多值的互转，但是面临着潜在的数据丢失问题。</p>
+<blockquote>
+<p>pb相比json占用空间更小的原因</p>
+<ul>
+<li>使用字段标签（tag）代替了字段名。</li>
+<li>紧凑的二进制编码，避免了文本编码的许多元字符，比如逗号，引号。</li>
+<li>使用可变长度的int编码整型字段（varint，字节最高位标识是否还有下一个字节），进一步降低了空间占用。</li>
+</ul>
+</blockquote>
+<h3 id="Avro">Avro</h3>
+<p>Avro是Hadroop孵化出得一个项目，广泛地用在Hadroop生态中。</p>
+<p>当应用程序想要对某些数据进行编码，它使用所知道的模式模式的任何版本来编码数据，这被称为<strong>写模式</strong>。当应用程序想要解码某些数据，它期望数据符合某个模式，即<strong>读模式</strong>。</p>
+<p><img src="avro_encode.jpeg" alt="avro encode"></p>
+<p>Avro的关键思想是，写模式和读模式不必是完全一模一样，它们只需保持兼容。例如，写模式和读模式字段顺序不同，这也没有问题，因为模式解析通过字段名匹配（这里不太懂，编码的时候没有将字段名编码进去，那解码是如何根据字段名匹配呢？）。如果一个字段写模式有读模式没有，则忽略，反之，则用默认值填充。</p>
+<p><img src="avro_models.jpeg" alt="avro models"></p>
+<p>相比pb和thrift，avro对动态模式支持更好。</p>
+<p>总结下，二进制编码的好处：</p>
+<ul>
+<li>比json这种文本格式更紧凑，因为省略了字段名称。</li>
+<li>模式是一种强制的自描述的文档<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>。</li>
+<li>更好的向前兼容和向后兼容。</li>
+<li>静态语言可以通过代码生成获得编译时类型检查。</li>
+</ul>
+<h2 id="进程间数据流动">进程间数据流动</h2>
+<h3 id="基于数据库的数据流">基于数据库的数据流</h3>
+<p>这种方式或许是大家见得最多，使用得最多的一种方式了。也就是应用程序将数据库当作中转站，将数据写入，并在之后读取写入的数据，通常会涉及多种不同功能的服务以及众多的接口。</p>
+<h3 id="基于服务的数据流：REST和RPC">基于服务的数据流：REST和RPC</h3>
+<p>服务器公开的API称为<strong>服务</strong>。</p>
+<p>将大型应用程序按照功能分解为较小的服务，当一个服务需要另一个服务的功能或数据时，就会向另一个服务发出请求。这种构建应用程序的方式被称为<strong>面向服务的体系架构</strong>（service-oriented architecture，SOA），或者<strong>微服务体系结构</strong>（microservices architecture）。</p>
+<p>微服务体系的一个关键设计目标是，通过使服务可独立部署和演化，让应用程序更易于修改和维护。</p>
+<p>当HTTP为用作底层通信协议时，它被称为<strong>Web服务</strong>。有两种流行的Web服务方法：REST和SOAP。</p>
+<p>REST不是一种协议，而是一个基于HTTP原则的设计理念。它强调简单的数据格式，使用URL标识资源，并使用HTTP功能进行缓存控制、身份验证和内容类型协商。根据REST原则设计的API称为RESTful。</p>
+<p>SOAP是一种基于XML的协议，用于发出网络API请求。虽然它最常用于HTTP，但其目的是独立于HTTP，并避免使用大多数HTTP功能。相反，它带有庞大而复杂的多种相关标准（Web服务框架，Web Service Framework，称为WS-*）和新增的各种功能。SOAP Web服务的API被称作WSDL（Web Service Description Language）来描述。</p>
+<p>SOAP消息复杂，严重依赖工具支持、代码生成和IDE，不同厂商实现之间标准不一。RESTful倾向于更简单的方法，涉及较少的自动化工具和代码生成，受到小公司的青睐。</p>
+<blockquote>
+<p>到底什么是REST？</p>
+<p>REST全称Resource Representational State Transfer，资源表现层状态转移。这名字越听越让人糊涂，它的真正意思是用url标识资源位置，用HTTP动词（GET/POST/DELETE/PUT）表示操作，用HTTP状态码标识访问状态。<br>
+它的一些最佳实践：</p>
+<ul>
+<li>使用名词，而不是动词，且推荐名词复数。<pre><code>BAD
+/getProducts
+/listOrders
+/retrieveClientByOrder?orderId=1
+
+GOOD
+GET /products : will return the list of all products
+POST /products : will add a product to the collection
+GET /products/4 : will retrieve product #4PATCH
+/PUT /products/4 : will update product #4
+</code></pre>
+</li>
+<li>保证HEAD和GET是安全的，不改变资源状态。</li>
+<li>资源地址采用嵌套结构，例如<code>GET /friends/10375923/profile</code></li>
+</ul>
+<p>这样做地好处是啥呢？</p>
+<ul>
+<li>看url就知道请求的什么资源。</li>
+<li>看method就知道要干什么。</li>
+<li>看状态码就知道结构如何。</li>
+</ul>
+</blockquote>
+<h3 id="基于消息传递的数据流">基于消息传递的数据流</h3>
+<p>与RPC相比，使用消息代理有几个优点：</p>
+<ul>
+<li>接受方不可用或过载，消息代理可以充当缓冲区，也就是常说的削锋作用。</li>
+<li>自动重发，防止消息丢失。</li>
+<li>避免了发送方需要知道接受方的ip和端口。</li>
+<li>支持一条消息发送给多个接受方。</li>
+<li>逻辑上将发送方和接受方分离，也就是解耦作用。</li>
+</ul>
+<p>消息传递是单向的，RPC通常是双向的，消息是fire-and-forget。</p>
+<p>两种实现：</p>
+<ul>
+<li>消息代理，也就是MQ。</li>
+<li>分布式Actor模型。</li>
+</ul>
+<p>分布式Actor框架的实质是将消息代理和Actor模型集成到单个框架中。</p>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>这一点的重要性相信调过别人接口的人都知道，当你使用一个json接口，很难有人能说清这个json会包含哪些字段，更比提每个字段的意义了。 <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/ddia/" rel="tag">ddia</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag">大数据</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" rel="tag">系统设计</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2023/12/13/%E7%AC%AC4%E7%AB%A0%20%E6%95%B0%E6%8D%AE%E7%BC%96%E7%A0%81%E4%B8%8E%E6%BC%94%E5%8C%96/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2023/12/13/第4章 数据编码与演化/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '第4章 数据编码与演化';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

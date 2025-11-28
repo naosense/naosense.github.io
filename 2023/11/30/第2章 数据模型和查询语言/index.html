@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>第2章 数据模型和查询语言 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="第2章 数据模型和查询语言 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/2023/11/30/%E7%AC%AC2%E7%AB%A0%20%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%9F%A5%E8%AF%A2%E8%AF%AD%E8%A8%80/tree_model.jpeg"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="第2章 数据模型和查询语言 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/2023/11/30/%E7%AC%AC2%E7%AB%A0%20%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%9F%A5%E8%AF%A2%E8%AF%AD%E8%A8%80/tree_model.jpeg"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=分布式,读书笔记,ddia,系统设计,大数据>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">第2章 数据模型和查询语言</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2023-11-30</span>
+  </div>
+  <div class="post-content">
+    <p>本章主要讲了数据模型，以及围绕模型所构建的查询语言。</p>
+<h2 id="数据模型">数据模型</h2>
+<h3 id="关系模型">关系模型</h3>
+<blockquote>
+<p>由Edgar Codd与1977年提出，这种模型将数据组织成关系（relations），在SQL中称为表（table），其中每个关系都是元组（tuples）的无序集合，也就是SQL中的行。</p>
+</blockquote>
+<p>MySQL、Oracle、PostgreSQL等一众大家耳熟能详的数据库都属于此类。适用于：</p>
+<ul>
+<li>结构一致的数据。</li>
+<li>事务性要求比较高的情况，比如金融、银行等领域。</li>
+</ul>
+<h3 id="文档模型">文档模型</h3>
+<p>所谓文档模型就是可以直接存储json、xml等非结构化数据，数据的关系和模式不再是首要关注的对象。相关的产品有Redis、MongoDB、HBase等等。</p>
+<blockquote>
+<p>NoSQL<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>：不仅仅是SQL</p>
+<p>最初作为一个标签出现在2009年的开源、分布式以及非关系数据库的见面会上。</p>
+</blockquote>
+<p>NoSQL的优势：</p>
+<ul>
+<li>扩展性更好，支持超大数据集或超高吞吐量。</li>
+<li>大部分是免费开源，成本优势。</li>
+<li>查询的局部性更好，也就是一次将所有数据都查出来了，不用做联结和子查询。</li>
+<li>更具动态和表达力的数据模型，和应用程序数据结构比较接近，减少了阻抗失谐<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>。</li>
+</ul>
+<h4 id="树模型">树模型</h4>
+<p>一个示例，下面是比尔盖茨个人简历的json描述：</p>
+<pre><code class="language-json">&#123;
+    &quot;user id&quot;: 251,
+    &quot;first_name&quot;: &quot;Bill&quot;,
+    &quot;last_ name&quot;: &quot;Gates&quot;,
+    &quot;summary&quot;: &quot;Co-chair of the Bill &amp; Melinda Gates... Active blogger.&quot;,
+    &quot;region id&quot;: &quot;us:91&quot;,
+    &quot;industry_id&quot;: 131,
+    &quot;photo ur1&quot;: &quot;/p/7/000/253/05b/308dd6e.jpg&quot;,
+    &quot;positions&quot;: [
+        &#123;&quot;job_title&quot;: &quot;Co-chair&quot;, &quot;organization&quot;: &quot;Bill &amp; Melinda Gates Foundation&quot;&#125;,
+    	&#123;&quot;job_title&quot;: &quot;Co-founder, Chairman&quot;, &quot;organization&quot;: &quot;Microsoft&quot;&#125;
+    ],
+    &quot;education&quot;: [
+        &#123; &quot;school_name&quot;: &quot;Harvard University&quot;, &quot;start&quot;: 1973, &quot;end&quot;: 1975 &#125;,
+    	&#123; &quot;school_name&quot;: &quot;Lakeside School, Seattle&quot;, &quot;start&quot;: null, &quot;end&quot;: null &#125;
+    ],
+    &quot;contact info&quot;: &#123;
+    	&quot;blog&quot;: &quot;http://thegatesnotes.com&quot;,
+    	&quot;twitter&quot;: &quot;http://twitter.com/BillGates&quot;
+    &#125;
+&#125;
+</code></pre>
+<p>画成图是这个样子。</p>
+<img alt="tree model" src="tree_model.jpeg" width=500>
+<p>可以看到是一层一层的，像一棵树，所以有时候也称为层次模型或树模型。</p>
+<p>其实json并非没有模式，只是和关系模型相比，一个是写式模式（显式），一个读时模式（隐式），json格式更易修改，不用像关系数据库得修改表结构。</p>
+<p>json拥有更好的局部性，不用联接（join）多张表或者多次查询，但仅限于访问大部分数据情况，无法像关系数据库返回特定字段。</p>
+<p>json擅长处理1 vs N，不擅长处理N vs 1和N vs N。想支持只能在应用层使用代码做，另外是不是还增加了数据冗余度，因为不能像关系数据库那样通过外键引用同一份数据。</p>
+<h4 id="网络模型">网络模型</h4>
+<p>不像层次模型，每个记录只有一个父节点，网络模型可以有多个父节点，比如“大西雅图地区”可能是一个记录，居住在该地区的用户都指向它，因此可以方便的支持多对一和多对多。</p>
+<p>比如这个多对多的例子。</p>
+<p><img src="net_model.jpeg" alt="net model"></p>
+<blockquote>
+<p>融合数据库</p>
+<p>关系数据库和文档数据库呈现出融合趋势，主流的关系数据库PostgreSQL、MySQL、DB2已经支持json、xml等常用文档类型。文档数据库RethinkDB查询接口支持和关系型类似的联结，MongoDB驱动程序可以自动解析数据库的引用关系。</p>
+</blockquote>
+<h3 id="图状数据模型">图状数据模型</h3>
+<p>关系模型可以勉为其难的处理多对多，但是还是图模型更自然。</p>
+<p>图有两种对象构成：顶点和边，典型的例子：</p>
+<ul>
+<li>社交网络：顶点是人，边指示哪些人彼此认识。</li>
+<li>Web图：顶点是网页，边表示网页之间的超链接。</li>
+<li>公路或铁路网：顶点是交叉口，边表示它们之间的公路线或铁路线。</li>
+</ul>
+<p>一个示例，来自社交网络的族谱数据库，来自爱达荷州的Lucy和来自法国波恩的Alain，他们结婚了，目前住在伦敦。</p>
+<p><img src="graph_model.jpeg" alt="graph model"></p>
+<p>图模型最大的特点就是灵活，它的灵活性来自于：</p>
+<ul>
+<li>任何顶点之间都可以连接。</li>
+<li>给定某个顶点，可以高效的得到它的入边和出边，从而遍历图。</li>
+<li>可以在同一张图的同一顶点之间标记不同的标签来表达不同的关系，同时仍然保持图的整洁。</li>
+</ul>
+<p>图数据模型可以使用关系数据库和三元存储实现。</p>
+<h4 id="关系数据表">关系数据表</h4>
+<p>如果是关系数据表实现，相应地可以用SQL查询，但是写起来比专门的图查询语言麻烦多了。</p>
+<pre><code class="language-sql">CREATE TABLE vertices (
+    vertex_id   interger PRIMARY KEY,
+    properties  json
+);
+
+CREATE TABLE edges (
+    edge_id     integer PRIMARY KEY,
+    tail_vertex integer REFERENCE vertices (vertex_id),
+    head_vertex integer REFERENCE vertices (vertex_id),
+    label       text,
+    properties  json
+);
+
+CREATE INDEX edges_tails ON edges (tail_vertex);
+CREATE INDEX edges_heads ON edges (head_vertex);
+</code></pre>
+<h4 id="三元组">三元组</h4>
+<p>几乎等同于属性图模型，所有信息都表示为（主体，谓语，客体）。例如，（吉姆，喜欢，香蕉）。三元组的主体相当于图的顶点，客体可能是：</p>
+<ul>
+<li>属性值，比如（lucy，age，33）。</li>
+<li>顶点，比如（lucy，marriedTo，alain）。</li>
+</ul>
+<p>以Turtle<sup class="footnote-ref"><a href="#fn3" id="fnref3">[3]</a></sup>三元组的形式表示图：</p>
+<pre><code>@prefix : &lt;urn:example:&gt;.
+_:lucy      a :Person;          :name &quot;Lucy&quot;;          :bornIn _:idaho.
+_:idaho     a :Location;        :name &quot;Idaho&quot;;         :type &quot;state&quot;;   :within _:usa.
+_:usa       a :Location;        :name &quot;United States&quot;; :type &quot;country&quot;; :within _:namerica.
+ :namerica  a :Location;        :name &quot;North America&quot;; :type &quot;continent&quot;.
+</code></pre>
+<p>RDF（Resource Description Framework）是一种基于xml的资源描述框架，目的是为不同的网站定义一种通用格式，这样不同的网站可以自动合并成一个数据网络，一种互联网级别包含一切数据的数据库。</p>
+<p>我个人觉得Turtle是给人看的三元组，RDF是给机器看的三元组。</p>
+<blockquote>
+<p>语义网</p>
+<p>语义网源自大家想创建一种囊括互联网所有数据的大数据库的设想，为了创建这种数据库，需要所有人都遵守一种通用格式，就像人为了能够理解彼此，必须得说同样地语言，为了描述这种格式诞生了RDF。</p>
+</blockquote>
+<p>在可预见的未来，大多数系统会同时使用关系数据库和NoSQL数据库，称为<strong>混合持久化</strong>。</p>
+<h2 id="数据查询语言">数据查询语言</h2>
+<h3 id="命令式">命令式</h3>
+<p>需要告诉程序一步一步怎么做，大多数的编程语言都属于此类。</p>
+<h3 id="声明式">声明式</h3>
+<p>告诉程序做什么即可，具体怎么做程序自主决定，如SQL、web中的css和xsl。</p>
+<h4 id="SQL">SQL</h4>
+<p>比如使用SQL查询每个月看到了多少鲨鱼。</p>
+<pre><code class="language-sql">SELECT date_trunc('month', observation_timestamp) AS observation_month,
+       sum(num_animals) as total_animals
+FROM observations
+WHERE family = 'Shark'
+GROUP BY observation_month;
+</code></pre>
+<h4 id="聚合管道">聚合管道</h4>
+<p>MongoDB 2.2增加了聚合管道的声明式查询语言，相当于SQL的子集，基于json语法。它的等效表达如下：</p>
+<pre><code>db.observations.aggregate(
+    &#123; $match: &#123; family: &quot;Shark&quot; &#125; &#125;,
+    &#123; $group: &#123;
+        _id: &#123;
+            year: &#123; $year: &quot;observationTimestamp&quot; &#125;,
+            month: &#123; $month: &quot;observationTimestamp&quot; &#125;
+        &#125;,
+        totalAnimal: &#123; $sum: &quot;$numAnimals&quot; &#125;
+    &#125;
+);
+</code></pre>
+<p>感觉某种程度上，可以看成是文档数据库的SQL语言。</p>
+<h4 id="Cypher">Cypher</h4>
+<p>Cypher查询语言，一种属性图的声明式查询语言，最早为Neo4j图形数据库而创建。比如，使用Cypher查询从美国移民到欧洲的人员名单：</p>
+<pre><code>MATCH
+    (person) -[BORN_IN]-&gt; () -[:WITHIN*O..]-&gt; (us:Location &#123;name:'United States'&#125;).
+    (person) -[LIVES_IN]-&gt; () -[:WITHIN*O..]-&gt; (eu:Location &#123;name:'Europe'&#125;).
+</code></pre>
+<h4 id="SPARQL">SPARQL</h4>
+<p>SPARQL（发音：sparkle），是一种基于RDF的查询语言。比如，执行同样的查询，比Cypher<br>
+更加简洁<sup class="footnote-ref"><a href="#fn4" id="fnref4">[4]</a></sup>。</p>
+<pre><code>SELECT ?personName WHERE &#123;
+    ?person :name ?personName.
+    ?person :bornIn / :within* / :name &quot;United States&quot;.
+    ?person :liveIn / :within* / :name &quot;Europe&quot;.
+&#125;
+</code></pre>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>又仔细看了下书，NoSQL是相对SQL（关系模型）而说的，应该不仅包括文档模型，还包含之后的图模型。 <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>编程语言中是一些对象，而关系数据库基本单元是行和列，模型之间的这种脱离称为阻抗失谐。 <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn3" class="footnote-item"><p>Turtle是Notation3的子集。 <a href="#fnref3" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn4" class="footnote-item"><p>简不简洁见仁见智，但是看起来更像SQL倒是真的。 <a href="#fnref4" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/ddia/" rel="tag">ddia</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag">大数据</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" rel="tag">系统设计</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2023/11/30/%E7%AC%AC2%E7%AB%A0%20%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%9F%A5%E8%AF%A2%E8%AF%AD%E8%A8%80/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2023/11/30/第2章 数据模型和查询语言/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '第2章 数据模型和查询语言';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>

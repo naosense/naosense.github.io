@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+  <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  
+  <title>第12章 数据系统的未来 - 扯淡有理</title>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:site" content="扯淡有理"/>
+  <meta name="twitter:creator" content="@songneverend"/>
+  <meta name="twitter:title" content="第12章 数据系统的未来 - 扯淡有理"/>
+  <meta name="twitter:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta name="twitter:image" content="https://naosense.github.io/2024/02/02/%E7%AC%AC12%E7%AB%A0%20%E6%95%B0%E6%8D%AE%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%9C%AA%E6%9D%A5/write_path_and_read_path.jpeg"/>
+  <meta property="og:site_name" content="扯淡有理">
+  <meta property="og:title" content="第12章 数据系统的未来 - 扯淡有理"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:locale" content="zh-CN"/>
+  <meta property="og:description" content="Java Python R 机器学习 统计 扯淡"/>
+  <meta property="og:image" content="https://naosense.github.io/2024/02/02/%E7%AC%AC12%E7%AB%A0%20%E6%95%B0%E6%8D%AE%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%9C%AA%E6%9D%A5/write_path_and_read_path.jpeg"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  
+  <meta name="keywords" content=分布式,读书笔记,ddia,系统设计,大数据>
+  
+  <meta name="description" content="Java Python R 机器学习 统计 扯淡">
+  
+  
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=1.02">
+  
+  
+  <link rel="alternate" href="/atom.xml " title="扯淡有理" type="application/atom+xml">
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/11.7.0/styles/github.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.bootcss.com/highlight.js/11.7.0/highlight.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scala.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/ocaml.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/highlight.js/11.7.0/languages/scheme.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=default"></script>
+  <script>
+      hljs.highlightAll();
+  </script>
+  <script type='text/x-mathjax-config'>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"],
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"] ]
+        },
+        messageStyle: "none"
+    });
+  </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D4YST94BJZ');
+  </script>
+  <!-- fancbox -->
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+  <script>
+    $(document).ready(function () {
+        $("img").each(function () {
+            var image = $(this);
+            var caption = image.attr("alt");
+            var src = image.attr("src");
+            link = image.wrap("<a href='" + src + "'></a>").parent("a");
+            link.attr("data-fancybox", "post image");
+            if (caption) {
+                link.attr("data-caption", caption);
+            }
+        });
+
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+  </script>
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+  <div class="blog-title">
+    <a href="/" class="logo">扯淡有理</a>
+    <div class="subtitle"></div>
+  </div>
+  <nav class="navbar">
+    <ul class="menu">
+      
+        <li class="menu-item">
+          <a href="/archives" class="menu-item-link">主页</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/tags" class="menu-item-link">标签</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/books" class="menu-item-link">读书</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/atom.xml" class="menu-item-link">订阅</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/links" class="menu-item-link">友链</a>
+        </li>
+      
+        <li class="menu-item">
+          <a href="/about" class="menu-item-link">关于</a>
+        </li>
+      
+    </ul>
+  </nav>
+</header>
+<article class="post">
+  <div class="post-title">
+    <h1 class="article-title">第12章 数据系统的未来</h1>
+    
+  </div>
+   <div class="post-meta">
+    <span class="post-time">2024-02-02</span>
+  </div>
+  <div class="post-content">
+    <h2 id="数据集成">数据集成</h2>
+<p>派生数据与分布式事务通过不同的方式达到了类似的目标。分布式事务通过锁机制进行互斥来决定写操作的顺序，而CDC和事件源使用日志进行排序。分布式事务使用原子提交来确保更改只生效一次，而基于日志的系统通常基于确定性重试和幂等性。</p>
+<p>派生数据允许逐步演变。想重建数据集，无需采用高风险的陡然切换。而是在同一个基础数据上的两个独立视图来同时维护新老两种架构。逐步将少量用户迁移到新视图中，以测试性能检测错误。最后，所有用户迁移完，放弃旧视图。</p>
+<p>lambda架构</p>
+<p>核心思想是将数据看成一个个不可变的事件，基于这些总事件，派生出读优化的视图。建议运行两套系统：一个批处理，一个流处理。批处理产生精确的全量视图，流处理产生及时的增量视图。</p>
+<p>这样结合了两套系统的优点：批处理简单，不易出错，流处理不可靠，难以容错，但流处理可以使用快速的近似算法。</p>
+<p>最近的发展是将批处理和流处理在同一个系统中实现，即所谓的kappa架构。</p>
+<h2 id="分拆数据库">分拆数据库</h2>
+<p>整个组织的数据流就像一个巨大的数据库。每当批处理、流或ETL将数据从一个位置传输到另一个位置，就类似数据库子系统需要保持索引或实体化视图至最新状态。流处理，批处理就像触发器。没有统一的数据模型或存储格式适用于所有的访问模式，最终会统一为两种途径：</p>
+<ul>
+<li>
+<p>联合数据库：统一读端</p>
+<p>为各种各样的底层存储引擎和处理方法提供一个统一的查询结构：一种称为联合数据库或聚合存储的方法。</p>
+</li>
+<li>
+<p>分离式数据库：统一写端</p>
+<p>跨系统的同步写。</p>
+</li>
+</ul>
+<p>传统的同步写依赖分布式事务，但是具有幂等写入的异步事件日志是一种更健壮的方法。</p>
+<ul>
+<li>在系统级别，异步事件流使得组件终端或性能下降时表现更稳健。</li>
+<li>在人员角度，分离式数据系统使得不同的团队可以独立的开发、改进和维护不同的软件和服务，可以更专业的专注于自己的领域。</li>
+</ul>
+<p>分离和组合的目的并不是替代传统数据库，而是为了组合不同的系统，结合每个系统的优点去满足自己的需求。</p>
+<p>流式处理与服务</p>
+<p>前者是单向的，异步的，后者是双向的，同步的。假设客户正在购买一种商品，这种商品以某一种货币定价，但需要另一种货币支付。两种方式的实现：</p>
+<ol>
+<li>对于微服务，同步查询汇率服务，以获取特定货币的当前汇率。</li>
+<li>对于数据流，会预先订阅汇率变更流，并在本地数据库记录当前汇率。</li>
+</ol>
+<p>但是要注意事件依赖，如果要重演当初的购买行为，汇率必须得是当时的。</p>
+<p>写路径与读路径</p>
+<p><img src="write_path_and_read_path.jpeg" alt="write path and read path"></p>
+<p>写路径与读路径涵盖了数据的整个过程。写路径和读路径在派生数据集上交会，某种程度上，它是写入时需完成的工作量与读取时需完成的工作量之间的一种平衡。从这个角度看，缓存、索引和视图主要是调整读写路径之间的边界。</p>
+<h2 id="端到端的正确性">端到端的正确性</h2>
+<h3 id="强制约束">强制约束</h3>
+<p>一致性包含两个方面：</p>
+<ul>
+<li>
+<p>时效性</p>
+<p>意味着确保用户观察到系统的最新状态。暂时的，最终通过等待和再次尝试来解决。</p>
+</li>
+<li>
+<p>完整性</p>
+<p>意味着避免数据损坏，即没有数据丢失，也没有互相矛盾或错误的数据。永久的，需要专门的检查和修理。</p>
+</li>
+</ul>
+<h3 id="宽松的约束">宽松的约束</h3>
+<p>为了性能或可用性通常会采用。</p>
+<ul>
+<li>如果两个人注册了相同的用户名或预订了同一个座位，则可以向其中一个发送道歉消息。这种纠正错误的措施被称为补偿性事务。</li>
+<li>如果订购的商品超出库存，可以追加补充库存，但需要为延误发货道歉，并提供折扣。</li>
+<li>如果有人提款额比他们账户中的钱还多，银行可以向他们收取透支费用。</li>
+</ul>
+<p>在许多商业环境中，实际上可以接受的是暂时性违反约束，稍后通过道歉流程来修复，关键是道歉的成本有多高。</p>
+<h3 id="信任，但要确认">信任，但要确认</h3>
+<p>也就是允许系统出错，但是要及时的发现和修复。</p>
+<p>加密工具来证明系统的完整性，比如加密货币、区块链和分布式账本。密码审计和完整性检查常常依赖默克尔树（Merkle Tree）。</p>
+<p>检查数据完整性也被称为审计。</p>
+<h2 id="做正确的事">做正确的事</h2>
+<p>技术是工具而不是目的，要用技术造福人类。本节讨论了一些开发问题，比如偏见和歧视、信息孤岛导致的囚笼效应，用户隐私保护等话题。</p>
+
+  </div>
+  <div class="post-footer">
+    
+      <ul class="post-tag-list" itemprop="keywords"><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/ddia/" rel="tag">ddia</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag">分布式</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag">大数据</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/" rel="tag">系统设计</a></li><li class="post-tag-list-item"><a class="post-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+    
+
+    <a href="#top" class="top">返回顶部</a>
+  </div>
+</article>
+<footer>
+    &copy; 2025
+    <span class="author">
+        naosense
+    </span>
+
+     
+        <span class="motto">
+            世上无难事，只要肯登攀
+        </span>
+     
+     
+        <div id="disqus_thread">
+        <script>
+        /**
+        *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+        *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+        var disqus_config = function () {
+        this.page.url = 'https://naosense.github.io/2024/02/02/%E7%AC%AC12%E7%AB%A0%20%E6%95%B0%E6%8D%AE%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%9C%AA%E6%9D%A5/';  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = '2024/02/02/第12章 数据系统的未来/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+        this.page.title = '第12章 数据系统的未来';
+        };
+
+        (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://pingao777.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+        })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+     
+    </div>
+</footer>
+
+
+    </div>
+  </body>
+</html>
