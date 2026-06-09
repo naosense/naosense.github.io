@@ -1516,7 +1516,8 @@ function renderChinaMap(provMap, distMap) {
         }
 
         const provs = [...new Set(Object.values(distMap).map(d => d.province))].filter(p => __provAdcode[p]);
-        const geojsonUrl = 'https://geo.datav.aliyun.com/areas_v3/bound/';
+        const isFileProto = window.location.protocol === 'file:';
+        const geojsonUrl = isFileProto ? 'https://geo.datav.aliyun.com/areas_v3/bound/' : './geojson/';
 
         Promise.all([
             fetch(geojsonUrl+'100000_full.json').then(r=>r.json())
