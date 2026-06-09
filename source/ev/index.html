@@ -948,9 +948,10 @@ function renderReport(ctx) {
 
     // Alerts
     let alerts = [];
-    const mergedCnt = window.__mergedCnt || 0;
-    // totalCnt counts records after parseExcel (kWh>0) + post-merge
-    // We need the pre-parseExcel count. Approximate: totalCnt + mergedCnt + filteredZero
+    let mergedCnt = window.__mergedCnt || 0;
+    if (ctx._currentYear && window.__jumpGunGroups) {
+        mergedCnt = window.__jumpGunGroups.filter(g => g.dateStr.startsWith(ctx._currentYear)).length;
+    }
     const filteredZero = allRecords.filter(r => r.chargedKWh < 0.1).length;
     const approxRaw = totalCnt + mergedCnt + filteredZero;
     if (filteredZero > 0 || mergedCnt > 0) {
@@ -1307,7 +1308,10 @@ function renderReport(ctx) {
     }
 
     // ====== 7. Jump-Gun Records ======
-    const jumpGunGroups = window.__jumpGunGroups;
+    let jumpGunGroups = window.__jumpGunGroups;
+    if (jumpGunGroups && ctx._currentYear) {
+        jumpGunGroups = jumpGunGroups.filter(g => g.dateStr.startsWith(ctx._currentYear));
+    }
     if (jumpGunGroups && jumpGunGroups.length > 0) {
         const jgSection = document.createElement('div');
         jgSection.className = 'section-title';
