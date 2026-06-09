@@ -878,6 +878,7 @@ async function handleFile(file) {
         const beforeMerge = rawRecords.length;
         const { merged: mergedRecords, groups: jumpGunGroups } = mergeJumpGunRecords(rawRecords);
         rawRecords = mergedRecords;
+        window.__rawRecords = rawRecords;
         const mergedCnt = beforeMerge - rawRecords.length;
         window.__mergedCnt = mergedCnt;
         window.__jumpGunGroups = jumpGunGroups;
@@ -1003,7 +1004,7 @@ function renderReport(ctx) {
     if (fastRecords.length > 0) {
         const regSection = document.createElement('div');
         regSection.className = 'section-title';
-        regSection.innerHTML = `充电区域与来源`;
+        regSection.innerHTML = `充电区域`;
         $('report').appendChild(regSection);
 
         // Province map data
@@ -1201,7 +1202,7 @@ function renderReport(ctx) {
     if (fastRecords.length >= 6) {
         const chartSection = document.createElement('div');
         chartSection.className = 'section-title';
-        chartSection.innerHTML = `SOC 与充电时长 <span class="badge">${homeCity}全部快充记录 · 点击查看详情</span>`;
+        chartSection.innerHTML = `SOC × 充电时长 <span class="badge">${homeCity}全部快充记录</span>`;
         $('report').appendChild(chartSection);
 
         const flexRow = document.createElement('div');
@@ -1217,7 +1218,7 @@ function renderReport(ctx) {
     } else {
         const noData = document.createElement('div');
         noData.className = 'no-data';
-        noData.innerHTML = '<strong>数据不足</strong>，需要至少 6 条快充记录展示 SOC 与充电时长的关系';
+        noData.innerHTML = '<strong>数据不足</strong>，需要至少 6 条快充记录展示 SOC × 充电时长的关系';
         $('report').appendChild(noData);
     }
 
@@ -1229,7 +1230,7 @@ function renderReport(ctx) {
         $('report').appendChild(stationSection);
 
         const stationCnt = {};
-        fastRecords.forEach(r => {
+        allRecords.forEach(r => {
             if (!stationCnt[r.station]) stationCnt[r.station] = { cnt: 0, powers: [], totalKwh: 0 };
             stationCnt[r.station].cnt++;
             stationCnt[r.station].powers.push(r.avgPower);
@@ -1488,6 +1489,7 @@ function renderSOCScatter(records, homeCity) {
                     ticks: { stepSize: 5, font: { size: 9 }, color: '#9ca3af' }
                 },
                 y: {
+                    title: { display: true, text: '起始 SOC（%）', font: { size: 10 }, color: '#9ca3af' },
                     grid: { display: false },
                     ticks: { font: { size: 9 }, color: '#5a6577' }
                 }
@@ -1967,6 +1969,39 @@ $('ecardAmount').addEventListener('input', function() {
     }
   }
 });
+
+// ====== 效率/电池/慢充阈值变更实时重渲染 ======
+let __reprocessTimer = null;
+function reprocessAndRerender() {
+    clearTimeout(__reprocessTimer);
+    __reprocessTimer = setTimeout(() => {
+        const rawRecords = window.__rawRecords;
+        if (!rawRecords) return;
+        const homeCity = ($('homeCity').value || '').trim() || '北京';
+        const batteryKWh = parseFloat($('batteryCap').value) || BATTERY_DEFAULT;
+        const slowKw = parseFloat($('slowThreshold').value) || SLOW_THRESHOLD_DEFAULT;
+        const eff = (parseFloat($('efficiency').value) || 92) / 100;
+        const allRecords = processRecords(rawRecords, batteryKWh, eff, slowKw);
+        const fastRecords = allRecords.filter(r => !r.isSlow);
+        const slowRecords = allRecords.filter(r => r.isSlow);
+        window.__fastRecords = fastRecords;
+        window.__allRecords = allRecords;
+        window.__fullRecords = [...allRecords];
+        const totalKWh = allRecords.reduce((s, r) => s + r.chargedKWh, 0);
+        const totalAmount = allRecords.reduce((s, r) => s + r.amount, 0);
+        const totalPaid = allRecords.reduce((s, r) => s + r.paid, 0);
+        const dates = rawRecords.map(r => r.dateStr).sort();
+        const reportCtx = { allRecords, fastRecords, slowRecords, totalKWh, totalAmount, totalPaid, batteryKWh, minDate: dates[0], maxDate: dates[dates.length - 1], slowKw, eff, homeCity };
+        if (window.__activeCtx?._currentYear) reportCtx._currentYear = window.__activeCtx._currentYear;
+        window.__reportCtx = reportCtx;
+        window.__activeCtx = reportCtx;
+        $('report').innerHTML = '';
+        renderReport(reportCtx);
+    }, 400);
+}
+$('efficiency').addEventListener('input', reprocessAndRerender);
+$('batteryCap').addEventListener('input', reprocessAndRerender);
+$('slowThreshold').addEventListener('input', reprocessAndRerender);
 
 // ====== 常驻地变更实时重渲染 ======
 $('homeCity').addEventListener('input', function() {
