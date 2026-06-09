@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>充电分析报告</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f5f9;
+  --card: #ffffff;
+  --subtle: #f8f9fc;
+  --border: #e6e9f0;
+  --border-strong: #d0d5dd;
+  --cyan: #009ef7;
+  --cyan-light: rgba(0, 158, 247, 0.07);
+  --cyan-dim: rgba(0, 158, 247, 0.7);
+  --coral: #f15b5b;
+  --coral-light: rgba(241, 91, 91, 0.06);
+  --green: #00b383;
+  --green-light: rgba(0, 179, 131, 0.08);
+  --amber: #e8912e;
+  --text: #0d111c;
+  --text-dim: #5a6577;
+  --text-faint: #9ca3af;
+  --display: 'Orbitron', 'Noto Sans SC', sans-serif;
+  --mono: 'Share Tech Mono', 'Noto Sans SC', monospace;
+  --body: 'Noto Sans SC', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-weight: 300;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ===== Upload / Hero ===== */
+.upload-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 90vh;
+  background: var(--card);
+  position: relative;
+  overflow: hidden;
+}
+.upload-section::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 1px; background: var(--border);
+}
+.upload-section .hero-text {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 80px clamp(40px, 5vw, 80px);
+}
+.upload-section .hero-text h1 {
+  font-family: var(--display);
+  font-size: clamp(38px, 4.5vw, 54px);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.15;
+  margin-bottom: 14px;
+  color: var(--text);
+}
+.upload-section .hero-text p {
+  font-size: 16px; color: var(--text-dim);
+  line-height: 1.7; max-width: 380px;
+  margin-bottom: 40px;
+}
+.upload-area {
+  display: inline-flex; align-items: center; gap: 20px;
+  padding: 16px 24px;
+  border: 1.5px dashed var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.upload-area:hover {
+  border-color: var(--cyan);
+  background: var(--cyan-light);
+}
+.upload-btn {
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer;
+}
+.upload-btn::before {
+  content: '↑';
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  background: var(--cyan-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--cyan);
+  flex-shrink: 0;
+}
+.upload-btn .label { font-size: 15px; font-weight: 600; color: var(--text); }
+.upload-btn.loading { opacity: .6; pointer-events: none; }
+#fileInput { display: none; }
+.file-name { font-size: 12px !important; color: var(--text-faint) !important; display: block; margin-top: 2px; }
+.settings-row {
+  display: flex; gap: 8px; margin-top: 16px; flex-wrap: nowrap;
+}
+.settings-row label {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px;
+  background: var(--bg);
+  border-radius: 8px;
+  font-size: 12px; color: var(--text-faint);
+}
+.settings-row label b {
+  display: inline-flex;
+  flex-direction: column;
+  font-weight: inherit;
+  line-height: 1.3;
+}
+.settings-row label b span {
+  font-size: 13px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.settings-row input {
+  font-family: var(--mono);
+  font-size: 13px;
+  width: 56px;
+  padding: 2px 4px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: transparent;
+  text-align: center;
+  color: var(--text);
+}
+.settings-row input:focus {
+  outline: none;
+  border-color: var(--cyan);
+}
+/* Hero right (stats) - built as hero-visual div */
+.upload-section .hero-visual {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 60px 48px;
+  position: relative;
+}
+.upload-section .hero-visual::before {
+  content: '';
+  position: absolute; left: 0; top: 15%; bottom: 15%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--border), transparent);
+}
+.badge-pill {
+  display: inline-flex; align-items: center;
+  padding: 5px 16px;
+  background: var(--cyan-light);
+  border-radius: 100px;
+  font-family: var(--display);
+  font-size: 11px; font-weight: 600; color: var(--cyan);
+  letter-spacing: 0.1em;
+  width: fit-content;
+  margin-bottom: 20px;
+}
+.stat-hero { text-align: right; }
+.stat-hero .number {
+  font-family: var(--display);
+  font-size: clamp(72px, 8vw, 100px);
+  font-weight: 700;
+  letter-spacing: -2px;
+  line-height: 0.9;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.stat-hero .unit {
+  font-size: 18px; font-weight: 500;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+.stat-hero .meta-row {
+  display: flex; justify-content: flex-end; gap: 24px;
+}
+.stat-hero .meta-item { text-align: right; }
+.stat-hero .meta-item .val {
+  font-family: var(--mono);
+  font-size: 22px; font-weight: 600;
+}
+.stat-hero .meta-item .val.cyan { color: var(--cyan); }
+.stat-hero .meta-item .val.green { color: var(--green); }
+.stat-hero .meta-item .val.coral { color: var(--coral); }
+.stat-hero .meta-item .lbl {
+  font-size: 11px; color: var(--text-faint);
+  font-family: var(--display);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* ===== Report Container ===== */
+.report {
+  max-width: 1200px; margin: 0 auto; padding: 0 24px 32px;
+  display: none;
+}
+.report.visible { display: block; }
+
+/* ===== Section Headers ===== */
+.section-title {
+  font-family: var(--display);
+  font-size: 22px; font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.section-title .badge {
+  font-family: var(--body);
+  font-size: 13px; font-weight: 400;
+  color: var(--text-dim);
+  background: var(--subtle);
+  padding: 2px 12px;
+  border-radius: 20px;
+}
+
+/* ===== Stats Grid ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+  border-color: var(--border-strong);
+}
+.stat-card::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--cyan);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.stat-card:hover::after { transform: scaleX(1); }
+.stat-card .label {
+  font-size: 11px; font-weight: 500;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: var(--display);
+  margin-bottom: 4px;
+}
+.stat-card .value {
+  font-family: var(--mono);
+  font-size: 30px;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+.stat-card .value.cyan { color: var(--cyan); }
+.stat-card .value.green { color: var(--green); }
+.stat-card .value.coral { color: var(--coral); }
+.stat-card .sub {
+  font-size: 12px; color: var(--text-dim);
+  margin-top: 2px; font-weight: 400;
+}
+
+/* ===== Table Wrap ===== */
+.table-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.table-wrap thead th {
+  font-family: var(--display);
+  font-size: 11px; font-weight: 600;
+  color: var(--text-faint);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 14px 16px;
+  text-align: center;
+  border-bottom: 1.5px solid var(--border);
+  background: var(--subtle);
+  position: sticky; top: 0;
+}
+.table-wrap thead th:first-child { text-align: left; padding-left: 20px; }
+.table-wrap thead th:last-child { padding-right: 20px; }
+.table-wrap td {
+  padding: 12px 16px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 13px;
+  transition: background 0.15s;
+}
+.table-wrap td:first-child { text-align: left; padding-left: 20px; color: var(--text); font-weight: 500; }
+.table-wrap td:last-child { padding-right: 20px; }
+.table-wrap tbody tr:last-child td { border-bottom: none; }
+.table-wrap tbody tr:hover td { background: var(--subtle); }
+.table-wrap .td-label { font-weight: 600; color: var(--text); text-align: left; }
+.table-wrap .note {
+  font-size: 12px; color: var(--text-faint);
+  padding: 10px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--subtle);
+}
+
+/* Heat colors */
+.cell-slow { color: var(--coral) !important; font-weight: 500; }
+.cell-mid-slow { color: var(--amber) !important; }
+.cell-mid { color: #5a8db8 !important; }
+.cell-fast { color: var(--green) !important; font-weight: 500; }
+
+/* ===== Chart Grid & Box ===== */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.chart-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  transition: box-shadow 0.2s;
+}
+.chart-box:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.04); }
+.chart-box h3 {
+  font-family: var(--display);
+  font-size: 12px; font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 18px;
+}
+
+/* ===== Station Grid ===== */
+.station-grid {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-bottom: 24px;
+}
+.station-item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 14px 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: all 0.2s;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+.station-item:hover {
+  border-color: var(--cyan);
+  box-shadow: 0 4px 20px rgba(0, 158, 247, 0.06);
+}
+.station-item .name { font-size: 14px; font-weight: 500; color: var(--text); }
+.station-item .meta { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+.station-item .meta strong { color: var(--cyan); font-size: 14px; font-weight: 600; font-family: var(--mono); }
+
+/* ===== Alerts ===== */
+.alert {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.alert.info {
+  background: var(--cyan-light);
+  border: 1px solid rgba(0, 158, 247, 0.12);
+  color: #0069a8;
+}
+.alert.warn {
+  background: var(--coral-light);
+  border: 1px solid rgba(241, 91, 91, 0.12);
+  color: #b33a3a;
+}
+
+/* ===== Error ===== */
+.error-msg {
+  background: var(--coral-light);
+  border: 1px solid rgba(241, 91, 91, 0.2);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  color: #b33a3a;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+/* ===== No Data ===== */
+.no-data {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 40px;
+  text-align: center;
+  color: var(--text-faint);
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+.no-data strong { color: var(--text-dim); }
+
+/* ===== Loading ===== */
+.loading-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  justify-content: center; align-items: center;
+}
+.loading-overlay.visible { display: flex; }
+.loading-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 48px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+}
+.spinner {
+  width: 32px; height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-box p { color: var(--text-dim); font-size: 14px; }
+
+/* ===== Modal ===== */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+}
+.modal-overlay.visible { display: block; }
+.modal {
+  display: none;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  z-index: 201;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  width: 640px; max-width: 92vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+  max-height: 85vh; overflow-y: auto;
+}
+.modal table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.modal thead th {
+  padding: 6px 8px; text-align: left;
+  border-bottom: 1.5px solid var(--border);
+  font-size: 11px; color: var(--text-faint);
+  font-family: var(--display); text-transform: uppercase; letter-spacing: 0.5px;
+}
+.modal tbody td {
+  padding: 8px; text-align: right;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-dim); font-size: 13px;
+}
+.modal tbody td:first-child { text-align: left; }
+.modal tbody tr:last-child td { border-bottom: none; }
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .upload-section { grid-template-columns: 1fr; min-height: auto; }
+  .upload-section .hero-text { padding: 60px 32px; }
+  .upload-section .hero-visual { padding: 0 32px 48px; }
+  .upload-section .hero-visual::before { display: none; }
+  .stats-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 640px) {
+  .upload-section .hero-text { padding: 40px 20px; }
+  .upload-section .hero-visual { padding: 0 20px 40px; }
+  .hero-text h1 { font-size: 28px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+    .chart-grid { grid-template-columns: 1fr; }
+  .settings-row { flex-direction: column; align-items: stretch; }
+  .stat-hero .meta-row { flex-wrap: wrap; gap: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Upload -->
+<div class="upload-section">
+  <div class="hero-text">
+    <div class="badge-pill">ANALYTICS · EV CHARGING REPORT</div>
+    <h1>充电分析报告</h1>
+    <p>上传充电记录 Excel，自动分析行程充电、SOC 曲线、充电站偏好与慢充校准</p>
+
+    <div class="upload-area" id="uploadArea">
+      <label class="upload-btn" id="uploadBtn" for="fileInput">
+        <span class="label">上传充电记录</span>
+        <span class="file-name" id="fileName" style="cursor:pointer;color:var(--cyan);text-decoration:underline" onclick="event.stopPropagation();event.preventDefault();downloadTemplate()">下载数据模板</span>
+      </label>
+      <input type="file" id="fileInput" accept=".xlsx,.xls">
+    </div>
+
+    <div class="settings-row">
+      <label><b><span>电池</span><span>容量</span></b> <input type="number" id="batteryCap" value="80" step="5" min="20" max="200"> kWh</label>
+      <label><b><span>慢充</span><span>阈值</span></b> <input type="number" id="slowThreshold" value="15" step="1" min="1" max="50"> kW</label>
+      <label><b><span>充电</span><span>效率</span></b> <input type="number" id="efficiency" value="92" step="1" min="70" max="100"> %</label>
+      <label><b><span>卡券</span><span>消费</span></b> <input type="number" id="ecardAmount" value="0" step="10" min="0" max="9999"> 元</label>
+      <label><b><span>常驻</span><span>地</span></b> <input type="text" id="homeCity" value="北京" style="width:52px"> </label>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="stat-hero" id="heroStats">
+      <div class="number">—</div>
+      <div class="unit">上传后显示核心指标</div>
+      <div class="meta-row">
+        <div class="meta-item"><div class="val">—</div><div class="lbl">充电次数</div></div>
+        <div class="meta-item"><div class="val">—</div><div class="lbl">快充</div></div>
+        <div class="meta-item"><div class="val">—</div><div class="lbl">慢充</div></div>
+        <div class="meta-item"><div class="val">—</div><div class="lbl">实付(元)</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-box">
+        <div class="spinner"></div>
+        <p id="loadingText">正在解析数据...</p>
+    </div>
+</div>
+
+<!-- Report -->
+<div class="report" id="report"></div>
+
+<script>
+// ====== China Geo Name Mapping ======
+const __cityMap = {"北京":["东城区","西城区","朝阳区","丰台区","石景山区","海淀区","门头沟区","房山区","通州区","顺义区","昌平区","大兴区","怀柔区","平谷区","密云区","延庆区"],"天津":["和平区","河东区","河西区","南开区","河北区","红桥区","东丽区","西青区","津南区","北辰区","武清区","宝坻区","滨海新区","宁河区","静海区","蓟州区"],"河北":["石家庄市","唐山市","秦皇岛市","邯郸市","邢台市","保定市","张家口市","承德市","沧州市","廊坊市","衡水市"],"山西":["太原市","大同市","阳泉市","长治市","晋城市","朔州市","晋中市","运城市","忻州市","临汾市","吕梁市"],"内蒙古":["呼和浩特市","包头市","乌海市","赤峰市","通辽市","鄂尔多斯市","呼伦贝尔市","巴彦淖尔市","乌兰察布市","兴安盟","锡林郭勒盟","阿拉善盟"],"辽宁":["沈阳市","大连市","鞍山市","抚顺市","本溪市","丹东市","锦州市","营口市","阜新市","辽阳市","盘锦市","铁岭市","朝阳市","葫芦岛市"],"吉林":["长春市","吉林市","四平市","辽源市","通化市","白山市","松原市","白城市","延边朝鲜族自治州"],"黑龙江":["哈尔滨市","齐齐哈尔市","鸡西市","鹤岗市","双鸭山市","大庆市","伊春市","佳木斯市","七台河市","牡丹江市","黑河市","绥化市","大兴安岭地区"],"上海":["黄浦区","徐汇区","长宁区","静安区","普陀区","虹口区","杨浦区","闵行区","宝山区","嘉定区","浦东新区","金山区","松江区","青浦区","奉贤区","崇明区"],"江苏":["南京市","无锡市","徐州市","常州市","苏州市","南通市","连云港市","淮安市","盐城市","扬州市","镇江市","泰州市","宿迁市"],"浙江":["杭州市","宁波市","温州市","嘉兴市","湖州市","绍兴市","金华市","衢州市","舟山市","台州市","丽水市"],"安徽":["合肥市","芜湖市","蚌埠市","淮南市","马鞍山市","淮北市","铜陵市","安庆市","黄山市","滁州市","阜阳市","宿州市","六安市","亳州市","池州市","宣城市"],"福建":["福州市","厦门市","莆田市","三明市","泉州市","漳州市","南平市","龙岩市","宁德市"],"江西":["南昌市","景德镇市","萍乡市","九江市","新余市","鹰潭市","赣州市","吉安市","宜春市","抚州市","上饶市"],"山东":["济南市","青岛市","淄博市","枣庄市","东营市","烟台市","潍坊市","济宁市","泰安市","威海市","日照市","临沂市","德州市","聊城市","滨州市","菏泽市"],"河南":["郑州市","开封市","洛阳市","平顶山市","安阳市","鹤壁市","新乡市","焦作市","濮阳市","许昌市","漯河市","三门峡市","南阳市","商丘市","信阳市","周口市","驻马店市","济源市"],"湖北":["武汉市","黄石市","十堰市","宜昌市","襄阳市","鄂州市","荆门市","孝感市","荆州市","黄冈市","咸宁市","随州市","恩施土家族苗族自治州","仙桃市","潜江市","天门市","神农架林区"],"湖南":["长沙市","株洲市","湘潭市","衡阳市","邵阳市","岳阳市","常德市","张家界市","益阳市","郴州市","永州市","怀化市","娄底市","湘西土家族苗族自治州"],"广东":["广州市","韶关市","深圳市","珠海市","汕头市","佛山市","江门市","湛江市","茂名市","肇庆市","惠州市","梅州市","汕尾市","河源市","阳江市","清远市","东莞市","中山市","潮州市","揭阳市","云浮市"],"广西":["南宁市","柳州市","桂林市","梧州市","北海市","防城港市","钦州市","贵港市","玉林市","百色市","贺州市","河池市","来宾市","崇左市"],"海南":["海口市","三亚市","三沙市","儋州市","五指山市","琼海市","文昌市","万宁市","东方市","定安县","屯昌县","澄迈县","临高县","白沙黎族自治县","昌江黎族自治县","乐东黎族自治县","陵水黎族自治县","保亭黎族苗族自治县","琼中黎族苗族自治县"],"重庆":["万州区","涪陵区","渝中区","大渡口区","江北区","沙坪坝区","九龙坡区","南岸区","北碚区","綦江区","大足区","渝北区","巴南区","黔江区","长寿区","江津区","合川区","永川区","南川区","璧山区","铜梁区","潼南区","荣昌区","开州区","梁平区","武隆区","城口县","丰都县","垫江县","忠县","云阳县","奉节县","巫山县","巫溪县","石柱土家族自治县","秀山土家族苗族自治县","酉阳土家族苗族自治县","彭水苗族土家族自治县"],"四川":["成都市","自贡市","攀枝花市","泸州市","德阳市","绵阳市","广元市","遂宁市","内江市","乐山市","南充市","眉山市","宜宾市","广安市","达州市","雅安市","巴中市","资阳市","阿坝藏族羌族自治州","甘孜藏族自治州","凉山彝族自治州"],"贵州":["贵阳市","六盘水市","遵义市","安顺市","毕节市","铜仁市","黔西南布依族苗族自治州","黔东南苗族侗族自治州","黔南布依族苗族自治州"],"云南":["昆明市","曲靖市","玉溪市","保山市","昭通市","丽江市","普洱市","临沧市","楚雄彝族自治州","红河哈尼族彝族自治州","文山壮族苗族自治州","西双版纳傣族自治州","大理白族自治州","德宏傣族景颇族自治州","怒江傈僳族自治州","迪庆藏族自治州"],"西藏":["拉萨市","日喀则市","昌都市","林芝市","山南市","那曲市","阿里地区"],"陕西":["西安市","铜川市","宝鸡市","咸阳市","渭南市","延安市","汉中市","榆林市","安康市","商洛市"],"甘肃":["兰州市","嘉峪关市","金昌市","白银市","天水市","武威市","张掖市","平凉市","酒泉市","庆阳市","定西市","陇南市","临夏回族自治州","甘南藏族自治州"],"青海":["西宁市","海东市","海北藏族自治州","黄南藏族自治州","海南藏族自治州","果洛藏族自治州","玉树藏族自治州","海西蒙古族藏族自治州"],"宁夏":["银川市","石嘴山市","吴忠市","固原市","中卫市"],"新疆":["乌鲁木齐市","克拉玛依市","吐鲁番市","哈密市","昌吉回族自治州","博尔塔拉蒙古自治州","巴音郭楞蒙古自治州","阿克苏地区","克孜勒苏柯尔克孜自治州","喀什地区","和田地区","伊犁哈萨克自治州","塔城地区","阿勒泰地区","石河子市","阿拉尔市","图木舒克市","五家渠市","北屯市","铁门关市","双河市","可克达拉市","昆玉市","胡杨河市"]};
+const __countyFallback = {"河北":{"长安区":"石家庄市","桥西区":"张家口市","新华区":"沧州市","井陉矿区":"石家庄市","裕华区":"石家庄市","藁城区":"石家庄市","鹿泉区":"石家庄市","栾城区":"石家庄市","井陉县":"石家庄市","正定县":"石家庄市","行唐县":"石家庄市","灵寿县":"石家庄市","高邑县":"石家庄市","深泽县":"石家庄市","赞皇县":"石家庄市","无极县":"石家庄市","平山县":"石家庄市","元氏县":"石家庄市","赵县":"石家庄市","辛集市":"石家庄市","晋州市":"石家庄市","新乐市":"石家庄市","路南区":"唐山市","路北区":"唐山市","古冶区":"唐山市","开平区":"唐山市","丰南区":"唐山市","丰润区":"唐山市","曹妃甸区":"唐山市","滦南县":"唐山市","乐亭县":"唐山市","迁西县":"唐山市","玉田县":"唐山市","遵化市":"唐山市","迁安市":"唐山市","滦州市":"唐山市","海港区":"秦皇岛市","山海关区":"秦皇岛市","北戴河区":"秦皇岛市","抚宁区":"秦皇岛市","青龙满族自治县":"秦皇岛市","昌黎县":"秦皇岛市","卢龙县":"秦皇岛市","邯山区":"邯郸市","丛台区":"邯郸市","复兴区":"邯郸市","峰峰矿区":"邯郸市","肥乡区":"邯郸市","永年区":"邯郸市","临漳县":"邯郸市","成安县":"邯郸市","大名县":"邯郸市","涉县":"邯郸市","磁县":"邯郸市","邱县":"邯郸市","鸡泽县":"邯郸市","广平县":"邯郸市","馆陶县":"邯郸市","魏县":"邯郸市","曲周县":"邯郸市","武安市":"邯郸市","襄都区":"邢台市","信都区":"邢台市","任泽区":"邢台市","南和区":"邢台市","临城县":"邢台市","内丘县":"邢台市","柏乡县":"邢台市","隆尧县":"邢台市","宁晋县":"邢台市","巨鹿县":"邢台市","新河县":"邢台市","广宗县":"邢台市","平乡县":"邢台市","威县":"邢台市","清河县":"邢台市","临西县":"邢台市","南宫市":"邢台市","沙河市":"邢台市","竞秀区":"保定市","莲池区":"保定市","满城区":"保定市","清苑区":"保定市","徐水区":"保定市","涞水县":"保定市","阜平县":"保定市","定兴县":"保定市","唐县":"保定市","高阳县":"保定市","容城县":"保定市","涞源县":"保定市","望都县":"保定市","安新县":"保定市","易县":"保定市","曲阳县":"保定市","蠡县":"保定市","顺平县":"保定市","博野县":"保定市","雄县":"保定市","涿州市":"保定市","定州市":"保定市","安国市":"保定市","高碑店市":"保定市","桥东区":"张家口市","宣化区":"张家口市","下花园区":"张家口市","万全区":"张家口市","崇礼区":"张家口市","张北县":"张家口市","康保县":"张家口市","沽源县":"张家口市","尚义县":"张家口市","蔚县":"张家口市","阳原县":"张家口市","怀安县":"张家口市","怀来县":"张家口市","涿鹿县":"张家口市","赤城县":"张家口市","双桥区":"承德市","双滦区":"承德市","鹰手营子矿区":"承德市","承德县":"承德市","兴隆县":"承德市","滦平县":"承德市","隆化县":"承德市","丰宁满族自治县":"承德市","宽城满族自治县":"承德市","围场满族蒙古族自治县":"承德市","平泉市":"承德市","运河区":"沧州市","沧县":"沧州市","青县":"沧州市","东光县":"沧州市","海兴县":"沧州市","盐山县":"沧州市","肃宁县":"沧州市","南皮县":"沧州市","吴桥县":"沧州市","献县":"沧州市","孟村回族自治县":"沧州市","泊头市":"沧州市","任丘市":"沧州市","黄骅市":"沧州市","河间市":"沧州市","安次区":"廊坊市","广阳区":"廊坊市","固安县":"廊坊市","永清县":"廊坊市","香河县":"廊坊市","大城县":"廊坊市","文安县":"廊坊市","大厂回族自治县":"廊坊市","霸州市":"廊坊市","三河市":"廊坊市","桃城区":"衡水市","冀州区":"衡水市","枣强县":"衡水市","武邑县":"衡水市","武强县":"衡水市","饶阳县":"衡水市","安平县":"衡水市","故城县":"衡水市","景县":"衡水市","阜城县":"衡水市","深州市":"衡水市"},"山东":{"历下区":"济南市","市中区":"枣庄市","槐荫区":"济南市","天桥区":"济南市","历城区":"济南市","长清区":"济南市","章丘区":"济南市","济阳区":"济南市","莱芜区":"济南市","钢城区":"济南市","平阴县":"济南市","商河县":"济南市","市南区":"青岛市","市北区":"青岛市","黄岛区":"青岛市","崂山区":"青岛市","李沧区":"青岛市","城阳区":"青岛市","即墨区":"青岛市","胶州市":"青岛市","平度市":"青岛市","莱西市":"青岛市","淄川区":"淄博市","张店区":"淄博市","博山区":"淄博市","临淄区":"淄博市","周村区":"淄博市","桓台县":"淄博市","高青县":"淄博市","沂源县":"淄博市","薛城区":"枣庄市","峄城区":"枣庄市","台儿庄区":"枣庄市","山亭区":"枣庄市","滕州市":"枣庄市","东营区":"东营市","河口区":"东营市","垦利区":"东营市","利津县":"东营市","广饶县":"东营市","芝罘区":"烟台市","福山区":"烟台市","牟平区":"烟台市","莱山区":"烟台市","蓬莱区":"烟台市","龙口市":"烟台市","莱阳市":"烟台市","莱州市":"烟台市","招远市":"烟台市","栖霞市":"烟台市","海阳市":"烟台市","潍城区":"潍坊市","寒亭区":"潍坊市","坊子区":"潍坊市","奎文区":"潍坊市","临朐县":"潍坊市","昌乐县":"潍坊市","青州市":"潍坊市","诸城市":"潍坊市","寿光市":"潍坊市","安丘市":"潍坊市","高密市":"潍坊市","昌邑市":"潍坊市","任城区":"济宁市","兖州区":"济宁市","微山县":"济宁市","鱼台县":"济宁市","金乡县":"济宁市","嘉祥县":"济宁市","汶上县":"济宁市","泗水县":"济宁市","梁山县":"济宁市","曲阜市":"济宁市","邹城市":"济宁市","泰山区":"泰安市","岱岳区":"泰安市","宁阳县":"泰安市","东平县":"泰安市","新泰市":"泰安市","肥城市":"泰安市","环翠区":"威海市","文登区":"威海市","荣成市":"威海市","乳山市":"威海市","东港区":"日照市","岚山区":"日照市","五莲县":"日照市","莒县":"日照市","兰山区":"临沂市","罗庄区":"临沂市","河东区":"临沂市","沂南县":"临沂市","郯城县":"临沂市","沂水县":"临沂市","兰陵县":"临沂市","费县":"临沂市","平邑县":"临沂市","莒南县":"临沂市","蒙阴县":"临沂市","临沭县":"临沂市","德城区":"德州市","陵城区":"德州市","宁津县":"德州市","庆云县":"德州市","临邑县":"德州市","齐河县":"德州市","平原县":"德州市","夏津县":"德州市","武城县":"德州市","乐陵市":"德州市","禹城市":"德州市","东昌府区":"聊城市","茌平区":"聊城市","阳谷县":"聊城市","莘县":"聊城市","东阿县":"聊城市","冠县":"聊城市","高唐县":"聊城市","临清市":"聊城市","滨城区":"滨州市","沾化区":"滨州市","惠民县":"滨州市","阳信县":"滨州市","无棣县":"滨州市","博兴县":"滨州市","邹平市":"滨州市","牡丹区":"菏泽市","定陶区":"菏泽市","曹县":"菏泽市","单县":"菏泽市","成武县":"菏泽市","巨野县":"菏泽市","郓城县":"菏泽市","鄄城县":"菏泽市","东明县":"菏泽市"}};
+
+const __provAdcode = {'北京':110000,'天津':120000,'河北':130000,'山西':140000,'内蒙古':150000,'辽宁':210000,'吉林':220000,'黑龙江':230000,'上海':310000,'江苏':320000,'浙江':330000,'安徽':340000,'福建':350000,'江西':360000,'山东':370000,'河南':410000,'湖北':420000,'湖南':430000,'广东':440000,'广西':450000,'海南':460000,'重庆':500000,'四川':510000,'贵州':520000,'云南':530000,'西藏':540000,'陕西':610000,'甘肃':620000,'青海':630000,'宁夏':640000,'新疆':650000};
+
+function geoName(province, district) {
+    const cities = __cityMap[province] || [];
+    // 1. Direct substring match (大兴 → 大兴区)
+    for (const c of cities) {
+        if (c.includes(district)) return c;
+    }
+    // 2. Base name match (沧州 → 沧州市)
+    for (const c of cities) {
+        if (district === c.replace(/[市县区]$/, '')) return c;
+    }
+    // 3. Try append 市/县/区
+    for (const s of ['市','县','区']) {
+        if (cities.includes(district + s)) return district + s;
+    }
+    // 4. County fallback (张北 → 张家口市)
+    const fb = __countyFallback[province];
+    if (fb) {
+        for (const s of ['','市','县','区']) {
+            const key = district + s;
+            if (fb[key]) return fb[key];
+        }
+    }
+    return district;
+}
+
+// ====== Chinese Holidays (2023-2027) ======
+const __holidays = [
+    {start:'2023-01-01',end:'2023-01-02',name:'元旦'},{start:'2023-01-21',end:'2023-01-27',name:'春节'},
+    {start:'2023-04-05',end:'2023-04-05',name:'清明'},{start:'2023-04-29',end:'2023-05-03',name:'劳动节'},
+    {start:'2023-06-22',end:'2023-06-24',name:'端午'},{start:'2023-09-29',end:'2023-10-06',name:'中秋·国庆'},
+    {start:'2024-01-01',end:'2024-01-01',name:'元旦'},{start:'2024-02-10',end:'2024-02-17',name:'春节'},
+    {start:'2024-04-04',end:'2024-04-06',name:'清明'},{start:'2024-05-01',end:'2024-05-05',name:'劳动节'},
+    {start:'2024-06-08',end:'2024-06-10',name:'端午'},{start:'2024-09-15',end:'2024-09-17',name:'中秋'},
+    {start:'2024-10-01',end:'2024-10-07',name:'国庆'},{start:'2025-01-01',end:'2025-01-01',name:'元旦'},
+    {start:'2025-01-28',end:'2025-02-03',name:'春节'},{start:'2025-04-04',end:'2025-04-06',name:'清明'},
+    {start:'2025-05-01',end:'2025-05-05',name:'劳动节'},{start:'2025-05-31',end:'2025-06-02',name:'端午'},
+    {start:'2025-10-01',end:'2025-10-08',name:'中秋·国庆'},{start:'2026-01-01',end:'2026-01-03',name:'元旦'},
+    {start:'2026-02-17',end:'2026-02-23',name:'春节'},{start:'2026-04-04',end:'2026-04-06',name:'清明'},
+    {start:'2026-05-01',end:'2026-05-05',name:'劳动节'},{start:'2026-06-25',end:'2026-06-27',name:'端午'},
+    {start:'2026-10-01',end:'2026-10-07',name:'国庆'},{start:'2027-01-01',end:'2027-01-03',name:'元旦'},
+    {start:'2027-02-13',end:'2027-02-19',name:'春节'},{start:'2027-04-05',end:'2027-04-05',name:'清明'},
+    {start:'2027-05-01',end:'2027-05-05',name:'劳动节'},{start:'2027-06-07',end:'2027-06-09',name:'端午'},
+    {start:'2027-10-01',end:'2027-10-07',name:'国庆'},
+];
+function tripHasHoliday(trip) {
+    const ts = trip.startTime.getTime(), te = trip.endTime.getTime();
+    for (const h of __holidays) {
+        const hs = new Date(h.start).getTime(), he = new Date(h.end+' 23:59:59').getTime();
+        if (ts <= he && te >= hs) return h.name;
+    }
+    return null;
+}
+
+function isHomeCity(r, homeCity) {
+    if (!r.province) return true;
+    if (r.province === homeCity) return true;
+    const base = homeCity.replace(/[市县区]$/, '');
+    const d = r.district || '';
+    return d.includes(base) || d.replace(/[市县区]$/, '') === base;
+}
+
+// ====== Helpers ======
+function fmtDate(d) {
+    return `${d.getFullYear()}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}`;
+}
+function calcDays(start, end) {
+    const s = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const e = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+    return Math.round((e - s) / 86400000) + 1;
+}
+
+function showTip(el) {
+    let tip = document.getElementById('cellTip');
+    if (!tip) {
+        tip = document.createElement('div');
+        tip.id = 'cellTip';
+        tip.style.cssText = 'position:fixed;background:#1e293b;color:#fff;padding:6px 12px;border-radius:8px;font-size:13px;z-index:999;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.2);max-width:400px';
+        document.body.appendChild(tip);
+    }
+    const full = el.dataset.tip;
+    if (!full) return;
+    tip.textContent = full + '  (点击复制)';
+    const rect = el.getBoundingClientRect();
+    tip.style.display = 'block';
+    tip.style.left = Math.min(rect.left, window.innerWidth - tip.offsetWidth - 10) + 'px';
+    tip.style.top = (rect.top - tip.offsetHeight - 8) + 'px';
+}
+
+function hideTip() {
+    const tip = document.getElementById('cellTip');
+    if (tip) tip.style.display = 'none';
+}
+
+function copyText(t) {
+    try {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(t).then(() => {
+                const tip = document.getElementById('copyTip');
+                if (tip) { tip.style.opacity = '1'; setTimeout(() => { tip.style.opacity = '0'; }, 1200); }
+            }).catch(() => {});
+        }
+    } catch(e) {}
+}
+
+// ====== Main App ======
+const BATTERY_DEFAULT = 80;
+const SLOW_THRESHOLD_DEFAULT = 15;
+const EFFICIENCY_DEFAULT = 0.92;
+
+let chartInstances = {};
+
+function $(id) { return document.getElementById(id); }
+
+function setLoading(show, text) {
+    $('loadingOverlay').classList.toggle('visible', show);
+    if (text) $('loadingText').textContent = text;
+}
+
+// ====== Parse Excel ======
+function parseExcel(data) {
+    const wb = XLSX.read(data, { type: 'array' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
+    // Find header row
+    let headerIdx = -1;
+    for (let i = 0; i < Math.min(rows.length, 10); i++) {
+        const row = rows[i];
+        if (!row || !Array.isArray(row)) continue;
+        const strRow = row.map(c => c !== undefined && c !== null ? String(c) : '');
+        if (strRow.some(c => typeof c === 'string' && (c.includes('开始时间') || c.includes('用电量') || c.includes('充电站')))) {
+            headerIdx = i;
+            break;
+        }
+    }
+    if (headerIdx === -1) {
+        // Second attempt: search more rows
+        for (let i = 0; i < Math.min(rows.length, 20); i++) {
+            const row = rows[i];
+            if (!row || !Array.isArray(row)) continue;
+            const strRow = row.map(c => c !== undefined && c !== null ? String(c) : '');
+            if (strRow.some(c => typeof c === 'string' && (c.includes('时间') || c.includes('电量')))) {
+                headerIdx = i;
+                break;
+            }
+        }
+    }
+    if (headerIdx === -1) throw new Error('未找到表头行，请确认包含: 开始时间、结束时间、用电量、充电站 等列');
+
+    const rawHeaders = rows[headerIdx];
+    const headers = [];
+    for (let i = 0; i < rawHeaders.length; i++) {
+        const h = rawHeaders[i];
+        headers.push(h !== undefined && h !== null ? String(h).trim() : '');
+    }
+
+    const colMap = {};
+    const keywords = {
+        '开始时间': ['开始时间', '开始充电', 'start_time', '开始'],
+        '结束时间': ['结束时间', '结束充电', 'end_time', '结束'],
+        '用电量': ['用电量', '电量', '充电量', 'kwh', '度数'],
+        '充电站': ['充电站', '充电站名', '站点', '站名', '地点'],
+        '实付': ['实付', '实际支付', '支付金额', '实付金额'],
+        '金额': ['金额', '充电金额', '总金额', '费用'],
+        '省市': ['省市', '省份', '省', '城市'],
+        '地区': ['地区', '区县', '区域', '区'],
+        '来源': ['来源', '平台', '运营商', '涞源']
+    };
+    for (let i = 0; i < headers.length; i++) {
+        const h = headers[i];
+        if (!h) continue;
+        for (const [key, names] of Object.entries(keywords)) {
+            if (names.some(n => h.includes(n))) { colMap[key] = i; break; }
+        }
+    }
+
+    // Fallback by position: if header names don't match, use known positions
+    if (colMap['省市'] === undefined && headers.length > 8 && headers[8]) colMap['省市'] = 8;
+    if (colMap['地区'] === undefined && headers.length > 9 && headers[9]) colMap['地区'] = 9;
+    if (colMap['来源'] === undefined && headers.length > 10 && headers[10]) colMap['来源'] = 10;
+
+    const foundHeaders = headers.filter(Boolean);
+    if (colMap['开始时间'] === undefined) throw new Error('未找到"开始时间"列（解析到: ' + foundHeaders.join(', ') + '）');
+    if (colMap['结束时间'] === undefined) throw new Error('未找到"结束时间"列');
+    if (colMap['用电量'] === undefined) throw new Error('未找到"用电量"列');
+
+    const records = [];
+    for (let i = headerIdx + 1; i < rows.length; i++) {
+        const row = rows[i];
+        if (!row || !Array.isArray(row) || row.length === 0) continue;
+        const v = idx => idx < row.length ? row[idx] : undefined;
+        const kWh = parseFloat(v(colMap['用电量']));
+        if (isNaN(kWh) || kWh <= 0) continue;
+
+        const parseDate = (val) => {
+            if (typeof val === 'number') return new Date((val - 25569) * 86400000);
+            const s = String(val || '').trim();
+            if (!s) return new Date(NaN);
+            return new Date(s);
+        };
+        const startTime = parseDate(v(colMap['开始时间']));
+        const endTime = parseDate(v(colMap['结束时间']));
+        if (isNaN(startTime) || isNaN(endTime)) continue;
+        if (endTime <= startTime) continue;
+
+        const amount = colMap['金额'] !== undefined ? parseFloat(v(colMap['金额'])) || 0 : 0;
+        const paid = colMap['实付'] !== undefined ? parseFloat(v(colMap['实付'])) || 0 : 0;
+        const station = colMap['充电站'] !== undefined ? String(v(colMap['充电站']) || '').trim() : '未知';
+        const province = colMap['省市'] !== undefined ? String(v(colMap['省市']) || '').trim() : '';
+        const district = colMap['地区'] !== undefined ? String(v(colMap['地区']) || '').trim() : '';
+        const source = colMap['来源'] !== undefined ? String(v(colMap['来源']) || '').trim() : '';
+
+        records.push({
+            startTime, endTime,
+            durationMin: (endTime - startTime) / 60000,
+            chargedKWh: kWh,
+            amount, paid,
+            station: station || '未知',
+            province, district, source,
+            dateStr: startTime.getFullYear() + '-' + String(startTime.getMonth()+1).padStart(2,'0') + '-' + String(startTime.getDate()).padStart(2,'0'),
+            month: startTime.getMonth() + 1
+        });
+    }
+    if (records.length === 0) throw new Error('未解析到有效充电记录');
+    return records;
+}
+
+// ====== Merge Jump-Gun Records ======
+function mergeJumpGunRecords(records, gapMinutes) {
+    gapMinutes = gapMinutes || 30;
+    const sorted = [...records].sort((a, b) => {
+        if (a.station !== b.station) return a.station.localeCompare(b.station);
+        return a.startTime - b.startTime;
+    });
+
+    const merged = [];
+    const groups = []; // for display
+    let i = 0;
+    while (i < sorted.length) {
+        const group = [sorted[i]];
+        let j = i + 1;
+        while (j < sorted.length && sorted[j].station === group[0].station) {
+            const prev = group[group.length - 1];
+            const gap = (sorted[j].startTime - prev.endTime) / 60000;
+            if (gap > gapMinutes) break;
+            group.push(sorted[j]);
+            j++;
+        }
+
+        if (group.length === 1) {
+            merged.push(group[0]);
+        } else {
+            const sumDuration = group.reduce((s, r) => s + r.durationMin, 0);
+            merged.push({
+                startTime: group[0].startTime,
+                endTime: group[group.length - 1].endTime,
+                durationMin: sumDuration,
+                chargedKWh: group.reduce((s, r) => s + r.chargedKWh, 0),
+                amount: group.reduce((s, r) => s + r.amount, 0),
+                paid: group.reduce((s, r) => s + r.paid, 0),
+                station: group[0].station,
+                province: group[0].province || '',
+                district: group[0].district || '',
+                source: group[0].source || '',
+                dateStr: group[0].dateStr,
+                month: group[0].month
+            });
+            groups.push({
+                station: group[0].station,
+                dateStr: group[0].dateStr,
+                records: group.map(r => ({
+                    startTime: r.startTime,
+                    endTime: r.endTime,
+                    chargedKWh: r.chargedKWh,
+                    durationMin: r.durationMin
+                })),
+                totalKWh: group.reduce((s, r) => s + r.chargedKWh, 0),
+                totalDurationMin: sumDuration
+            });
+        }
+        i = j;
+    }
+    return { merged, groups };
+}
+
+// ====== Process Records ======
+function processRecords(records, batteryKWh, efficiency, slowThresholdKw) {
+    return records.map(r => {
+        const startSOC = 100 - (r.chargedKWh * efficiency / batteryKWh * 100);
+        const avgPower = r.chargedKWh / (r.durationMin / 60);
+        return {
+            ...r,
+            startSOC: Math.max(0, Math.min(100, startSOC)),
+            avgPower,
+            isSlow: avgPower < slowThresholdKw
+        };
+    });
+}
+
+// ====== Render Report ======
+async function handleFile(file) {
+    setLoading(true, '正在读取文件...');
+    try {
+        const buf = await file.arrayBuffer();
+        let rawRecords = parseExcel(buf);
+
+        // Merge jump-gun records (same station, <30min gap)
+        const beforeMerge = rawRecords.length;
+        const { merged: mergedRecords, groups: jumpGunGroups } = mergeJumpGunRecords(rawRecords);
+        rawRecords = mergedRecords;
+        const mergedCnt = beforeMerge - rawRecords.length;
+        window.__mergedCnt = mergedCnt;
+        window.__jumpGunGroups = jumpGunGroups;
+
+        // Debug: verify amounts survived merge
+        const totalAmt = rawRecords.reduce((s, r) => s + (r.amount || 0), 0);
+        const totalPd = rawRecords.reduce((s, r) => s + (r.paid || 0), 0);
+        console.log('After merge: records=' + rawRecords.length + ' amount=' + totalAmt + ' paid=' + totalPd);
+
+        const homeCity = ($('homeCity').value || '').trim() || '北京';
+        window.__homeCity = homeCity;
+        const batteryKWh = parseFloat($('batteryCap').value) || BATTERY_DEFAULT;
+        const slowKw = parseFloat($('slowThreshold').value) || SLOW_THRESHOLD_DEFAULT;
+        const eff = (parseFloat($('efficiency').value) || 92) / 100;
+
+        // Date range
+        const dates = rawRecords.map(r => r.dateStr).sort();
+        const minDate = dates[0], maxDate = dates[dates.length - 1];
+
+        setLoading(true, '正在分析数据...');
+        await new Promise(r => setTimeout(r, 50));
+
+        const allRecords = processRecords(rawRecords, batteryKWh, eff, slowKw);
+        const fastRecords = allRecords.filter(r => !r.isSlow);
+
+        // Store globally for detail popup
+        window.__fastRecords = fastRecords;
+        window.__allRecords = allRecords;
+        window.__fullRecords = [...allRecords]; // keep full data for year-over-year chart
+        window.__batteryKWh = batteryKWh;
+        window.__eff = eff;
+        const slowRecords = allRecords.filter(r => r.isSlow);
+
+        // Compute stats
+        const totalKWh = allRecords.reduce((s, r) => s + r.chargedKWh, 0);
+        const totalAmount = allRecords.reduce((s, r) => s + r.amount, 0);
+        const totalPaid = allRecords.reduce((s, r) => s + r.paid, 0);
+
+        const reportCtx = {
+            allRecords, fastRecords, slowRecords,
+            totalKWh, totalAmount, totalPaid,
+            batteryKWh, minDate, maxDate, slowKw, eff, homeCity
+        };
+        window.__reportCtx = reportCtx;
+        window.__activeCtx = reportCtx;
+        renderReport(reportCtx);
+
+    } catch (e) {
+        setLoading(false);
+        $('report').classList.remove('visible');
+        $('report').innerHTML = `<div class="error-msg">❌ ${e.message}</div>`;
+        $('report').classList.add('visible');
+    }
+    // Reset file input so re-selecting same file triggers change
+    $('fileInput').value = '';
+    setLoading(false);
+}
+
+function renderReport(ctx) {
+    const { allRecords, fastRecords, slowRecords, totalKWh, totalAmount, totalPaid,
+            batteryKWh, minDate, maxDate, slowKw, eff, homeCity } = ctx;
+
+    const totalCnt = allRecords.length;
+    const fastCnt = fastRecords.length;
+    const slowCnt = slowRecords.length;
+    const ecardAmt = parseFloat($('ecardAmount').value) || 0;
+    const adjustedPaid = totalPaid + ecardAmt;
+
+    // Alerts
+    let alerts = [];
+    const mergedCnt = window.__mergedCnt || 0;
+    // totalCnt counts records after parseExcel (kWh>0) + post-merge
+    // We need the pre-parseExcel count. Approximate: totalCnt + mergedCnt + filteredZero
+    const filteredZero = allRecords.filter(r => r.chargedKWh < 0.1).length;
+    const approxRaw = totalCnt + mergedCnt + filteredZero;
+    if (filteredZero > 0 || mergedCnt > 0) {
+        alerts.push({ type: 'info', msg: `原始约 ${approxRaw} 条，${filteredZero > 0 ? filteredZero + ' 条电量=0（已过滤）' : ''}${filteredZero > 0 && mergedCnt > 0 ? '，' : ''}${mergedCnt > 0 ? mergedCnt + ' 组跳枪续充（已合并）' : ''}，有效 ${totalCnt} 条` });
+    }
+    const over100 = allRecords.filter(r => r.startSOC < 0).length;
+    if (over100 > 0) alerts.push({ type: 'warn', msg: `${over100} 条记录估算起始 SOC 为负值（充电量异常高），可能包含充电损耗波动` });
+    if (fastCnt < 6) alerts.push({ type: 'warn', msg: `快充记录仅 ${fastCnt} 条，分析结果仅供参考` });
+
+    console.log('Stats: cnt=' + totalCnt + ' kwh=' + totalKWh.toFixed(1) + ' amount=' + totalAmount.toFixed(1) + ' paid=' + totalPaid.toFixed(1));
+
+    $('report').innerHTML = '';
+
+    // ====== Header ======
+    const years = ctx._allYears || [...new Set(allRecords.map(r => new Date(r.startTime).getFullYear()))].sort();
+    const header = document.createElement('div');
+    header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:8px';
+    header.innerHTML = `
+        <h2 style="font-family:var(--display);font-size:22px;font-weight:600;letter-spacing:-0.3px">分析报告</h2>
+        <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:13px;color:var(--text-dim)">${minDate} ~ ${maxDate}</span>
+            <select id="yearFilter" style="padding:5px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card);color:var(--text);cursor:pointer;font-family:var(--body)" onchange="applyYearFilter()">
+                <option value="">全部年份</option>
+                ${years.map(y => `<option value="${y}">${y}年</option>`).join('')}
+            </select>
+        </div>`;
+    $('report').appendChild(header);
+    if (ctx._currentYear && $('yearFilter')) $('yearFilter').value = ctx._currentYear;
+
+    // Alerts
+    alerts.forEach(a => {
+        const el = document.createElement('div');
+        el.className = `alert ${a.type}`;
+        el.textContent = a.msg;
+        $('report').appendChild(el);
+    });
+
+    // ====== Stats ======
+    const statsDiv = document.createElement('div');
+    statsDiv.className = 'stats-grid';
+    statsDiv.innerHTML = `
+        <div class="stat-card"><div class="label">充电次数</div><div class="value cyan">${totalCnt}</div><div class="sub">快充 ${fastCnt} / 慢充 ${slowCnt}</div></div>
+        <div class="stat-card"><div class="label">总充电量</div><div class="value">${totalKWh.toFixed(0)}</div><div class="sub">kWh</div></div>
+        <div class="stat-card"><div class="label">总金额</div><div class="value">${totalAmount.toFixed(0)}</div><div class="sub">元</div></div>
+        <div class="stat-card"><div class="label">实付金额</div><div class="value coral">${adjustedPaid.toFixed(0)}</div><div class="sub">优惠 ${(totalAmount - adjustedPaid).toFixed(0)} 元${ecardAmt > 0 ? '（含卡券' + ecardAmt + '元）' : ''}</div></div>
+    `;
+    $('report').appendChild(statsDiv);
+    // ====== 1. Province & Source Analysis ======
+    if (fastRecords.length > 0) {
+        const regSection = document.createElement('div');
+        regSection.className = 'section-title';
+        regSection.innerHTML = `充电区域与来源`;
+        $('report').appendChild(regSection);
+
+        // Province map data
+        const provMap = {};
+        fastRecords.forEach(r => {
+            const p = r.province || '未知';
+            if (!provMap[p]) provMap[p] = { cnt: 0, kwh: 0, cost: 0 };
+            provMap[p].cnt++;
+            provMap[p].kwh += r.chargedKWh;
+            provMap[p].cost += r.amount;
+        });
+
+        // Map + Source side by side
+        const mapSrcRow = document.createElement('div');
+        mapSrcRow.style.cssText = 'display:flex;gap:20px;margin-bottom:20px;flex-wrap:wrap';
+
+        // Map: square aspect ratio
+        if (typeof echarts !== 'undefined') {
+            const boxMap = document.createElement('div');
+            boxMap.style.cssText = 'background:#fff;border-radius:12px;padding:8px 8px 2px 8px;box-shadow:0 1px 3px rgba(0,0,0,.08);flex:1;min-width:300px;aspect-ratio:1;display:flex;flex-direction:column';
+            const minYear2 = minDate.split('-')[0], maxYear2 = maxDate.split('-')[0];
+            const yearRange = minYear2 === maxYear2 ? minYear2 : minYear2 + '-' + maxYear2;
+            boxMap.innerHTML = '<div style="font-size:14px;font-weight:600;color:#1e293b;padding:4px 8px 0;flex-shrink:0">充电足迹</div><div id="chinaMap" style="flex:1;min-height:0"></div><div style="font-size:11px;color:#94a3b8;text-align:right;padding:2px 8px 4px;flex-shrink:0">数据年份：' + yearRange + '</div>';
+            mapSrcRow.appendChild(boxMap);
+
+            // Detail panel on the right (replaces source cards)
+            const detailPanel = document.createElement('div');
+            detailPanel.style.cssText = 'background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08);width:320px;min-width:240px;display:flex;flex-direction:column';
+            detailPanel.id = 'mapDetailPanel';
+            // Build district overview for default panel
+            const distOverview = {};
+            allRecords.forEach(r => {
+                const p = r.province || '', d = r.district || '';
+                if (!d) return;
+                const key = p + '|' + d;
+                if (!distOverview[key]) distOverview[key] = {province:p, district:d, cnt:0, kwh:0};
+                distOverview[key].cnt++;
+                distOverview[key].kwh += r.chargedKWh;
+            });
+            const distHtml = Object.entries(distOverview).sort((a,b) => b[1].cnt - a[1].cnt).map(([key, d]) => {
+                return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:6px;background:#f8fafc;margin-bottom:4px;font-size:13px;cursor:pointer" onclick="showCityDetail('${d.province}','${d.district}')">
+                    <span style="color:#1e293b">${d.province} · ${d.district}</span>
+                    <span style="color:#64748b;font-size:12px">${d.cnt}次 · ${d.kwh.toFixed(0)}kWh</span>
+                </div>`;
+            }).join('');
+            detailPanel.innerHTML = `<div style="font-size:13px"><strong style="font-size:14px">所有地区</strong><div style="margin-top:8px">${distHtml}</div></div><div id="copyTip" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:4px 12px;border-radius:6px;font-size:12px;opacity:0;transition:opacity .3s">已复制</div>`;
+            detailPanel.style.position = 'relative';
+            mapSrcRow.appendChild(detailPanel);
+        } else {
+            const fallback = document.createElement('div');
+            fallback.style.cssText = 'background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08);flex:1';
+            let ph = '<div style="font-size:13px"><strong style="font-size:14px">省市</strong><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:8px">';
+            for (const [p, d] of Object.entries(provMap).sort((a,b)=>b[1].cnt-a[1].cnt)) {
+                ph += `<div style="background:#f8fafc;border-radius:8px;padding:10px"><div style="font-weight:600">${p}</div><div style="font-size:12px;color:#64748b">${d.cnt}次·${d.kwh.toFixed(0)}kWh</div></div>`;
+            }
+            fallback.innerHTML = ph + '</div></div>';
+            mapSrcRow.appendChild(fallback);
+        }
+
+        $('report').appendChild(mapSrcRow);
+
+        // Render map if ECharts available
+        if (typeof echarts !== 'undefined') {
+            const distMap = {};
+            const nameToKey = {}; // normalized name → "province|district"
+            allRecords.forEach(r => {
+                const key = (r.province || '') + '|' + (r.district || '');
+                if (!key.includes('|') || r.district === '') return;
+                if (!distMap[key]) distMap[key] = { province: r.province, district: r.district, cnt: 0, kwh: 0 };
+                distMap[key].cnt++;
+                distMap[key].kwh += r.chargedKWh;
+            });
+            // Build name mapping
+            for (const [key] of Object.entries(distMap)) {
+                const [prov, dist] = key.split('|');
+                const nn = geoName(prov, dist);
+                nameToKey[nn] = key;
+            }
+            window.__nameToKey = nameToKey;
+            requestAnimationFrame(() => renderChinaMap(provMap, distMap));
+        }
+    }
+
+    // ====== 2. Trip Analysis ======
+    if (allRecords.length > 0) {
+        // Use ALL records (including slow) for trip boundary detection
+        const allSorted = [...allRecords].filter(r => r.province).sort((a, b) => a.startTime - b.startTime);
+
+        // Detect trips: consecutive non-Beijing records.
+        // If a Beijing charge happened within 36h before the first waypoint charge,
+        // treat it as pre-trip top-up and include it in the trip's departure.
+        const trips = [];
+        let curTrip = null;
+        let lastBjRecord = null;
+        for (const r of allSorted) {
+            const isBj = isHomeCity(r, homeCity);
+            if (!isBj) {
+                if (!curTrip) {
+                    curTrip = {startTime: r.startTime, endTime: r.startTime, provinces: [], districts: [], records: [], totalKwh: 0};
+                    // Include Beijing pre-charge on same day or previous day
+                    const dayGap = lastBjRecord ? Math.round((new Date(r.startTime.getFullYear(), r.startTime.getMonth(), r.startTime.getDate()) - new Date(lastBjRecord.endTime.getFullYear(), lastBjRecord.endTime.getMonth(), lastBjRecord.endTime.getDate())) / 86400000) : 99;
+                    if (lastBjRecord && dayGap >= 0 && dayGap <= 1) {
+                        curTrip.startTime = lastBjRecord.endTime;
+                        curTrip.records.push(lastBjRecord);
+                        curTrip.totalKwh += lastBjRecord.chargedKWh;
+                        curTrip.preChargeKwh = (curTrip.preChargeKwh || 0) + lastBjRecord.chargedKWh;
+                    }
+                }
+                curTrip.endTime = r.endTime;
+                if (!curTrip.provinces.includes(r.province)) curTrip.provinces.push(r.province);
+                const dist = r.district || '';
+                if (dist) curTrip.districts.push(dist);
+                curTrip.records.push(r);
+                curTrip.totalKwh += r.chargedKWh;
+            } else {
+                if (curTrip) {
+                    curTrip.days = calcDays(curTrip.startTime, curTrip.endTime);
+                    if (curTrip.records.length > 0) trips.push(curTrip);
+                    curTrip = null;
+                }
+                lastBjRecord = r;
+            }
+        }
+        if (curTrip && curTrip.records.length > 0) { curTrip.days = calcDays(curTrip.startTime, curTrip.endTime); trips.push(curTrip); }
+        window.__trips = trips;
+
+        if (trips.length > 0) {
+            const tripContainer = document.createElement('div');
+            tripContainer.id = 'tripSection';
+
+            const tripTitle = document.createElement('div');
+            tripTitle.className = 'section-title';
+            tripTitle.innerHTML = `行程分析 <span class="badge">${trips.length} 次出行</span>`;
+            tripContainer.appendChild(tripTitle);
+
+            const totalTripKwh = trips.reduce((s, t) => s + t.totalKwh - (t.preChargeKwh || 0), 0);
+            const totalLocalKwh = allRecords.filter(r => isHomeCity(r, homeCity)).reduce((s, r) => s + r.chargedKWh, 0);
+            const allDests = [...new Set(trips.flatMap(t => t.districts.filter(Boolean)))];
+
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'stats-grid';
+            summaryDiv.innerHTML = `
+                <div class="stat-card"><div class="label">出行次数</div><div class="value cyan">${trips.length}</div><div class="sub">${allDests.length ? '去过 ' + allDests.join('·') : ''}</div></div>
+                <div class="stat-card"><div class="label">出行充电</div><div class="value">${totalTripKwh.toFixed(0)}</div><div class="sub">kWh</div></div>
+                <div class="stat-card"><div class="label">本地充电</div><div class="value">${totalLocalKwh.toFixed(0)}</div><div class="sub">kWh</div></div>
+                <div class="stat-card"><div class="label">出行占比</div><div class="value green">${(totalTripKwh / (totalTripKwh + totalLocalKwh) * 100).toFixed(0)}%</div><div class="sub">充电量</div></div>
+            `;
+            tripContainer.appendChild(summaryDiv);
+
+            const tripDiv = document.createElement('div');
+            tripDiv.className = 'table-wrap';
+            let tripHtml = '<table><thead><tr><th style="text-align:left;white-space:nowrap">出发</th><th style="text-align:left;white-space:nowrap">返回</th><th style="text-align:right;width:40px;white-space:nowrap">天数</th><th style="text-align:left">途经</th><th style="text-align:right;width:50px;white-space:nowrap">次数</th><th style="text-align:right;width:50px;white-space:nowrap">电量</th></tr></thead><tbody>';
+            trips.forEach(t => {
+                const sd = new Date(t.startTime), ed = new Date(t.endTime);
+                const dests = t.districts.filter((d, i, a) => i === 0 || d !== a[i-1]).join(' → ');
+                const h = tripHasHoliday(t);
+                tripHtml += `<tr style="cursor:pointer" onclick="showTripDetail(${trips.indexOf(t)})">
+                    <td style="text-align:left;font-size:12px">${fmtDate(sd)}</td>
+                    <td style="text-align:left;font-size:12px">${fmtDate(ed)}</td>
+                    <td style="text-align:right">${t.days}</td>
+                    <td style="text-align:left;font-size:12px">${dests}${h ? ` <span style="display:inline-block;background:var(--cyan-light);color:var(--cyan-dim);font-size:10px;padding:1px 6px;border-radius:4px;margin-left:4px">${h}</span>` : ''}</td>
+                    <td style="text-align:right">${t.records.length}</td>
+                    <td style="text-align:right">${t.totalKwh.toFixed(0)}</td>
+                </tr>`;
+            });
+            tripHtml += '</tbody></table></div>';
+            tripDiv.innerHTML = tripHtml;
+            tripContainer.appendChild(tripDiv);
+
+            const chartBox = document.createElement('div');
+            chartBox.className = 'chart-box';
+            chartBox.innerHTML = '<canvas id="chartTripMonthly" style="max-height:250px"></canvas>';
+            tripContainer.appendChild(chartBox);
+
+            // Year-over-year chart (only when no year filter)
+            if (!ctx._currentYear) {
+                const chartBoxYear = document.createElement('div');
+                chartBoxYear.className = 'chart-box';
+                chartBoxYear.style.marginTop = '16px';
+                chartBoxYear.innerHTML = '<canvas id="chartTripYearly" style="max-height:250px"></canvas>';
+                tripContainer.appendChild(chartBoxYear);
+                $('report').appendChild(tripContainer);
+                requestAnimationFrame(() => {
+                    renderTripChart(allRecords, trips, homeCity);
+                    renderTripYearChart(homeCity);
+                });
+            } else {
+                $('report').appendChild(tripContainer);
+                requestAnimationFrame(() => renderTripChart(allRecords, trips, homeCity));
+            }
+        }
+    }
+
+    // ====== 3. SOC vs Charging Time Scatter + Distribution ======
+    if (fastRecords.length >= 6) {
+        const chartSection = document.createElement('div');
+        chartSection.className = 'section-title';
+        chartSection.innerHTML = `SOC 与充电时长 <span class="badge">${homeCity}全部快充记录 · 点击查看详情</span>`;
+        $('report').appendChild(chartSection);
+
+        const flexRow = document.createElement('div');
+        flexRow.style.cssText = 'display:flex;gap:20px';
+        flexRow.innerHTML = `
+          <div class="chart-box" style="flex:1.3;aspect-ratio:1;padding:16px"><canvas id="chartScatterAll" style="width:100%;height:100%"></canvas></div>
+          <div class="chart-box" style="flex:1;aspect-ratio:1;padding:16px"><canvas id="chartSocDist" style="width:100%;height:100%"></canvas></div>`;
+        $('report').appendChild(flexRow);
+
+        requestAnimationFrame(() => {
+            renderSOCScatter(fastRecords, homeCity);
+        });
+    } else {
+        const noData = document.createElement('div');
+        noData.className = 'no-data';
+        noData.innerHTML = '<strong>数据不足</strong>，需要至少 6 条快充记录展示 SOC 与充电时长的关系';
+        $('report').appendChild(noData);
+    }
+
+    // ====== 5. Station Overview ======
+    if (fastRecords.length > 0) {
+        const stationSection = document.createElement('div');
+        stationSection.className = 'section-title';
+        stationSection.innerHTML = `常用充电站`;
+        $('report').appendChild(stationSection);
+
+        const stationCnt = {};
+        fastRecords.forEach(r => {
+            if (!stationCnt[r.station]) stationCnt[r.station] = { cnt: 0, powers: [], totalKwh: 0 };
+            stationCnt[r.station].cnt++;
+            stationCnt[r.station].powers.push(r.avgPower);
+            stationCnt[r.station].totalKwh += r.chargedKWh;
+        });
+
+        const sorted = Object.entries(stationCnt).sort((a, b) => b[1].cnt - a[1].cnt).slice(0, 10);
+        const maxCnt = sorted.length > 0 ? sorted[0][1].cnt : 1;
+
+        const grid = document.createElement('div');
+        grid.className = 'station-grid';
+        sorted.forEach(([name, data], idx) => {
+            const avgP = data.powers.reduce((a, b) => a + b, 0) / data.powers.length;
+            const maxP = Math.max(...data.powers);
+            const pct = Math.round(data.cnt / maxCnt * 100);
+            const item = document.createElement('div');
+            item.className = 'station-item';
+            item.innerHTML = `
+                <span style="font-family:var(--display);font-size:13px;font-weight:600;color:var(--text-faint);width:28px;flex-shrink:0">${String(idx + 1).padStart(2, '0')}</span>
+                <div style="flex:1;min-width:0">
+                    <div class="name" title="${name}">${name}</div>
+                    <div class="meta">${data.cnt}次 · ${data.totalKwh.toFixed(0)} kWh</div>
+                </div>
+                <div style="width:80px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;flex-shrink:0">
+                    <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--cyan),rgba(0,179,131,0.6));border-radius:3px"></div>
+                </div>
+                <div style="text-align:right;flex-shrink:0;min-width:56px">
+                    <div style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--cyan)">${avgP.toFixed(0)}</div>
+                    <div style="font-size:10px;color:var(--text-faint);line-height:1">kW</div>
+                </div>
+            `;
+            grid.appendChild(item);
+        });
+        $('report').appendChild(grid);
+    }
+
+
+    // ====== 6. Slow Charge Analysis ======
+    if (slowRecords.length > 0) {
+        const slowSection = document.createElement('div');
+        slowSection.className = 'section-title';
+        slowSection.innerHTML = `慢充校准记录 <span class="badge">${slowRecords.length} 次，间隔分析</span>`;
+        $('report').appendChild(slowSection);
+
+        const slowSorted = [...slowRecords].sort((a, b) => a.startTime - b.startTime);
+        const lastSlow = slowSorted[slowSorted.length - 1];
+        const daysSinceLastSlow = Math.round((Date.now() - lastSlow.startTime) / 86400000);
+
+        // Alert: days since last slow charge
+        const slowAlert = document.createElement('div');
+        slowAlert.className = `alert ${daysSinceLastSlow > 60 ? 'warn' : 'info'}`;
+        const lastSlowDate = new Date(lastSlow.startTime);
+        slowAlert.innerHTML = `上次慢充校准：<strong>${fmtDate(lastSlowDate)}</strong>，距今 <strong>${daysSinceLastSlow} 天</strong>${daysSinceLastSlow > 60 ? ' ⚠️ 已超过2个月，建议尽快做一次慢充校准' : daysSinceLastSlow > 30 ? ' ⚠️ 已超过1个月，可以考虑做一次慢充校准' : ''}`;
+        $('report').appendChild(slowAlert);
+
+        const slowDiv = document.createElement('div');
+        slowDiv.className = 'table-wrap';
+
+        let slowHtml = '<table><thead><tr><th style="text-align:left">日期</th><th style="text-align:left">充电站</th><th style="text-align:right">距上次(天)</th><th style="text-align:right">充电量</th><th style="text-align:right">起始SOC</th><th style="text-align:right">时长</th><th style="text-align:right">平均功率</th></tr></thead><tbody>';
+        let lastDate = null;
+        slowSorted.forEach(r => {
+            const interval = lastDate ? Math.round((r.startTime - lastDate) / 86400000) : '-';
+            lastDate = r.startTime;
+            const d = new Date(r.startTime);
+            const dy = fmtDate(d);
+            slowHtml += `<tr>
+                <td style="text-align:left">${dy}</td><td style="font-size:12px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left" title="${r.station}">${r.station}</td>
+                <td style="text-align:right">${interval}</td><td style="text-align:right">${r.chargedKWh.toFixed(1)}</td><td style="text-align:right">${r.startSOC.toFixed(0)}%</td>
+                <td style="text-align:right">${r.durationMin.toFixed(0)}</td><td style="text-align:right">${r.avgPower.toFixed(1)}</td>
+            </tr>`;
+        });
+        slowHtml += '</tbody></table>';
+        slowHtml += `<div class="note">慢充（功率 < ${slowKw}kW）用于电池校准。建议每 1-2 个月做一次慢充以均衡电芯。</div>`;
+        slowDiv.innerHTML = slowHtml;
+        $('report').appendChild(slowDiv);
+    }
+
+    // ====== 7. Jump-Gun Records ======
+    const jumpGunGroups = window.__jumpGunGroups;
+    if (jumpGunGroups && jumpGunGroups.length > 0) {
+        const jgSection = document.createElement('div');
+        jgSection.className = 'section-title';
+        jgSection.innerHTML = `跳枪续充记录 <span class="badge">${jumpGunGroups.length} 组</span>`;
+        $('report').appendChild(jgSection);
+
+        const jgDiv = document.createElement('div');
+        jgDiv.className = 'table-wrap';
+        let jgHtml = '<table><thead><tr><th style="text-align:left">日期</th><th style="text-align:left">充电站</th><th style="text-align:center">续充段数</th><th style="text-align:left">各段充电量</th><th style="text-align:right">总电量(kWh)</th><th style="text-align:right">总时长(min)</th></tr></thead><tbody>';
+
+        jumpGunGroups.sort((a, b) => a.dateStr.localeCompare(b.dateStr)).forEach((g, idx) => {
+            const d = new Date(g.dateStr);
+            const ds = fmtDate(d);
+            const segments = g.records.map(r => `${r.chargedKWh.toFixed(1)}`).join(' + ');
+            jgHtml += `<tr style="cursor:pointer" onclick="showJumpGunDetail(${idx})">
+                <td style="text-align:left">${ds}</td>
+                <td style="font-size:12px;max-width:160px;text-align:left" title="${g.station}">${g.station}</td>
+                <td style="text-align:center">${g.records.length}段</td>
+                <td style="font-size:12px;text-align:left">${segments}</td>
+                <td style="text-align:right">${g.totalKWh.toFixed(1)}</td>
+                <td style="text-align:right">${g.totalDurationMin.toFixed(0)}</td>
+            </tr>`;
+        });
+        jgHtml += '</tbody></table>';
+        jgHtml += `<div class="note">跳枪续充：同一充电站短时间间隔内连续充电记录，已自动合并为单次完整充电参与分析。</div>`;
+        jgDiv.innerHTML = jgHtml;
+        $('report').appendChild(jgDiv);
+    }
+
+    // Update hero right-side stats
+    updateHeroStats(ctx);
+
+    $('report').classList.add('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function applyYearFilter() {
+    const year = $('yearFilter').value;
+    const ctx = window.__reportCtx;
+    if (!ctx) return;
+    const filterFn = r => !year || new Date(r.startTime).getFullYear() === parseInt(year);
+    const allYears = [...new Set(ctx.allRecords.map(r => new Date(r.startTime).getFullYear()))].sort();
+    // Re-render report with filtered data
+    const filteredRecords = ctx.allRecords.filter(filterFn);
+    const filteredDates = filteredRecords.map(r => r.dateStr).sort();
+    const filteredCtx = {
+        allRecords: filteredRecords,
+        fastRecords: ctx.allRecords.filter(r => !r.isSlow).filter(filterFn),
+        slowRecords: ctx.allRecords.filter(r => r.isSlow).filter(filterFn),
+        totalKWh: filteredRecords.reduce((s,r) => s+r.chargedKWh, 0),
+        totalAmount: filteredRecords.reduce((s,r) => s+r.amount, 0),
+        totalPaid: filteredRecords.reduce((s,r) => s+r.paid, 0),
+        batteryKWh: ctx.batteryKWh,
+        minDate: filteredDates[0] || ctx.minDate,
+        maxDate: filteredDates[filteredDates.length - 1] || ctx.maxDate,
+        slowKw: ctx.slowKw,
+        eff: ctx.eff,
+        homeCity: ctx.homeCity,
+        _allYears: allYears,
+        _currentYear: year
+    };
+    window.__activeCtx = filteredCtx;
+    // Clear report and re-render
+    $('report').innerHTML = '';
+    renderReport(filteredCtx);
+}
+// ====== Charts ======
+function destroyChart(id) {
+    if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; }
+}
+
+function renderSOCScatter(records, homeCity) {
+    destroyChart('chartScatterAll');
+    const scatterCtx = document.getElementById('chartScatterAll');
+    if (!scatterCtx) return;
+
+    // 单色：统一 cyan，不区分月份
+    const bjRecords = records.filter(r => isHomeCity(r, homeCity) && r.startSOC < 90);
+    window.__scatterRecords = bjRecords;
+    const scatterData = [{
+        label: '充电记录',
+        data: bjRecords.map(r => ({ x: r.startSOC, y: r.durationMin })),
+        backgroundColor: '#009ef7',
+        pointRadius: 3.5,
+        pointHoverRadius: 6
+    }];
+
+    Chart.register({
+        id: 'bleedGrid',
+        afterDraw(chart) {
+            if (!chart.options.plugins?.bleedGrid?.enabled) return;
+            const c = chart.ctx, xa = chart.scales.x, ya = chart.scales.y;
+            const ext = 14;
+            c.save();
+            c.strokeStyle = 'rgba(0,0,0,0.035)'; c.lineWidth = 1;
+            // Horizontal: extend past both sides
+            [...ya.ticks].forEach(t => {
+                if (t.value === undefined) return;
+                const py = ya.getPixelForValue(t.value);
+                c.beginPath(); c.moveTo(xa.left - ext, py); c.lineTo(xa.right + ext, py); c.stroke();
+            });
+            // Vertical: extend past both sides
+            [...xa.ticks].forEach(t => {
+                if (t.value === undefined) return;
+                const px = xa.getPixelForValue(t.value);
+                c.beginPath(); c.moveTo(px, ya.bottom + ext); c.lineTo(px, ya.top - ext); c.stroke();
+            });
+            c.restore();
+        }
+    });
+
+    chartInstances['chartScatterAll'] = new Chart(scatterCtx, {
+        type: 'scatter',
+        data: { datasets: scatterData },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'linear',
+                    title: { display: true, text: '起始 SOC (%)', font: { size: 11 }, color: '#9ca3af' },
+                    border: { color: 'rgba(0,0,0,0.035)' },
+                    grid: { display: false },
+                    ticks: { font: { size: 10 }, color: '#9ca3af', padding: 16 }
+                },
+                y: {
+                    type: 'linear',
+                    title: { display: true, text: '充电时长 (min)', font: { size: 11 }, color: '#9ca3af' },
+                    border: { color: 'rgba(0,0,0,0.035)' },
+                    grid: { display: false },
+                    ticks: { font: { size: 10 }, color: '#9ca3af', padding: 16 }
+                }
+            },
+            plugins: {
+                bleedGrid: { enabled: true },
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(255,255,255,0.9)',
+                    titleColor: '#0d111c', bodyColor: '#5a6577',
+                    borderColor: '#e6e9f0', borderWidth: 1, padding: 10,
+                    callbacks: { label: c => { const r = window.__scatterRecords[c.dataIndex]; return r ? fmtDate(new Date(r.startTime)) + ' · ' + r.chargedKWh.toFixed(1) + 'kWh · SOC ' + Math.round(c.parsed.x) + '% → ' + Math.round(c.parsed.y) + 'min' : 'SOC ' + Math.round(c.parsed.x) + '% → ' + Math.round(c.parsed.y) + 'min'; } }
+                }
+            }
+        }
+    });
+
+    // SOC Distribution Histogram
+    destroyChart('chartSocDist');
+    const distCtx = document.getElementById('chartSocDist');
+    if (!distCtx) return;
+
+    const bins = [10, 20, 30, 40, 50, 60, 70, 80];
+    const binLabels = bins.map(b => b + '%');
+    const counts = bins.map(b => bjRecords.filter(r => r.startSOC >= b && r.startSOC < b + 10).length);
+
+    chartInstances['chartSocDist'] = new Chart(distCtx, {
+        type: 'bar',
+        data: {
+            labels: binLabels,
+            datasets: [{
+                data: counts,
+                backgroundColor: '#009ef7',
+                borderRadius: 3,
+                barPercentage: 0.65
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: { display: true, text: '次数', font: { size: 10 }, color: '#9ca3af' },
+                    grid: { display: false },
+                    ticks: { stepSize: 5, font: { size: 9 }, color: '#9ca3af' }
+                },
+                y: {
+                    grid: { display: false },
+                    ticks: { font: { size: 9 }, color: '#5a6577' }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: c => `${c.label} 区间: ${c.parsed.x} 次` } }
+            }
+        }
+    });
+}
+
+function renderChinaMap(provMap, distMap) {
+    const el = document.getElementById('chinaMap');
+    if (!el) return;
+    try {
+        const myChart = echarts.init(el);
+
+        // Determine which provinces to load (all visited)
+        const visitedProvs = [...new Set(Object.values(distMap).map(d => d.province))].filter(p => __provAdcode[p]);
+
+        // Aggregate by normalized city name
+        const cityData = {};
+        for (const [key, d] of Object.entries(distMap)) {
+            const [prov, dist] = key.split('|');
+            const name = geoName(prov, dist);
+            if (!cityData[name]) cityData[name] = {cnt:0,kwh:0};
+            cityData[name].cnt += d.cnt;
+            cityData[name].kwh += d.kwh;
+        }
+
+        const provs = [...new Set(Object.values(distMap).map(d => d.province))].filter(p => __provAdcode[p]);
+        const geojsonUrl = 'https://geo.datav.aliyun.com/areas_v3/bound/';
+
+        Promise.all([
+            fetch(geojsonUrl+'100000_full.json').then(r=>r.json())
+        ].concat(provs.map(p =>
+            fetch(geojsonUrl+__provAdcode[p]+'_full.json').then(r=>r.json())
+        ))).then(results => {
+            const provFeatures = results[0].features;
+            const cityFeaturesAll = results.slice(1);
+
+            // Build set of province-level adcodes to exclude
+            const provNameToAdcode = {};
+            for (const f of provFeatures) {
+                const nm = f.properties.name;
+                for (const p of provs) {
+                    if (nm.includes(p)) { provNameToAdcode[p] = parseInt(f.properties.adcode); break; }
+                }
+            }
+            const excludeAdcodes = new Set(Object.values(provNameToAdcode));
+
+            // Merged: province features for others + city features for visited
+            const merged = {type:'FeatureCollection', features:[]};
+            for (const f of provFeatures) {
+                if (!excludeAdcodes.has(parseInt(f.properties.adcode))) {
+                    merged.features.push(f);
+                }
+            }
+            for (const fc of cityFeaturesAll) {
+                for (const f of fc.features) merged.features.push(f);
+            }
+
+            echarts.registerMap('chinaMerged', merged);
+            const maxCnt = Math.max(...Object.values(cityData).map(d=>d.cnt), 1);
+            const mapData = Object.entries(cityData).map(([n,d])=>({name:n,value:d.cnt,kwh:d.kwh.toFixed(0)}));
+
+            myChart.setOption({
+                tooltip: {
+                    trigger: 'item',
+                    formatter: p => {
+                        if (p.data && p.data.value > 0) {
+                            return `<strong>${p.name}</strong><br/>充电次数: ${p.value} 次<br/>电量: ${p.data.kwh} kWh<br/><span style="color:#94a3b8;font-size:12px">点击查看详情</span>`;
+                        }
+                        return p.name;
+                    }
+                },
+                visualMap: {
+                    min:0, max:maxCnt, left:'left', bottom:10,
+                    text:['多','少'], textStyle:{color:'#64748b',fontSize:11},
+                    inRange:{color:['#2c7bb6','#abd9e9','#ffffbf','#fdae61','#f46d43','#d73027']}, calculable:false
+                },
+                series: [{
+                    type:'map', map:'chinaMerged', roam:true, selectedMode:false,
+                    label: { show: false },
+                    data: mapData,
+                    itemStyle: { borderColor:'#cbd5e1', borderWidth:0.5, areaColor:'#f1f5f9' },
+                    emphasis: {
+                        label: { show: true, fontSize: 12, fontWeight: 'bold' },
+                        itemStyle: { areaColor: '#fbb03b' }
+                    }
+                }]
+            });
+
+            // Click handler: show city charging details
+            myChart.on('click', params => {
+                const name = params.name;
+                if (!name || !window.__nameToKey) { resetMapPanel(); return; }
+                const key = window.__nameToKey[name];
+                if (!key) { resetMapPanel(); return; }
+                const [province, district] = key.split('|');
+                showCityDetail(province, district);
+            });
+        }).catch(() => {
+            el.innerHTML = '<div style="text-align:center;color:#94a3b8;padding:80px 0;font-size:14px">地图数据加载失败</div>';
+        });
+    } catch (e) {
+        el.innerHTML = '<div style="text-align:center;color:#94a3b8;padding:80px 0;font-size:14px">地图组件不可用</div>';
+    }
+}
+
+
+function renderTripChart(allRecords, trips, homeCity) {
+    destroyChart('chartTripMonthly');
+    const ctx = document.getElementById('chartTripMonthly');
+    if (!ctx) return;
+
+    const local = allRecords.filter(r => isHomeCity(r, homeCity));
+    const tripRecords = new Set();
+    trips.forEach(t => t.records.forEach(r => tripRecords.add(r)));
+
+    const localMonthly = {}, tripMonthly = {};
+    for (let m = 1; m <= 12; m++) { localMonthly[m] = 0; tripMonthly[m] = 0; }
+
+    local.forEach(r => { localMonthly[r.month] = (localMonthly[r.month] || 0) + r.chargedKWh; });
+    trips.forEach(t => t.records.forEach(r => { if (!isHomeCity(r, homeCity)) tripMonthly[r.month] = (tripMonthly[r.month] || 0) + r.chargedKWh; }));
+
+    const labels = [], localData = [], tripData = [];
+    for (let m = 1; m <= 12; m++) {
+        labels.push(m + '月');
+        localData.push(Math.round(localMonthly[m] || 0));
+        tripData.push(Math.round(tripMonthly[m] || 0));
+    }
+
+    chartInstances['chartTripMonthly'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [
+                { label: '本地', data: localData, backgroundColor: '#009ef7', borderRadius: 4 },
+                { label: '出行', data: tripData, backgroundColor: '#f15b5b', borderRadius: 4 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            scales: {
+                x: { stacked: true, grid: { display: false } },
+                y: { stacked: true, title: { display: true, text: 'kWh' }, grid: { color: 'rgba(0,0,0,0.06)', drawTicks: false }, beginAtZero: true }
+            },
+            plugins: {
+                legend: { position: 'top', labels: { boxWidth: 14, font: { size: 12 } } },
+                tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y} kWh` } }
+            }
+        }
+    });
+}
+
+function renderTripYearChart(homeCity) {
+    destroyChart('chartTripYearly');
+    const ctx = document.getElementById('chartTripYearly');
+    if (!ctx) return;
+    const all = window.__fullRecords || [];
+    if (all.length === 0) return;
+
+    // Group by year
+    const years = [...new Set(all.map(r => new Date(r.startTime).getFullYear()))].sort();
+    const localByYear = {}, tripByYear = {};
+    years.forEach(y => { localByYear[y] = 0; tripByYear[y] = 0; });
+
+    all.forEach(r => {
+        const y = new Date(r.startTime).getFullYear();
+        const isLocal = isHomeCity(r, homeCity);
+        if (isLocal) localByYear[y] += r.chargedKWh;
+        else tripByYear[y] += r.chargedKWh;
+    });
+
+    chartInstances['chartTripYearly'] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: years.map(y => y + '年'),
+            datasets: [
+                { label: '本地', data: years.map(y => Math.round(localByYear[y])), backgroundColor: '#009ef7', borderRadius: 4 },
+                { label: '出行', data: years.map(y => Math.round(tripByYear[y])), backgroundColor: '#f15b5b', borderRadius: 4 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            scales: {
+                x: { stacked: true, grid: { display: false } },
+                y: { stacked: true, title: { display: true, text: 'kWh' }, grid: { color: 'rgba(0,0,0,0.06)', drawTicks: false }, beginAtZero: true }
+            },
+            plugins: {
+                legend: { position: 'top', labels: { boxWidth: 14, font: { size: 12 } } },
+                tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y} kWh` } }
+            },
+            datasets: { bar: { maxBarThickness: 40 } }
+        }
+    });
+}
+
+// ====== Detail Modal ======
+function showDetail(soc, month, minutes, monthCount, batteryKWh, effPct) {
+    const modal = $('detailModal');
+    const overlay = $('modalOverlay');
+    if (!modal || !overlay) return;
+
+    // Get Beijing records for this month with close SOC
+    const records = window.__fastRecords || [];
+    const monthRecords = records.filter(r => r.month === month && isHomeCity(r, window.__homeCity || '北京') && !r.isSlow);
+
+    // Sort by how close their start SOC is to the clicked SOC
+    const socRecords = monthRecords
+        .map(r => ({ ...r, socDiff: Math.abs(r.startSOC - soc) }))
+        .sort((a, b) => a.socDiff - b.socDiff)
+        .slice(0, 10);
+
+    const kwh = (100 - soc) / 100 * batteryKWh / (effPct / 100);
+    const seasonMap = { 3:'春',4:'春',5:'春',6:'夏',7:'夏',8:'夏',9:'秋',10:'秋',11:'秋',12:'冬',1:'冬',2:'冬' };
+
+    let rowsHtml = '';
+    if (socRecords.length > 0) {
+        socRecords.forEach(r => {
+            const d = new Date(r.startTime);
+            const ds2 = fmtDate(d);
+            rowsHtml += `<tr>
+                <td style="text-align:left">${ds2}</td>
+                <td style="font-size:12px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left" title="${r.station}">${r.station}</td>
+                <td style="text-align:right">${r.chargedKWh.toFixed(1)}</td>
+                <td style="text-align:right">${r.startSOC.toFixed(0)}</td>
+                <td style="text-align:right">${r.durationMin.toFixed(0)}</td>
+                <td style="text-align:right">${r.avgPower.toFixed(0)}</td>
+            </tr>`;
+        });
+    }
+
+    const season = seasonMap[month] || '';
+    modal.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px">
+            <div>
+                <span style="font-size:13px;color:var(--text-dim)">${season}季 · ${month}月</span>
+                <h3 style="font-size:20px;font-weight:700;margin:2px 0 0;color:var(--text)">${soc}% → 100%</h3>
+            </div>
+            <div style="text-align:right">
+                <div style="font-size:28px;font-weight:800;color:var(--cyan)">${minutes}<span style="font-size:14px;font-weight:400;color:var(--text-dim)"> min</span></div>
+                <div style="font-size:12px;color:var(--text-faint)">${kwh.toFixed(0)} kWh</div>
+            </div>
+        </div>`;
+
+    if (socRecords.length > 0) {
+        const nearestDiff = socRecords[0].socDiff;
+        modal.innerHTML += `
+        <div style="font-size:13px;color:var(--text-dim);margin-bottom:10px">
+            该月共 ${monthRecords.length} 次快充记录${nearestDiff > 3 ? `，最近起始SOC偏差约 ${nearestDiff.toFixed(0)}%` : ''}：
+        </div>
+        <div style="overflow-x:auto;font-size:13px">
+        <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--subtle)">
+            <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)">日期</th>
+            <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)">充电站</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">电量</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">起始SOC</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">时长</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">功率</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+        </table></div>`;
+    } else {
+        modal.innerHTML += `<div style="color:var(--text-faint);font-size:13px;padding:20px 0;text-align:center">该月无实际快充记录</div>`;
+    }
+
+    modal.innerHTML += `
+        <div style="margin-top:14px;text-align:right">
+            <button onclick="closeDetail()" style="padding:8px 24px;background:var(--border);border:none;border-radius:8px;cursor:pointer;font-size:14px;color:var(--text-dim)">关闭</button>
+        </div>`;
+
+    overlay.classList.add('visible');
+    modal.style.display = 'block';
+}
+
+function closeDetail() {
+    const modal = $('detailModal');
+    const overlay = $('modalOverlay');
+    if (modal) modal.style.display = 'none';
+    if (overlay) overlay.classList.remove('visible');
+}
+
+function showJumpGunDetail(idx) {
+    const groups = window.__jumpGunGroups;
+    if (!groups || !groups[idx]) return;
+    const g = groups[idx];
+    const modal = $('detailModal');
+    const overlay = $('modalOverlay');
+    if (!modal || !overlay) return;
+
+    let rowsHtml = '';
+    g.records.forEach((r, i) => {
+        const rd = new Date(r.startTime);
+        const st = `${rd.getHours().toString().padStart(2,'0')}:${rd.getMinutes().toString().padStart(2,'0')}`;
+        const red = new Date(r.endTime);
+        const et = `${red.getHours().toString().padStart(2,'0')}:${red.getMinutes().toString().padStart(2,'0')}`;
+        rowsHtml += `<tr>
+            <td>#${i+1}</td>
+            <td>${st} → ${et}</td>
+            <td style="text-align:right">${r.durationMin.toFixed(0)}</td>
+            <td style="text-align:right">${r.chargedKWh.toFixed(1)}</td>
+        </tr>`;
+    });
+
+    const d = new Date(g.dateStr);
+
+    modal.innerHTML = `
+        <div style="margin-bottom:16px">
+            <span style="font-size:13px;color:var(--text-dim)">${fmtDate(d)}</span>
+            <h3 style="font-size:18px;font-weight:700;margin:2px 0 4px;color:var(--text)">${g.station}</h3>
+            <div style="font-size:13px;color:var(--text-dim)">${g.records.length} 段续充 · 合计 ${g.totalKWh.toFixed(1)} kWh · ${g.totalDurationMin.toFixed(0)}min</div>
+        </div>
+        <div style="overflow-x:auto;font-size:13px">
+        <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--subtle)">
+            <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)">段</th>
+            <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)">时间</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">时长(min)</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">充电量(kWh)</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+        </table></div>
+        <div style="margin-top:14px;text-align:right">
+            <button onclick="closeDetail()" style="padding:8px 24px;background:var(--border);border:none;border-radius:8px;cursor:pointer;font-size:14px;color:var(--text-dim)">关闭</button>
+        </div>`;
+
+    overlay.classList.add('visible');
+    modal.style.display = 'block';
+}
+
+function showCityDetail(province, district) {
+    const panel = document.getElementById('mapDetailPanel');
+    if (!panel) return;
+    const records = window.__allRecords || window.__fastRecords || [];
+    const filtered = records.filter(r => r.province === province && r.district === district);
+    if (filtered.length === 0) {
+        panel.innerHTML = '<div style="text-align:center;color:var(--text-faint);padding:40px 0;font-size:14px">该地区无快充记录</div>';
+        return;
+    }
+
+    const totalKwh = filtered.reduce((s, r) => s + r.chargedKWh, 0);
+    const avgDur = filtered.reduce((s, r) => s + r.durationMin, 0) / filtered.length;
+
+    let rowsHtml = '';
+    filtered.sort((a, b) => b.startTime - a.startTime).slice(0, 20).forEach(r => {
+        const d = new Date(r.startTime);
+        const ds = fmtDate(d);
+        rowsHtml += `<tr>
+            <td style="text-align:left;font-size:12px">${ds}</td>
+            <td style="font-size:11px;text-align:left;cursor:pointer;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" onclick="copyText(this.dataset.station)" data-station="${r.station}" data-tip="${r.station}" onmouseenter="showTip(this)" onmouseleave="hideTip(this)">${r.station}</td>
+            <td style="text-align:right;font-size:12px">${r.chargedKWh.toFixed(1)}</td>
+            <td style="text-align:right;font-size:12px">${r.durationMin.toFixed(0)}</td>
+        </tr>`;
+    });
+
+    panel.innerHTML = `
+        <div style="margin-bottom:10px;flex-shrink:0">
+            <span style="font-size:12px;color:var(--text-dim)">${province} · ${district}</span>
+            <h3 style="font-size:16px;font-weight:700;margin:2px 0 2px;color:var(--text)">充电记录</h3>
+            <div style="font-size:12px;color:var(--text-dim)">${filtered.length}次 · ${totalKwh.toFixed(0)}kWh · 均${avgDur.toFixed(0)}min</div>
+        </div>
+        <div style="overflow-y:auto;font-size:12px;flex:1">
+        <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--subtle);position:sticky;top:0">
+            <th style="padding:4px 6px;text-align:left;border-bottom:1px solid var(--border);font-size:11px">日期</th>
+            <th style="padding:4px 6px;text-align:left;border-bottom:1px solid var(--border);font-size:11px">充电站</th>
+            <th style="padding:4px 6px;text-align:right;border-bottom:1px solid var(--border);font-size:11px">电量</th>
+            <th style="padding:4px 6px;text-align:right;border-bottom:1px solid var(--border);font-size:11px">时长(min)</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+        </table></div>
+        ${filtered.length > 20 ? '<div style="font-size:11px;color:var(--text-faint);text-align:center;padding:6px;flex-shrink:0">仅显示最近20条</div>' : ''}
+        <div style="font-size:11px;color:var(--cyan);text-align:center;padding:6px;cursor:pointer;flex-shrink:0" onclick="resetMapPanel()">← 返回地区概览</div>
+        <div id="copyTip" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--card);padding:4px 12px;border-radius:6px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none">已复制</div>
+    `;
+    panel.style.position = 'relative';
+}
+
+function showTripDetail(idx) {
+    const trips = window.__trips;
+    if (!trips || !trips[idx]) return;
+    const t = trips[idx];
+    const modal = $('detailModal');
+    const overlay = $('modalOverlay');
+    if (!modal || !overlay) return;
+
+    let rowsHtml = '';
+    t.records.forEach(r => {
+        const d = new Date(r.startTime);
+        const st = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+        rowsHtml += `<tr>
+            <td style="text-align:left;font-size:12px">${fmtDate(d)} ${st}</td>
+            <td style="font-size:12px;text-align:left">${r.station}</td>
+            <td style="text-align:right;font-size:12px">${r.district || '-'}</td>
+            <td style="text-align:right;font-size:12px">${r.chargedKWh.toFixed(1)}</td>
+            <td style="text-align:right;font-size:12px">${r.durationMin.toFixed(0)}</td>
+        </tr>`;
+    });
+
+    const dests = t.districts.join(' → ');
+    modal.innerHTML = `
+        <div style="margin-bottom:14px">
+            <span style="font-size:13px;color:var(--text-dim)">${fmtDate(new Date(t.startTime))} → ${fmtDate(new Date(t.endTime))} · ${t.days}天</span>
+            <h3 style="font-size:18px;font-weight:700;margin:2px 0 2px;color:var(--text)">${dests}</h3>
+            <div style="font-size:13px;color:var(--text-dim)">${t.records.length} 次充电 · ${t.totalKwh.toFixed(0)} kWh</div>
+        </div>
+        <div style="overflow-x:auto;font-size:13px;max-height:360px;overflow-y:auto">
+        <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--subtle);position:sticky;top:0">
+            <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)">时间</th>
+            <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)">充电站</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">地区</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">电量</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">时长</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+        </table></div>
+        <div style="margin-top:14px;text-align:right">
+            <button onclick="closeDetail()" style="padding:8px 24px;background:var(--border);border:none;border-radius:8px;cursor:pointer;font-size:14px;color:var(--text-dim)">关闭</button>
+        </div>`;
+    overlay.classList.add('visible');
+    modal.style.display = 'block';
+}
+
+function resetMapPanel() {
+    const panel = document.getElementById('mapDetailPanel');
+    if (!panel) return;
+    const records = window.__allRecords || window.__fastRecords || [];
+    const distOverview = {};
+    records.forEach(r => {
+        const p = r.province || '', d = r.district || '';
+        if (!d) return;
+        const key = p + '|' + d;
+        if (!distOverview[key]) distOverview[key] = {province:p, district:d, cnt:0, kwh:0};
+        distOverview[key].cnt++;
+        distOverview[key].kwh += r.chargedKWh;
+    });
+    const distHtml = Object.entries(distOverview).sort((a,b) => b[1].cnt - a[1].cnt).map(([key, d]) => {
+        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;border-radius:6px;background:var(--subtle);margin-bottom:4px;font-size:13px;cursor:pointer" onclick="showCityDetail('${d.province}','${d.district}')">
+            <span style="color:var(--text)">${d.province} · ${d.district}</span>
+            <span style="color:var(--text-faint);font-size:12px">${d.cnt}次 · ${d.kwh.toFixed(0)}kWh</span>
+        </div>`;
+    }).join('');
+    panel.innerHTML = `<div style="font-size:13px"><strong style="font-size:14px;color:var(--text)">所有地区</strong><div style="margin-top:8px">${distHtml}</div></div><div id="copyTip" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--card);padding:4px 12px;border-radius:6px;font-size:12px;opacity:0;transition:opacity .3s">已复制</div>`;
+    panel.style.position = 'relative';
+}
+
+// ====== Settings display sync ======
+['batteryCap','slowThreshold','efficiency','ecardAmount'].forEach(id => {
+  $(id).addEventListener('input', function() {
+    const displayId = id.replace('batteryCap','batteryDisplay').replace('slowThreshold','slowDisplay').replace('efficiency','effDisplay').replace('ecardAmount','ecardDisplay');
+    const el = $(displayId);
+    if (el) el.textContent = this.value;
+  });
+});
+
+// ====== 卡券消费实时更新实付金额 ======
+$('ecardAmount').addEventListener('input', function() {
+  const ctx = window.__activeCtx;
+  if (!ctx) return;
+  const ecardAmt = parseFloat(this.value) || 0;
+  const adjustedPaid = ctx.totalPaid + ecardAmt;
+  updateHeroStats(ctx);
+  const cards = document.querySelectorAll('.stat-card');
+  for (const card of cards) {
+    if (card.querySelector('.label')?.textContent === '实付金额') {
+      const valEl = card.querySelector('.value');
+      const subEl = card.querySelector('.sub');
+      if (valEl) valEl.textContent = adjustedPaid.toFixed(0);
+      if (subEl) subEl.textContent = '优惠 ' + (ctx.totalAmount - adjustedPaid).toFixed(0) + ' 元' + (ecardAmt > 0 ? '（含卡券' + ecardAmt + '元）' : '');
+      break;
+    }
+  }
+});
+
+// ====== 常驻地变更实时重渲染 ======
+$('homeCity').addEventListener('input', function() {
+  const ctx = window.__activeCtx;
+  if (!ctx) return;
+  const homeCity = (this.value || '').trim() || '北京';
+  window.__homeCity = homeCity;
+  ctx.homeCity = homeCity;
+  $('report').innerHTML = '';
+  renderReport(ctx);
+});
+
+// ====== Update hero stats after data load ======
+function updateHeroStats(ctx) {
+  const el = $('heroStats');
+  if (!el) return;
+  const { allRecords, totalKWh, totalPaid } = ctx;
+  const ecardAmt = parseFloat($('ecardAmount').value) || 0;
+  const adjustedPaid = totalPaid + ecardAmt;
+  const totalCnt = allRecords.length;
+  const fastCnt = allRecords.filter(r => !r.isSlow).length;
+  const slowCnt = allRecords.filter(r => r.isSlow).length;
+  const cities = [...new Set(allRecords.filter(r => r.province && r.district && !isHomeCity(r, ctx.homeCity)).map(r => r.district))];
+  const year = ctx._currentYear || '全部';
+
+  // Monthly kWh for battery grid (all records)
+  const byMonth = {};
+  allRecords.forEach(r => {
+    const d = new Date(r.startTime);
+    const key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    byMonth[key] = (byMonth[key] || 0) + r.chargedKWh;
+  });
+  // 12 rows: by year or aggregated across years
+  const monthLabels = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+  const monthValues = monthLabels.map(m => {
+    if (ctx._currentYear) return byMonth[ctx._currentYear + '-' + m] || 0;
+    let total = 0;
+    for (const [key, val] of Object.entries(byMonth)) {
+      if (key.endsWith('-' + m)) total += val;
+    }
+    return total;
+  });
+  const maxKwh = Math.max(...monthValues, 1);
+  const startR = 0, startG = 158, startB = 247;  // cyan
+  const endR = 0, endG = 179, endB = 131;         // green
+  let gridHtml = '';
+  for (let idx = 11; idx >= 0; idx--) {
+    const raw = monthValues[idx];
+    const cells = raw > 0 ? Math.round(raw / maxKwh * 10) : 0;
+    const t = idx / 11;
+    const r = Math.round(startR + (endR - startR) * t);
+    const g = Math.round(startG + (endG - startG) * t);
+    const b = Math.round(startB + (endB - startB) * t);
+    let row = '';
+    for (let i = 0; i < cells; i++) {
+      row += `<div style="width:5px;height:28px;background:rgb(${r},${g},${b});flex-shrink:0"></div>`;
+    }
+    gridHtml += `<div style="display:flex;flex-direction:row-reverse;gap:2px;margin-bottom:5px;min-height:28px">${row}</div>`;
+  }
+
+  el.style.cssText = 'text-align:right';
+  el.innerHTML = `
+    <div style="display:flex;flex-direction:row;align-items:stretch;gap:28px;justify-content:flex-end;flex-wrap:wrap">
+      <div style="flex-shrink:0">
+        <div class="number" style="font-style:italic">${totalKWh.toFixed(0)}<span style="font-size:0.4em;vertical-align:super;letter-spacing:0;font-weight:300">.${String(totalKWh.toFixed(1)).split('.')[1]||0}</span></div>
+        <div class="unit">kWh 总充电量</div>
+        <div style="margin-top:24px;display:flex;flex-direction:column;gap:18px">
+          <div class="meta-item"><div class="val cyan" style="font-size:36px;line-height:1;font-style:italic">${totalCnt}</div><div class="lbl" style="margin-top:4px">充电次数</div></div>
+          <div class="meta-item"><div class="val green" style="font-size:36px;line-height:1;font-style:italic">${fastCnt}</div><div class="lbl" style="margin-top:4px">快充</div></div>
+          <div class="meta-item"><div class="val" style="font-size:36px;line-height:1;color:var(--text-dim);font-style:italic">${slowCnt}</div><div class="lbl" style="margin-top:4px">慢充</div></div>
+          <div class="meta-item"><div class="val coral" style="font-size:36px;line-height:1;font-style:italic">${adjustedPaid.toFixed(0)}</div><div class="lbl" style="margin-top:4px">实付(元)</div></div>
+          <div class="meta-item"><div class="val" style="font-size:36px;line-height:1;font-style:italic;color:var(--amber)">${window.__trips ? window.__trips.length : 0}</div><div class="lbl" style="margin-top:4px">出行记录</div></div>
+        </div>
+        <div style="margin-top:6px;text-align:right;font-size:12px;color:var(--text-faint);letter-spacing:0.02em">${cities.length > 0 ? cities.slice(0, 6).join(' · ') : '—'}</div>${cities.length > 6 ? '<div style="text-align:right;font-size:12px;color:var(--text-faint);letter-spacing:0.02em">↵ ' + cities.slice(6).join(' · ') + '</div>' : ''}
+        <div style="margin-top:4px;text-align:right;font-size:11px;color:var(--text-faint);font-family:var(--mono)">${year === '全部' ? '全部年份' : year + ' 年'}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-end;gap:0;opacity:0.9;filter:drop-shadow(0 0 8px rgba(0,158,247,0.12))">${gridHtml}</div>
+    </div>`;
+}
+
+// ====== 下载数据模板 ======
+function downloadTemplate() {
+    const wb = XLSX.utils.book_new();
+    const headers = ['充电站', '充电金额（元）', '实际支付金额（元）', '用电量（度）', '开始时间', '结束时间', '省市', '地区', '来源'];
+    const samples = [
+        ['国家电网·北京朝阳站', 30, 25, 26.5, '2025-06-01 10:30:00', '2025-06-01 11:15:00', '北京', '朝阳区', '国家电网'],
+        ['特来电·济南历下站', 45, 40, 38.2, '2025-06-02 14:00:00', '2025-06-02 15:20:00', '山东', '济南', '特来电']
+    ];
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...samples]);
+    ws['!cols'] = headers.map(() => ({ wch: 20 }));
+    XLSX.utils.book_append_sheet(wb, ws, '充电记录');
+    XLSX.writeFile(wb, '充电记录模板.xlsx');
+}
+
+// ====== Event Listeners ======
+$('fileInput').addEventListener('change', e => {
+    if (e.target.files.length > 0) {
+        $('fileName').textContent = '📄 ' + e.target.files[0].name;
+        handleFile(e.target.files[0]);
+    }
+});
+
+// Drag & drop
+document.addEventListener('dragover', e => { e.preventDefault(); });
+document.addEventListener('drop', e => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+        $('fileName').textContent = '📄 ' + file.name;
+        handleFile(file);
+    }
+});
+</script>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeDetail()"></div>
+<div class="modal" id="detailModal"></div>
+
+</body>
+</html>
