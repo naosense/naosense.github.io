@@ -186,7 +186,7 @@ if __name__ == "__main__":
                                 discussion["createdAt"], "%Y-%m-%dT%H:%M:%SZ"
                             )
                             created_localized = created_at.astimezone(tz_east_8)
-                            md.write(f"date: {created_localized:%Y-%m-%d %H:%M:%S}")
+                            md.write(f"date: {created_localized:%Y-%m-%d %H:%M:%S}\n")
                         md.write("---\n")
                         md.write(body)
                         print(f"Create or Update {title}")
