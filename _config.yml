@@ -102,7 +102,7 @@ douban:
   customize_layout: page
   book:
     path: books/index.html
-    title: '读书'
-    quote: ''
+    title: 'Books'
+    quote: '读万卷书，行万里路'
     option:
   timeout: 10000
