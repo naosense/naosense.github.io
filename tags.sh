@@ -10,10 +10,22 @@ for file in source/_posts/*.md; do
     tags+=( $(echo "$tag_line" | awk -F 'tags: ' '{print $2}' | tr -d '[] ' | tr ',' '\n') )
 done
 
-# 使用sort命令对标签进行排序并去重
-sorted_tags=($(echo "${tags[@]}" | tr ' ' '\n' | sort -u))
-
-# 打印排好序的标签
-for tag in "${sorted_tags[@]}"; do
-    echo "$tag"
-done
+# 统计每个标签的出现次数，按数量降序排列，名称左对齐数量右对齐
+echo "${tags[@]}" | tr ' ' '\n' | sort | uniq -c | sort -rn | {
+    # 收集数据并计算最大显示宽度
+    lines=()
+    max_w=0
+    while read count tag; do
+        byte_len=$(echo -n "$tag" | wc -c | tr -d ' ')
+        char_len=${#tag}
+        cjk_count=$(( (byte_len - char_len) / 2 ))
+        vis_width=$(( char_len + cjk_count ))
+        lines+=("$vis_width|$tag|$count")
+        (( vis_width > max_w )) && max_w=$vis_width
+    done
+    for line in "${lines[@]}"; do
+        IFS='|' read -r w t c <<< "$line"
+        pad=$(( max_w - w ))
+        printf "%s%*s%3d\n" "$t" "$pad" "" "$c"
+    done
+}
