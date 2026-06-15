@@ -23,6 +23,10 @@ menu:
   Tags: /tags
   Books: /books
   RSS: /atom.xml
-  Ev: /ev
-  Hlm: /hlm
+  Ev:
+    url: /ev
+    target: _blank
+  Hlm:
+    url: /hlm
+    target: _blank
   About: /about

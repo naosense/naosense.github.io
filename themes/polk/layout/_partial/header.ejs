@@ -6,8 +6,12 @@
   <nav class="navbar">
     <ul class="menu">
       <% for (name in theme.menu) { %>
+        <% var item = theme.menu[name]; %>
+        <% var item_url = typeof item === 'object' ? item.url : item; %>
+        <% var item_target = typeof item === 'object' && item.target ? item.target : '_self'; %>
+        <% var item_rel = item_target === '_blank' ? 'noopener noreferrer' : ''; %>
         <li class="menu-item">
-          <a href="<%- url_for(theme.menu[name]) %>" class="menu-item-link"><%- __(name) %></a>
+          <a href="<%- url_for(item_url) %>" class="menu-item-link" target="<%- item_target %>"<%- item_rel ? ' rel="' + item_rel + '"' : '' %>><%- __(name) %></a>
         </li>
       <% } %>
     </ul>
