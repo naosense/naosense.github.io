@@ -611,11 +611,12 @@ const __holidays = [
     {start:'2024-04-04',end:'2024-04-06',name:'清明'},{start:'2024-05-01',end:'2024-05-05',name:'劳动节'},
     {start:'2024-06-08',end:'2024-06-10',name:'端午'},{start:'2024-09-15',end:'2024-09-17',name:'中秋'},
     {start:'2024-10-01',end:'2024-10-07',name:'国庆'},{start:'2025-01-01',end:'2025-01-01',name:'元旦'},
-    {start:'2025-01-28',end:'2025-02-03',name:'春节'},{start:'2025-04-04',end:'2025-04-06',name:'清明'},
+    {start:'2025-01-28',end:'2025-02-04',name:'春节'},{start:'2025-04-04',end:'2025-04-06',name:'清明'},
     {start:'2025-05-01',end:'2025-05-05',name:'劳动节'},{start:'2025-05-31',end:'2025-06-02',name:'端午'},
     {start:'2025-10-01',end:'2025-10-08',name:'中秋·国庆'},{start:'2026-01-01',end:'2026-01-03',name:'元旦'},
-    {start:'2026-02-17',end:'2026-02-23',name:'春节'},{start:'2026-04-04',end:'2026-04-06',name:'清明'},
-    {start:'2026-05-01',end:'2026-05-05',name:'劳动节'},{start:'2026-06-25',end:'2026-06-27',name:'端午'},
+    {start:'2026-02-15',end:'2026-02-23',name:'春节'},{start:'2026-04-04',end:'2026-04-06',name:'清明'},
+    {start:'2026-05-01',end:'2026-05-05',name:'劳动节'},{start:'2026-06-19',end:'2026-06-21',name:'端午'},
+    {start:'2026-09-25',end:'2026-09-27',name:'中秋'},
     {start:'2026-10-01',end:'2026-10-07',name:'国庆'},{start:'2027-01-01',end:'2027-01-03',name:'元旦'},
     {start:'2027-02-13',end:'2027-02-19',name:'春节'},{start:'2027-04-05',end:'2027-04-05',name:'清明'},
     {start:'2027-05-01',end:'2027-05-05',name:'劳动节'},{start:'2027-06-07',end:'2027-06-09',name:'端午'},
@@ -1102,25 +1103,14 @@ function renderReport(ctx) {
         // Use ALL records (including slow) for trip boundary detection
         const allSorted = [...allRecords].filter(r => r.province).sort((a, b) => a.startTime - b.startTime);
 
-        // Detect trips: consecutive non-Beijing records.
-        // If a Beijing charge happened within 36h before the first waypoint charge,
-        // treat it as pre-trip top-up and include it in the trip's departure.
+        // Detect trips: consecutive non-home-city records.
         const trips = [];
         let curTrip = null;
-        let lastBjRecord = null;
         for (const r of allSorted) {
             const isBj = isHomeCity(r, homeCity);
             if (!isBj) {
                 if (!curTrip) {
                     curTrip = {startTime: r.startTime, endTime: r.startTime, provinces: [], districts: [], records: [], totalKwh: 0};
-                    // Include Beijing pre-charge on same day or previous day
-                    const dayGap = lastBjRecord ? Math.round((new Date(r.startTime.getFullYear(), r.startTime.getMonth(), r.startTime.getDate()) - new Date(lastBjRecord.endTime.getFullYear(), lastBjRecord.endTime.getMonth(), lastBjRecord.endTime.getDate())) / 86400000) : 99;
-                    if (lastBjRecord && dayGap >= 0 && dayGap <= 1) {
-                        curTrip.startTime = lastBjRecord.endTime;
-                        curTrip.records.push(lastBjRecord);
-                        curTrip.totalKwh += lastBjRecord.chargedKWh;
-                        curTrip.preChargeKwh = (curTrip.preChargeKwh || 0) + lastBjRecord.chargedKWh;
-                    }
                 }
                 curTrip.endTime = r.endTime;
                 if (!curTrip.provinces.includes(r.province)) curTrip.provinces.push(r.province);
@@ -1130,14 +1120,12 @@ function renderReport(ctx) {
                 curTrip.totalKwh += r.chargedKWh;
             } else {
                 if (curTrip) {
-                    curTrip.days = calcDays(curTrip.startTime, curTrip.endTime);
                     if (curTrip.records.length > 0) trips.push(curTrip);
                     curTrip = null;
                 }
-                lastBjRecord = r;
             }
         }
-        if (curTrip && curTrip.records.length > 0) { curTrip.days = calcDays(curTrip.startTime, curTrip.endTime); trips.push(curTrip); }
+        if (curTrip && curTrip.records.length > 0) trips.push(curTrip);
         window.__trips = trips;
 
         if (trips.length > 0) {
@@ -1149,7 +1137,7 @@ function renderReport(ctx) {
             tripTitle.innerHTML = `行程分析 <span class="badge">${trips.length} 次出行</span>`;
             tripContainer.appendChild(tripTitle);
 
-            const totalTripKwh = trips.reduce((s, t) => s + t.totalKwh - (t.preChargeKwh || 0), 0);
+            const totalTripKwh = trips.reduce((s, t) => s + t.totalKwh, 0);
             const totalLocalKwh = allRecords.filter(r => isHomeCity(r, homeCity)).reduce((s, r) => s + r.chargedKWh, 0);
             const allDests = [...new Set(trips.flatMap(t => t.districts.filter(Boolean)))];
 
@@ -1165,18 +1153,19 @@ function renderReport(ctx) {
 
             const tripDiv = document.createElement('div');
             tripDiv.className = 'table-wrap';
-            let tripHtml = '<table><thead><tr><th style="text-align:left;white-space:nowrap">出发</th><th style="text-align:left;white-space:nowrap">返回</th><th style="text-align:right;width:40px;white-space:nowrap">天数</th><th style="text-align:left">途经</th><th style="text-align:right;width:50px;white-space:nowrap">次数</th><th style="text-align:right;width:50px;white-space:nowrap">电量</th></tr></thead><tbody>';
+            let tripHtml = '<table><thead><tr><th style="text-align:left;white-space:nowrap">出发</th><th style="text-align:left;white-space:nowrap">返回</th><th style="text-align:left">途经</th><th style="text-align:right;width:50px;white-space:nowrap">次数</th><th style="text-align:right;width:50px;white-space:nowrap">电量</th><th style="text-align:right;width:50px;white-space:nowrap">费用</th></tr></thead><tbody>';
             trips.forEach(t => {
                 const sd = new Date(t.startTime), ed = new Date(t.endTime);
                 const dests = t.districts.filter((d, i, a) => i === 0 || d !== a[i-1]).join(' → ');
                 const h = tripHasHoliday(t);
+                const tripFee = t.records.reduce((s, r) => s + (r.paid || r.amount || 0), 0);
                 tripHtml += `<tr style="cursor:pointer" onclick="showTripDetail(${trips.indexOf(t)})">
                     <td style="text-align:left;font-size:12px">${fmtDate(sd)}</td>
                     <td style="text-align:left;font-size:12px">${fmtDate(ed)}</td>
-                    <td style="text-align:right">${t.days}</td>
                     <td style="text-align:left;font-size:12px">${dests}${h ? ` <span style="display:inline-block;background:var(--cyan-light);color:var(--cyan-dim);font-size:10px;padding:1px 6px;border-radius:4px;margin-left:4px">${h}</span>` : ''}</td>
                     <td style="text-align:right">${t.records.length}</td>
                     <td style="text-align:right">${t.totalKwh.toFixed(0)}</td>
+                    <td style="text-align:right">${tripFee.toFixed(0)}</td>
                 </tr>`;
             });
             tripHtml += '</tbody></table></div>';
@@ -1899,14 +1888,14 @@ function showTripDetail(idx) {
             <td style="font-size:12px;text-align:left">${r.station}</td>
             <td style="text-align:right;font-size:12px">${r.district || '-'}</td>
             <td style="text-align:right;font-size:12px">${r.chargedKWh.toFixed(1)}</td>
-            <td style="text-align:right;font-size:12px">${r.durationMin.toFixed(0)}</td>
+            <td style="text-align:right;font-size:12px">${(r.paid || r.amount || 0).toFixed(0)}</td>
         </tr>`;
     });
 
     const dests = t.districts.join(' → ');
     modal.innerHTML = `
         <div style="margin-bottom:14px">
-            <span style="font-size:13px;color:var(--text-dim)">${fmtDate(new Date(t.startTime))} → ${fmtDate(new Date(t.endTime))} · ${t.days}天</span>
+            <span style="font-size:13px;color:var(--text-dim)">${fmtDate(new Date(t.startTime))} → ${fmtDate(new Date(t.endTime))}</span>
             <h3 style="font-size:18px;font-weight:700;margin:2px 0 2px;color:var(--text)">${dests}</h3>
             <div style="font-size:13px;color:var(--text-dim)">${t.records.length} 次充电 · ${t.totalKwh.toFixed(0)} kWh</div>
         </div>
@@ -1917,7 +1906,7 @@ function showTripDetail(idx) {
             <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)">充电站</th>
             <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">地区</th>
             <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">电量</th>
-            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">时长</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">费用</th>
         </tr></thead>
         <tbody>${rowsHtml}</tbody>
         </table></div>
