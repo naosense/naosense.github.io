@@ -744,6 +744,7 @@ function parseExcel(data) {
         '金额': ['金额', '充电金额', '总金额', '费用'],
         '省市': ['省市', '省份', '省', '城市'],
         '地区': ['地区', '区县', '区域', '区'],
+        '标记': ['标记', '县乡', '县镇', '乡镇', '县城'],
         '来源': ['来源', '平台', '运营商', '涞源']
     };
     for (let i = 0; i < headers.length; i++) {
@@ -757,7 +758,9 @@ function parseExcel(data) {
     // Fallback by position: if header names don't match, use known positions
     if (colMap['省市'] === undefined && headers.length > 8 && headers[8]) colMap['省市'] = 8;
     if (colMap['地区'] === undefined && headers.length > 9 && headers[9]) colMap['地区'] = 9;
+    if (colMap['标记'] === undefined && headers.length > 10 && headers[10]) colMap['标记'] = 10;
     if (colMap['来源'] === undefined && headers.length > 10 && headers[10]) colMap['来源'] = 10;
+    if (colMap['来源'] === undefined && headers.length > 11 && headers[11]) colMap['来源'] = 11;
 
     const foundHeaders = headers.filter(Boolean);
     if (colMap['开始时间'] === undefined) throw new Error('未找到"开始时间"列（解析到: ' + foundHeaders.join(', ') + '）');
@@ -788,6 +791,7 @@ function parseExcel(data) {
         const station = colMap['充电站'] !== undefined ? String(v(colMap['充电站']) || '').trim() : '未知';
         const province = colMap['省市'] !== undefined ? String(v(colMap['省市']) || '').trim() : '';
         const district = colMap['地区'] !== undefined ? String(v(colMap['地区']) || '').trim() : '';
+        const tag = colMap['标记'] !== undefined ? String(v(colMap['标记']) || '').trim() : '';
         const source = colMap['来源'] !== undefined ? String(v(colMap['来源']) || '').trim() : '';
 
         records.push({
@@ -796,7 +800,7 @@ function parseExcel(data) {
             chargedKWh: kWh,
             amount, paid,
             station: station || '未知',
-            province, district, source,
+            province, district, tag, source,
             dateStr: startTime.getFullYear() + '-' + String(startTime.getMonth()+1).padStart(2,'0') + '-' + String(startTime.getDate()).padStart(2,'0'),
             month: startTime.getMonth() + 1
         });
@@ -841,6 +845,7 @@ function mergeJumpGunRecords(records, gapMinutes) {
                 station: group[0].station,
                 province: group[0].province || '',
                 district: group[0].district || '',
+                tag: group[0].tag || '',
                 source: group[0].source || '',
                 dateStr: group[0].dateStr,
                 month: group[0].month
@@ -1110,12 +1115,14 @@ function renderReport(ctx) {
             const isBj = isHomeCity(r, homeCity);
             if (!isBj) {
                 if (!curTrip) {
-                    curTrip = {startTime: r.startTime, endTime: r.startTime, provinces: [], districts: [], records: [], totalKwh: 0};
+                    curTrip = {startTime: r.startTime, endTime: r.startTime, provinces: [], districts: [], counties: [], records: [], totalKwh: 0};
                 }
                 curTrip.endTime = r.endTime;
                 if (!curTrip.provinces.includes(r.province)) curTrip.provinces.push(r.province);
                 const dist = r.district || '';
+                const cty = (r.tag && r.tag !== '-') ? r.tag : dist;
                 if (dist) curTrip.districts.push(dist);
+                if (cty) curTrip.counties.push(cty);
                 curTrip.records.push(r);
                 curTrip.totalKwh += r.chargedKWh;
             } else {
@@ -1156,7 +1163,7 @@ function renderReport(ctx) {
             let tripHtml = '<table><thead><tr><th style="text-align:left;white-space:nowrap">出发</th><th style="text-align:left;white-space:nowrap">返回</th><th style="text-align:left">途经</th><th style="text-align:right;width:50px;white-space:nowrap">次数</th><th style="text-align:right;width:50px;white-space:nowrap">电量</th><th style="text-align:right;width:50px;white-space:nowrap">费用</th></tr></thead><tbody>';
             trips.forEach(t => {
                 const sd = new Date(t.startTime), ed = new Date(t.endTime);
-                const dests = t.districts.filter((d, i, a) => i === 0 || d !== a[i-1]).join(' → ');
+                const dests = t.counties.filter((d, i, a) => i === 0 || d !== a[i-1]).join(' → ');
                 const h = tripHasHoliday(t);
                 const tripFee = t.records.reduce((s, r) => s + (r.paid || r.amount || 0), 0);
                 tripHtml += `<tr style="cursor:pointer" onclick="showTripDetail(${trips.indexOf(t)})">
@@ -1887,12 +1894,13 @@ function showTripDetail(idx) {
             <td style="text-align:left;font-size:12px">${fmtDate(d)} ${st}</td>
             <td style="font-size:12px;text-align:left">${r.station}</td>
             <td style="text-align:right;font-size:12px">${r.district || '-'}</td>
+            <td style="text-align:right;font-size:12px">${(r.tag && r.tag !== '-') ? r.tag : (r.district || '-')}</td>
             <td style="text-align:right;font-size:12px">${r.chargedKWh.toFixed(1)}</td>
             <td style="text-align:right;font-size:12px">${(r.paid || r.amount || 0).toFixed(0)}</td>
         </tr>`;
     });
 
-    const dests = t.districts.join(' → ');
+    const dests = t.counties.filter((d, i, a) => i === 0 || d !== a[i-1]).join(' → ');
     modal.innerHTML = `
         <div style="margin-bottom:14px">
             <span style="font-size:13px;color:var(--text-dim)">${fmtDate(new Date(t.startTime))} → ${fmtDate(new Date(t.endTime))}</span>
@@ -1905,6 +1913,7 @@ function showTripDetail(idx) {
             <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)">时间</th>
             <th style="padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)">充电站</th>
             <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">地区</th>
+            <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">标记</th>
             <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">电量</th>
             <th style="padding:6px 8px;text-align:right;border-bottom:1px solid var(--border)">费用</th>
         </tr></thead>
@@ -2083,10 +2092,10 @@ function updateHeroStats(ctx) {
 // ====== 下载数据模板 ======
 function downloadTemplate() {
     const wb = XLSX.utils.book_new();
-    const headers = ['充电站', '充电金额（元）', '实际支付金额（元）', '用电量（度）', '开始时间', '结束时间', '省市', '地区', '来源'];
+    const headers = ['充电站', '充电金额（元）', '实际支付金额（元）', '用电量（度）', '开始时间', '结束时间', '省市', '地区', '标记', '来源'];
     const samples = [
-        ['国家电网·北京朝阳站', 30, 25, 26.5, '2025-06-01 10:30:00', '2025-06-01 11:15:00', '北京', '朝阳区', '国家电网'],
-        ['特来电·济南历下站', 45, 40, 38.2, '2025-06-02 14:00:00', '2025-06-02 15:20:00', '山东', '济南', '特来电']
+        ['国家电网·北京朝阳站', 30, 25, 26.5, '2025-06-01 10:30:00', '2025-06-01 11:15:00', '北京', '朝阳区', '-', '国家电网'],
+        ['特来电·济南历下站', 45, 40, 38.2, '2025-06-02 14:00:00', '2025-06-02 15:20:00', '山东', '济南', '-', '特来电']
     ];
     const ws = XLSX.utils.aoa_to_sheet([headers, ...samples]);
     ws['!cols'] = headers.map(() => ({ wch: 20 }));
