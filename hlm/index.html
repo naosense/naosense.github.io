@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="金陵十二钗 · 贾府五代 · 四大家族人物关系图谱，可拖拽缩放，寻问人物情缘">
+<title>红楼梦人物关系图谱</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D4YST94BJZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-D4YST94BJZ');
+</script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #fdf6ec;
+    color: #3c2415;
+    overflow: hidden;
+    height: 100vh;
+    user-select: none;
+  }
+
+  /* ========== 顶部标题栏 ========== */
+  .header {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 10;
+    padding: 16px 28px 20px;
+    background: linear-gradient(180deg, rgba(253,246,236,0.98) 0%, rgba(253,246,236,0.85) 70%, rgba(253,246,236,0) 100%);
+    pointer-events: none;
+  }
+  .header h1 {
+    font-family: "STKaiti", "KaiTi", "楷体", "Noto Serif SC", serif;
+    font-size: 30px;
+    font-weight: normal;
+    color: #8b0000;
+    letter-spacing: 6px;
+  }
+  .header .subtitle {
+    font-size: 13px;
+    color: #9b8870;
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  /* ========== 左侧控制面板 ========== */
+  .controls {
+    position: absolute;
+    top: 100px; left: 20px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: fit-content;
+    min-width: 180px;
+    max-width: 600px;
+    max-height: calc(100vh - 130px);
+    overflow-y: auto;
+  }
+
+  /* 搜索框 */
+  .search-box {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid #d4c5b2;
+    border-radius: 10px;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  }
+  .search-box .search-icon {
+    color: #b8a590;
+    font-size: 16px;
+  }
+  .search-box input {
+    border: none; outline: none;
+    background: transparent;
+    font-size: 14px;
+    color: #3c2415;
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    padding: 4px 6px;
+    font-family: inherit;
+  }
+  .search-box input::placeholder { color: #c4b5a0; }
+  .search-box .clear-btn {
+    cursor: pointer;
+    color: #b8a590;
+    font-size: 16px;
+    display: none;
+    padding: 0 4px;
+  }
+  .search-box .clear-btn.visible { display: block; }
+
+  /* 问情 */
+  .rel-calc {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid #d4c5b2;
+    border-radius: 10px;
+    padding: 8px 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    font-size: 12px;
+  }
+  .rel-calc-title {
+    font-weight: 600;
+    color: #8b0000;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .rel-calc-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .rel-calc-row input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid #d4c5b2;
+    border-radius: 5px;
+    padding: 4px 4px;
+    font-size: 11px;
+    color: #3c2415;
+    background: #fdfaf4;
+    outline: none;
+    font-family: inherit;
+  }
+  .rel-calc-row input:focus { border-color: #8b0000; }
+  .rel-calc-row button {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  .rel-calc-arrow {
+    color: #b8a590;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .rel-calc-row button {
+    background: #8b0000;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    flex-shrink: 0;
+  }
+  .rel-calc-row button:hover { background: #a00000; }
+  .rel-calc-result {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #e8ddd0;
+    font-size: 11px;
+    color: #6b5b4f;
+    line-height: 1.7;
+    display: none;
+  }
+  .rel-calc-result.visible { display: block; }
+  .rel-calc-result .path-step {
+    display: inline-block;
+    background: #fdf6ec;
+    border: 1px solid #e8ddd0;
+    border-radius: 3px;
+    padding: 1px 6px;
+    margin: 0 2px;
+  }
+  .rel-calc-result .path-rel {
+    color: #8b0000;
+    font-weight: 600;
+  }
+
+  /* 图例 */
+  .legend {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid #d4c5b2;
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    font-size: 12px;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      "title title"
+      "family reltype"
+      "family badge";
+    column-gap: 20px;
+  }
+  .legend-title {
+    grid-area: title;
+    margin-bottom: 6px;
+  }
+  .legend-section-family { grid-area: family; }
+  .legend-section-reltype { grid-area: reltype; }
+  .legend-section-badge { grid-area: badge; }
+  .legend-title {
+    font-weight: 600;
+    color: #8b0000;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+  .legend-section-label {
+    font-size: 11px;
+    color: #9b8870;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 3px;
+    font-size: 12px;
+  }
+  .legend-dot {
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .legend-line {
+    width: 16px; height: 0;
+    flex-shrink: 0;
+  }
+  .legend-line.solid { border-top: 2px solid #999; }
+  .legend-line.dashed { border-top: 2px dashed #999; }
+  .legend-line.dotted { border-top: 2px dotted #999; }
+
+  /* 家族图例交互 */
+  .family-item {
+    cursor: pointer;
+    padding: 3px 6px;
+    margin-left: -6px;
+    border-radius: 5px;
+    transition: background 0.15s;
+  }
+  .family-item:hover {
+    background: rgba(139,0,0,0.07);
+  }
+  .legend-dot {
+    transition: opacity 0.2s, box-shadow 0.2s;
+  }
+  .legend-dot.hidden {
+    opacity: 0.2;
+    box-shadow: none;
+  }
+
+  /* 十二钗标记说明 */
+  .beauty-badge-legend {
+    display: inline-block;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* ========== 右侧详情卡片 ========== */
+  .detail-panel {
+    position: absolute;
+    top: 100px; right: 20px;
+    z-index: 10;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid #d4c5b2;
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    font-size: 13px;
+    min-width: 200px;
+    max-width: 260px;
+    display: none;
+  }
+  .detail-panel.visible { display: block; }
+  .detail-panel .close-btn {
+    position: absolute;
+    top: 8px; right: 12px;
+    cursor: pointer;
+    color: #b8a590;
+    font-size: 18px;
+  }
+  .detail-panel .char-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #8b0000;
+    margin-bottom: 6px;
+  }
+  .detail-panel .char-info {
+    color: #6b5b4f;
+    line-height: 1.7;
+  }
+  .detail-panel .char-info span {
+    display: inline-block;
+    background: #fdf6ec;
+    padding: 1px 8px;
+    border-radius: 4px;
+    margin: 2px 4px 2px 0;
+    font-size: 12px;
+    border: 1px solid #e8ddd0;
+  }
+  .detail-panel .relation-list {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #e8ddd0;
+  }
+  .detail-panel .relation-item {
+    font-size: 12px;
+    color: #6b5b4f;
+    line-height: 1.8;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+    user-select: none;
+  }
+  .detail-panel .relation-item:hover {
+    background: #fdf6ec;
+    color: #8b0000;
+  }
+
+  /* ========== 提示框 ========== */
+  .tooltip {
+    position: absolute;
+    background: rgba(255,255,255,0.96);
+    border: 1px solid #d4c5b2;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    pointer-events: none;
+    opacity: 0;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    z-index: 100;
+    max-width: 200px;
+    transition: opacity 0.15s;
+  }
+  .tooltip.visible { opacity: 1; }
+  .tooltip .tt-name {
+    font-size: 15px;
+    font-weight: bold;
+    color: #8b0000;
+    margin-bottom: 4px;
+  }
+  .tooltip .tt-info {
+    color: #6b5b4f;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  /* ========== SVG 画布 ========== */
+  #graph {
+    width: 100vw; height: 100vh;
+    cursor: grab;
+  }
+  #graph:active { cursor: grabbing; }
+  #graph.dimmed .node:not(.highlighted) { opacity: 0.15; }
+  #graph.dimmed .link:not(.highlighted) { opacity: 0.05; }
+
+  .node-label {
+    font-size: 11px;
+    pointer-events: none;
+    text-anchor: middle;
+    fill: #4a3525;
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  .node-label.dim { opacity: 0.2; }
+
+  .link {
+    fill: none;
+    stroke-opacity: 0.45;
+    pointer-events: none;
+  }
+  .link-hit {
+    fill: none;
+    pointer-events: stroke;
+    cursor: pointer;
+  }
+
+  .link-label {
+    font-size: 9px;
+    fill: #9b8870;
+    text-anchor: middle;
+    pointer-events: none;
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .controls { left: 8px; top: 90px; gap: 6px; }
+    .search-box input { width: 100px; font-size: 13px; }
+    .legend { font-size: 11px; padding: 10px 12px; max-width: 180px; }
+    .controls { min-width: 100px; max-width: 300px; }
+    .detail-panel { right: 8px; top: 90px; min-width: 160px; max-width: 200px; }
+    .header h1 { font-size: 22px; letter-spacing: 3px; }
+    .node-label { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 标题 -->
+<div class="header">
+  <h1>红楼梦 · 人物关系图谱</h1>
+  <div class="subtitle">满纸荒唐言，一把辛酸泪。都云作者痴，谁解其中味？</div>
+</div>
+
+<!-- 左侧控制面板 -->
+<div class="controls">
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="孽海情天觅一人" autocomplete="off">
+    <span class="clear-btn" id="clearBtn">✕</span>
+  </div>
+  <div class="rel-calc" id="relCalc">
+    <div class="rel-calc-title">问情</div>
+    <div class="rel-calc-row">
+      <input type="text" id="relFrom" placeholder="人物A" autocomplete="off">
+      <span class="rel-calc-arrow">→</span>
+      <input type="text" id="relTo" placeholder="人物B" autocomplete="off">
+      <button id="relCalcBtn">好</button>
+      <button id="relClearBtn">了</button>
+    </div>
+    <div class="rel-calc-result" id="relResult"></div>
+  </div>
+  <div class="legend">
+  <div class="legend-title">图例</div>
+  <div class="legend-section legend-section-family">
+	    <div class="legend-section-label">家族 / 府邸</div>
+    <div class="legend-item family-item" data-cat="rong"><span class="legend-dot" style="background:#c23531;"></span>荣国府</div>
+    <div class="legend-item family-item" data-cat="ning"><span class="legend-dot" style="background:#b0481a;"></span>宁国府</div>
+    <div class="legend-item family-item" data-cat="wang"><span class="legend-dot" style="background:#e8923f;"></span>王家</div>
+    <div class="legend-item family-item" data-cat="shi"><span class="legend-dot" style="background:#4a9e8a;"></span>史家</div>
+    <div class="legend-item family-item" data-cat="xue"><span class="legend-dot" style="background:#3b6fb6;"></span>薛家</div>
+    <div class="legend-item family-item" data-cat="lin"><span class="legend-dot" style="background:#8e5cbe;"></span>林家</div>
+    <div class="legend-item family-item" data-cat="other"><span class="legend-dot" style="background:#8b8682;"></span>其他</div>
+  </div>
+  <div class="legend-section legend-section-reltype">
+    <div class="legend-section-label">关系类型</div>
+    <div class="legend-item"><span class="legend-line solid"></span>血缘 / 婚姻</div>
+    <div class="legend-item"><span class="legend-line dashed"></span>主仆</div>
+    <div class="legend-item"><span class="legend-line dotted"></span>情感 / 其他</div>
+  </div>
+  <div class="legend-section legend-section-badge">
+    <div class="legend-section-label">十二钗标记</div>
+    <div class="legend-item family-item" data-tb="正册"><span class="legend-dot" style="background:#fff;border:2.5px solid #d4a017;"></span>正册</div>
+    <div class="legend-item family-item" data-tb="副册"><span class="legend-dot" style="background:#fff;border:2.5px solid #a07848;"></span>副册</div>
+    <div class="legend-item family-item" data-tb="又副册"><span class="legend-dot" style="background:#fff;border:2.5px solid #8b5e4b;"></span>又副册</div>
+  </div>
+</div>
+</div>
+
+<!-- 右侧详情面板 -->
+<div class="detail-panel" id="detailPanel">
+  <span class="close-btn" id="closeDetail">✕</span>
+  <div class="char-name" id="detailName"></div>
+  <div class="char-info" id="detailInfo"></div>
+  <div class="relation-list" id="detailRelations"></div>
+</div>
+
+<!-- 悬停提示 -->
+<div class="tooltip" id="tooltip">
+  <div class="tt-name"></div>
+  <div class="tt-info"></div>
+</div>
+
+<!-- 画布 -->
+<svg id="graph"></svg>
+
+<script>
+// ============================================================
+// 数据定义
+// ============================================================
+
+// 家族颜色映射
+const categoryColors = {
+  rong: "#c23531",   // 荣国府
+  ning: "#b0481a",   // 宁国府
+  wang: "#e8923f",   // 王家
+  shi:  "#4a9e8a",   // 史家
+  xue:  "#3b6fb6",   // 薛家
+  lin:  "#8e5cbe",   // 林家
+  other:"#8b8682"    // 其他
+};
+
+const categoryNames = {
+  rong: "荣国府", ning: "宁国府", wang: "王家",
+  shi: "史家", xue: "薛家", lin: "林家", other: "其他"
+};
+
+// 节点数据
+const nodes = [
+  // ===== 宁国府 =====
+  { id:"贾演",   cat:"ning", gen:1, gender:"male",   tb:null,  desc:"宁国公 · 贾府始祖", short:"宁国公" },
+  { id:"贾代化", cat:"ning", gen:2, gender:"male",   tb:null,  desc:"贾演之子 · 世袭宁国府", short:"贾演之子" },
+  { id:"贾敬",   cat:"ning", gen:3, gender:"male",   tb:null,  desc:"贾代化之子 · 一心好道", short:"好道修仙" },
+  { id:"贾珍",   cat:"ning", gen:4, gender:"male",   tb:null,  desc:"贾敬之子 · 世袭三品威烈将军", short:"宁国府当家" },
+  { id:"尤氏",   cat:"ning", gen:4, gender:"female", tb:null,  desc:"贾珍之妻 · 宁国府当家奶奶", short:"贾珍之妻" },
+  { id:"贾惜春", cat:"ning", gen:4, gender:"female", tb:"正册", desc:"贾敬之女 · 贾珍之妹 · 金陵十二钗正册 · 善画", short:"四姑娘" },
+  { id:"贾蓉",   cat:"ning", gen:5, gender:"male",   tb:null,  desc:"贾珍之子", short:"贾珍之子" },
+  { id:"秦可卿", cat:"ning", gen:5, gender:"female", tb:"正册", desc:"贾蓉之妻 · 金陵十二钗正册 · 兼美", short:"蓉大奶奶" },
+
+  // ===== 荣国府 =====
+  { id:"贾源",   cat:"rong", gen:1, gender:"male",   tb:null,  desc:"荣国公 · 贾府始祖", short:"荣国公" },
+  { id:"贾代善", cat:"rong", gen:2, gender:"male",   tb:null,  desc:"贾源之子 · 世袭荣国府", short:"荣国公之子" },
+  { id:"贾母",   cat:"rong", gen:2, gender:"female", tb:null,  desc:"史氏 · 贾代善之妻 · 史家大小姐 · 贾府最高辈分", short:"史太君·老祖宗" },
+  { id:"贾赦",   cat:"rong", gen:3, gender:"male",   tb:null,  desc:"贾代善长子 · 袭一等将军 · 好色昏聩", short:"大老爷" },
+  { id:"邢夫人", cat:"rong", gen:3, gender:"female", tb:null,  desc:"贾赦续弦 · 邢岫烟之姑母", short:"大太太" },
+  { id:"贾政",   cat:"rong", gen:3, gender:"male",   tb:null,  desc:"贾代善次子 · 工部员外郎 · 端方正直", short:"二老爷" },
+  { id:"王夫人", cat:"rong", gen:3, gender:"female", tb:null,  desc:"王氏 · 贾政之妻 · 王子腾之妹 · 薛姨妈之姐", short:"二太太·王家女" },
+  { id:"赵姨娘", cat:"rong", gen:3, gender:"female", tb:null,  desc:"贾政之妾 · 探春/贾环生母", short:"政之妾" },
+  { id:"贾敏",   cat:"lin",  gen:3, gender:"female", tb:null,  desc:"贾代善之女 · 嫁林如海 · 黛玉之母", short:"黛玉之母·荣府千金" },
+  { id:"贾琏",   cat:"rong", gen:4, gender:"male",   tb:null,  desc:"贾赦之子 · 善理家务 · 风流成性", short:"琏二爷" },
+  { id:"王熙凤", cat:"rong", gen:4, gender:"female", tb:"正册", desc:"王氏 · 贾琏之妻 · 王子腾之侄女 · 金陵十二钗正册 · 精明泼辣", short:"凤辣子·琏二奶奶" },
+  { id:"贾珠",   cat:"rong", gen:4, gender:"male",   tb:null,  desc:"贾政长子 · 早逝", short:"已故·政长子" },
+  { id:"李纨",   cat:"rong", gen:4, gender:"female", tb:"正册", desc:"贾珠之妻 · 金陵十二钗正册 · 槁木死灰 · 课子读书", short:"珠大奶奶·稻香老农" },
+  { id:"贾宝玉", cat:"rong", gen:4, gender:"male",   tb:null,  desc:"贾政次子 · 衔玉而生 · 绛洞花主 · 怡红公子", short:"宝二爷·怡红公子" },
+  { id:"贾元春", cat:"rong", gen:4, gender:"female", tb:"正册", desc:"贾政长女 · 贤德妃 · 金陵十二钗正册 · 省亲大观园", short:"元妃娘娘" },
+  { id:"贾迎春", cat:"rong", gen:4, gender:"female", tb:"正册", desc:"贾赦之女 · 金陵十二钗正册 · 性格懦弱 · 误嫁中山狼", short:"二木头·菱洲" },
+  { id:"贾探春", cat:"rong", gen:4, gender:"female", tb:"正册", desc:"贾政庶女 · 赵姨娘所出 · 金陵十二钗正册 · 精明才志 · 远嫁海外", short:"三姑娘·蕉下客" },
+  { id:"贾环",   cat:"rong", gen:4, gender:"male",   tb:null,  desc:"贾政庶子 · 赵姨娘所出 · 猥琐小气", short:"环三爷" },
+  { id:"贾兰",   cat:"rong", gen:5, gender:"male",   tb:null,  desc:"贾珠·李纨之子 · 好学上进", short:"珠大奶奶之子" },
+  { id:"贾桂",   cat:"rong", gen:5, gender:"male",   tb:null,  desc:"贾宝玉·薛宝钗之子 · 续书第一百二十回 · 兰桂齐芳", short:"宝玉之子·兰桂齐芳" },
+  { id:"巧姐",   cat:"rong", gen:5, gender:"female", tb:"正册", desc:"贾琏·王熙凤之女 · 金陵十二钗正册 · 得刘姥姥搭救", short:"大姐儿" },
+
+  // ===== 林家 =====
+  { id:"林如海", cat:"lin",  gen:3, gender:"male",   tb:null,  desc:"巡盐御史 · 黛玉之父 · 探花出身", short:"巡盐御史" },
+  { id:"林黛玉", cat:"lin", gen:4, gender:"female", tb:"正册", desc:"贾敏·林如海之女 · 金陵十二钗正册之首 · 绛珠仙草 · 潇湘妃子", short:"颦儿·潇湘妃子" },
+
+  // ===== 王家 =====
+  { id:"王子腾", cat:"wang", gen:3, gender:"male",   tb:null,  desc:"王夫人/薛姨妈之兄 · 京营节度使 · 九省统制", short:"京营节度使" },
+  { id:"王仁",   cat:"wang", gen:4, gender:"male",   tb:null,  desc:"王熙凤之兄 · 忘仁", short:"凤姐之兄" },
+
+  // ===== 史家 =====
+  { id:"史鼐",   cat:"shi",  gen:3, gender:"male",   tb:null,  desc:"保龄侯 · 贾母之侄 · 史湘云之叔", short:"保龄侯" },
+  { id:"史湘云", cat:"shi",  gen:4, gender:"female", tb:"正册", desc:"史家遗孤 · 金陵十二钗正册 · 英豪阔大 · 醉卧芍药", short:"云妹妹·枕霞旧友" },
+
+  // ===== 薛家 =====
+  { id:"薛姨妈", cat:"xue",  gen:3, gender:"female", tb:null,  desc:"王氏 · 王子腾之妹 · 王夫人之妹 · 嫁入薛家", short:"姨太太·王家女" },
+  { id:"薛蟠",   cat:"xue",  gen:4, gender:"male",   tb:null,  desc:"薛姨妈之子 · 呆霸王", short:"呆霸王" },
+  { id:"薛宝钗", cat:"xue", gen:4, gender:"female", tb:"正册", desc:"薛姨妈之女 · 金陵十二钗正册 · 蘅芜君 · 金玉良缘", short:"宝姐姐·蘅芜君" },
+  { id:"薛宝琴", cat:"xue",  gen:4, gender:"female", tb:"副册", desc:"薛宝钗堂妹 · 金陵十二钗副册 · 才貌双全", short:"宝琴·薛家明珠" },
+  { id:"夏金桂", cat:"xue",  gen:4, gender:"female", tb:"副册", desc:"薛蟠之妻 · 金陵十二钗副册 · 河东狮", short:"薛大奶奶·河东狮" },
+  { id:"香菱",   cat:"xue",  gen:4, gender:"female", tb:"副册", desc:"薛蟠之妾 · 原名甄英莲 · 金陵十二钗副册之首 · 学诗痴迷", short:"英莲·呆香菱" },
+
+  // ===== 其他(妙玉等) =====
+  { id:"妙玉",   cat:"other",gen:4, gender:"female", tb:"正册", desc:"栊翠庵尼姑 · 金陵十二钗正册 · 带发修行 · 气质如兰", short:"槛外人" },
+  { id:"尤二姐", cat:"other",gen:4, gender:"female", tb:"副册", desc:"尤氏之妹 · 贾琏侧室 · 金陵十二钗副册 · 吞金自尽", short:"尤二·苦命人" },
+  { id:"尤三姐", cat:"other",gen:4, gender:"female", tb:"副册", desc:"尤氏之妹 · 金陵十二钗副册 · 刚烈殉情", short:"尤三·烈女" },
+  { id:"邢岫烟", cat:"other",gen:4, gender:"female", tb:"副册", desc:"邢夫人侄女 · 金陵十二钗副册 · 家贫志坚 · 嫁薛蝌", short:"岫烟·寒梅" },
+  { id:"李纹",   cat:"other",gen:4, gender:"female", tb:"副册", desc:"李纨堂妹 · 金陵十二钗副册", short:"李纨堂妹" },
+  { id:"李绮",   cat:"other",gen:4, gender:"female", tb:"副册", desc:"李纨堂妹 · 金陵十二钗副册", short:"李纨堂妹" },
+  { id:"秋桐",   cat:"rong", gen:4, gender:"female", tb:"副册", desc:"贾琏之妾 · 金陵十二钗副册 · 泼辣善妒", short:"贾琏之妾" },
+  { id:"平儿",   cat:"rong", gen:4, gender:"female", tb:"副册", desc:"王熙凤陪嫁丫鬟 · 贾琏通房 · 金陵十二钗副册 · 心地善良", short:"凤姐心腹" },
+  { id:"娇杏",   cat:"other",gen:4, gender:"female", tb:"副册", desc:"贾雨村之妻 · 金陵十二钗副册 · 偶因一回顾", short:"贾雨村妻" },
+
+  // ===== 又副册 丫鬟 =====
+  { id:"晴雯",   cat:"rong", gen:4, gender:"female", tb:"又副册", desc:"贾宝玉丫鬟 · 金陵十二钗又副册之首 · 霁月难逢 · 心比天高", short:"勇晴雯·芙蓉花神" },
+  { id:"袭人",   cat:"rong", gen:4, gender:"female", tb:"又副册", desc:"贾宝玉丫鬟 · 金陵十二钗又副册 · 花气袭人 · 温柔贤惠", short:"花袭人·准姨娘" },
+  { id:"鸳鸯",   cat:"rong", gen:4, gender:"female", tb:"又副册", desc:"贾母首席丫鬟 · 金陵十二钗又副册 · 誓绝鸳鸯偶", short:"金鸳鸯·贾母心腹" },
+  { id:"紫鹃",   cat:"rong", gen:4, gender:"female", tb:"又副册", desc:"林黛玉贴身丫鬟 · 金陵十二钗又副册 · 慧心忠义", short:"慧紫鹃" },
+  { id:"麝月",   cat:"rong", gen:4, gender:"female", tb:"又副册", desc:"贾宝玉丫鬟 · 金陵十二钗又副册", short:"宝玉丫鬟" },
+  { id:"司棋",   cat:"rong", gen:4, gender:"female", tb:"又副册", desc:"贾迎春丫鬟 · 金陵十二钗又副册 · 刚烈殉情", short:"迎春大丫鬟" },
+  { id:"金钏",   cat:"rong", gen:4, gender:"female", tb:"又副册", desc:"王夫人丫鬟 · 金陵十二钗又副册 · 含耻投井", short:"王夫人丫鬟" },
+  { id:"玉钏",   cat:"rong", gen:4, gender:"female", tb:"又副册", desc:"王夫人丫鬟 · 金钏之妹 · 金陵十二钗又副册", short:"金钏之妹" },
+  { id:"小红",   cat:"rong", gen:4, gender:"female", tb:"又副册", desc:"原名林红玉 · 先在宝玉处后跟凤姐 · 金陵十二钗又副册", short:"林红玉·凤姐得力" },
+  { id:"莺儿",   cat:"xue",  gen:4, gender:"female", tb:"又副册", desc:"薛宝钗贴身丫鬟 · 金陵十二钗又副册", short:"宝钗丫鬟" },
+  { id:"雪雁",   cat:"rong", gen:4, gender:"female", tb:"又副册", desc:"林黛玉从林家带来的小丫鬟 · 金陵十二钗又副册", short:"黛玉小丫鬟" },
+  { id:"彩霞",   cat:"rong", gen:4, gender:"female", tb:"又副册", desc:"王夫人丫鬟 · 金陵十二钗又副册", short:"王夫人丫鬟" },
+
+  // ===== 补充人物 =====
+  { id:"甄士隐", cat:"other",gen:2, gender:"male",   tb:null,  desc:"香菱（甄英莲）之父 · 姑苏乡绅", short:"英莲之父" },
+  { id:"贾雨村", cat:"other",gen:3, gender:"male",   tb:null,  desc:"进士出身 · 黛玉启蒙老师 · 受甄士隐资助 · 得贾政提携复职 · 忘恩负义", short:"黛玉启蒙师·势利之徒" },
+
+  // ===== 小厮 =====
+  { id:"茗烟",   cat:"rong", gen:4, gender:"male",   tb:null,  desc:"贾宝玉贴身小厮 · 机灵忠心 · 大闹学堂", short:"宝玉贴身小厮" },
+
+  // ===== 婆子/外围 =====
+  { id:"刘姥姥", cat:"other",gen:2, gender:"female", tb:null,  desc:"乡村老妪 · 三进荣国府 · 智救巧姐 · 知恩图报", short:"积古老人·巧姐恩人" },
+
+  // ===== 宝玉社交圈 =====
+  { id:"秦钟",   cat:"other",gen:4, gender:"male",   tb:null,  desc:"秦可卿之弟 · 宝玉挚友 · 相貌俊美 · 早夭", short:"情种·宝玉挚友" },
+  { id:"蒋玉菡", cat:"other",gen:4, gender:"male",   tb:null,  desc:"戏子·艺名琪官 · 宝玉知己 · 后娶花袭人", short:"琪官·优伶" },
+  { id:"柳湘莲", cat:"other",gen:4, gender:"male",   tb:null,  desc:"冷面二郎 · 尤三姐未婚夫 · 侠义之士 · 出家", short:"冷二郎·侠客" },
+
+  // ===== 僧道 =====
+  { id:"茫茫大士", cat:"other",gen:1, gender:"male", tb:null,  desc:"癞头和尚 · 携通灵宝玉下凡 · 度化世人", short:"癞头和尚·度化者" },
+  { id:"渺渺真人", cat:"other",gen:1, gender:"male", tb:null,  desc:"跛足道人 · 唱好了歌 · 携宝玉下凡", short:"跛足道人·度化者" },
+  { id:"智能儿",   cat:"other",gen:4, gender:"female",tb:null,  desc:"水月庵小尼姑 · 秦钟情人 · 私奔被逐", short:"小尼姑·秦钟情人" },
+
+  // ===== 管家/老仆 =====
+  { id:"林之孝",   cat:"rong", gen:3, gender:"male",   tb:null,  desc:"荣国府管家 · 小红之父 · 沉默寡言", short:"荣府管家·小红之父" },
+  { id:"周瑞家的", cat:"rong", gen:3, gender:"female", tb:null,  desc:"王夫人陪房 · 周瑞之妻 · 掌太太出行", short:"王夫人陪房" },
+  { id:"赖大",     cat:"rong", gen:3, gender:"male",   tb:null,  desc:"荣国府大总管 · 赖嬷嬷之子 · 家资丰厚", short:"荣府大总管" },
+  { id:"焦大",     cat:"ning", gen:1, gender:"male",   tb:null,  desc:"宁国府老仆 · 从死人堆救过主子 · 酒后骂宁府", short:"宁府忠仆·醉骂" },
+
+  // ===== 第一档：独立故事线 =====
+  { id:"北静王",   cat:"other",gen:3, gender:"male",   tb:null,  desc:"水溶 · 四王之一 · 与宝玉交好 · 赠鹡鸰香串", short:"北静郡王·宝玉之友" },
+  { id:"贾蔷",     cat:"ning", gen:5, gender:"male",   tb:null,  desc:"宁国府旁支 · 与龄官相恋 · 风流俊俏", short:"宁府旁支·龄官情人" },
+  { id:"贾芸",     cat:"rong", gen:5, gender:"male",   tb:null,  desc:"荣国府旁支 · 小红之夫 · 认宝玉为义父", short:"荣府旁支·小红之夫" },
+  { id:"龄官",     cat:"other",gen:4, gender:"female", tb:null,  desc:"贾府戏子 · 与贾蔷相恋 · 画蔷痴情 · 眉眼似黛玉", short:"戏子·画蔷人" },
+  { id:"薛蝌",     cat:"xue",  gen:4, gender:"male",   tb:null,  desc:"薛宝琴之兄 · 邢岫烟之夫 · 品性端正", short:"宝琴之兄·岫烟之夫" },
+  { id:"警幻仙姑", cat:"other",gen:0, gender:"female", tb:null,  desc:"太虚幻境之主 · 掌情司 · 点化宝玉 · 司人间风情月债", short:"警幻仙子·掌情司" },
+
+  // ===== 第二档：代表性情节 =====
+  { id:"贾瑞",       cat:"other",gen:4, gender:"male",   tb:null,  desc:"贾代儒之孙 · 贾府旁支 · 风月宝鉴 · 死于凤姐毒计", short:"风月宝鉴·痴心人" },
+  { id:"芳官",       cat:"rong", gen:4, gender:"female", tb:null,  desc:"宝玉丫鬟 · 原为戏子 · 豪爽叛逆 · 后被逐出家", short:"戏子丫鬟·小匈奴" },
+  { id:"藕官",       cat:"rong", gen:4, gender:"female", tb:null,  desc:"贾府戏子 · 分到黛玉房中 · 与蕊官情谊深厚", short:"黛玉丫鬟·戏子" },
+  { id:"蕊官",       cat:"rong", gen:4, gender:"female", tb:null,  desc:"贾府戏子 · 分到宝钗房中 · 与藕官情谊深厚", short:"宝钗丫鬟·戏子" },
+  { id:"五儿",       cat:"rong", gen:4, gender:"female", tb:null,  desc:"柳五儿 · 想进怡红院 · 茯苓霜事件 · 后为宝玉丫鬟", short:"柳五儿·茯苓霜" },
+  { id:"冷子兴",     cat:"other",gen:3, gender:"male",   tb:null,  desc:"周瑞的女婿 · 古董商 · 演说荣国府", short:"古董商·演说荣国府" },
+  { id:"赖嬷嬷",     cat:"rong", gen:2, gender:"female", tb:null,  desc:"赖大之母 · 贾府有脸面的老奴才 · 孙子赖尚荣捐官", short:"老资格奴才·赖大之母" },
+  { id:"王善保家的", cat:"rong", gen:3, gender:"female", tb:null,  desc:"邢夫人陪房 · 司棋外婆 · 抄检大观园挑事者", short:"邢夫人陪房·挑事精" },
+  { id:"兴儿",       cat:"rong", gen:4, gender:"male",   tb:null,  desc:"贾琏贴身小厮 · 向尤二姐评说凤姐", short:"贾琏小厮·说实话的" },
+  { id:"板儿",       cat:"other",gen:3, gender:"male",   tb:null,  desc:"刘姥姥外孙 · 与巧姐互换佛手柚子 · 缘定终生", short:"刘姥姥外孙·巧姐姻缘" },
+];
+
+// 边数据
+const links = [
+  // ---- 宁国府血缘 ----
+  { source:"贾演",   target:"贾代化", type:"父子", style:"solid" },
+  { source:"贾代化", target:"贾敬",   type:"父子", style:"solid" },
+  { source:"贾敬",   target:"贾珍",   type:"父子", style:"solid" },
+  { source:"贾敬",   target:"贾惜春", type:"父女", style:"solid" },
+  { source:"贾珍",   target:"贾蓉",   type:"父子", style:"solid" },
+  // ---- 荣国府血缘 ----
+  { source:"贾源",   target:"贾代善", type:"父子", style:"solid" },
+  { source:"贾演",   target:"贾源",   type:"兄弟", style:"solid" },
+  { source:"贾代善", target:"贾赦",   type:"父子", style:"solid" },
+  { source:"贾代善", target:"贾政",   type:"父子", style:"solid" },
+  { source:"贾代善", target:"贾敏",   type:"父女", style:"solid" },
+  { source:"贾赦",   target:"贾政",   type:"兄弟", style:"solid" },
+  { source:"贾赦",   target:"贾敏",   type:"兄妹", style:"solid" },
+  { source:"贾政",   target:"贾敏",   type:"兄妹", style:"solid" },
+  { source:"贾赦",   target:"贾琏",   type:"父子", style:"solid" },
+  { source:"贾赦",   target:"贾迎春", type:"父女", style:"solid" },
+  { source:"贾政",   target:"贾珠",   type:"父子", style:"solid" },
+  { source:"贾政",   target:"贾宝玉", type:"父子", style:"solid" },
+  { source:"贾政",   target:"贾元春", type:"父女", style:"solid" },
+  { source:"贾政",   target:"贾探春", type:"父女", style:"solid" },
+  { source:"贾政",   target:"贾环",   type:"父子", style:"solid" },
+  { source:"赵姨娘", target:"贾探春", type:"母女", style:"solid" },
+  { source:"赵姨娘", target:"贾环",   type:"母子", style:"solid" },
+  { source:"贾珠",   target:"贾兰",   type:"父子", style:"solid" },
+  { source:"贾宝玉", target:"贾桂",   type:"父子", style:"solid" },
+  { source:"薛宝钗", target:"贾桂",   type:"母子", style:"solid" },
+  { source:"贾琏",   target:"巧姐",   type:"父女", style:"solid" },
+  // ---- 婚姻 ----
+  { source:"贾代善", target:"贾母",   type:"夫妻", style:"solid" },
+  { source:"贾母",   target:"贾赦",   type:"母子", style:"solid" },
+  { source:"贾母",   target:"贾政",   type:"母子", style:"solid" },
+  { source:"贾母",   target:"贾敏",   type:"母女", style:"solid" },
+  { source:"贾赦",   target:"邢夫人", type:"夫妻", style:"solid" },
+  { source:"贾政",   target:"王夫人", type:"夫妻", style:"solid" },
+  { source:"贾政",   target:"赵姨娘", type:"夫妾", style:"solid" },
+  { source:"贾珍",   target:"尤氏",   type:"夫妻", style:"solid" },
+  { source:"贾琏",   target:"王熙凤", type:"夫妻", style:"solid" },
+  { source:"贾琏",   target:"尤二姐", type:"夫妾", style:"solid" },
+  { source:"贾琏",   target:"秋桐",   type:"夫妾", style:"solid" },
+  { source:"贾琏",   target:"平儿",   type:"通房", style:"solid" },
+  { source:"贾珠",   target:"李纨",   type:"夫妻", style:"solid" },
+  { source:"贾蓉",   target:"秦可卿", type:"夫妻", style:"solid" },
+  { source:"林如海", target:"贾敏",   type:"夫妻", style:"solid" },
+  { source:"薛蟠",   target:"夏金桂", type:"夫妻", style:"solid" },
+  { source:"薛蟠",   target:"香菱",   type:"夫妾", style:"solid" },
+  // ---- 林黛玉 ----
+  { source:"林如海", target:"林黛玉", type:"父女", style:"solid" },
+  { source:"贾敏",   target:"林黛玉", type:"母女", style:"solid" },
+  // ---- 薛家 ----
+  { source:"薛姨妈", target:"薛蟠",   type:"母子", style:"solid" },
+  { source:"薛姨妈", target:"薛宝钗", type:"母女", style:"solid" },
+  { source:"薛蟠",   target:"薛宝钗", type:"兄妹", style:"solid" },
+  { source:"薛宝钗", target:"薛宝琴", type:"堂姐妹", style:"solid" },
+  // ---- 史家 ----
+  { source:"史鼐",   target:"史湘云", type:"叔侄", style:"solid" },
+  // ---- 四大家族跨界关联 ----
+  { source:"贾母",   target:"史鼐",   type:"姑侄", style:"dotted" },
+  { source:"贾母",   target:"史湘云", type:"姑祖母", style:"dotted" },
+  { source:"王子腾", target:"王夫人", type:"兄妹", style:"solid" },
+  { source:"王夫人", target:"薛姨妈", type:"姐妹", style:"solid" },
+  { source:"王子腾", target:"王熙凤", type:"叔侄", style:"solid" },
+  { source:"王子腾", target:"薛姨妈", type:"兄妹", style:"solid" },
+  { source:"王仁",   target:"王熙凤", type:"兄妹", style:"solid" },
+  // ---- 情感 ----
+  { source:"贾宝玉", target:"林黛玉", type:"知己·木石前盟", style:"dotted" },
+  { source:"贾宝玉", target:"薛宝钗", type:"金玉良缘", style:"dotted" },
+  { source:"贾宝玉", target:"史湘云", type:"亲密", style:"dotted" },
+  { source:"贾宝玉", target:"妙玉",   type:"相知", style:"dotted" },
+  // ---- 尤家姐妹 ----
+  { source:"尤氏",   target:"尤二姐", type:"姐妹", style:"solid" },
+  { source:"尤氏",   target:"尤三姐", type:"姐妹", style:"solid" },
+  { source:"尤二姐", target:"尤三姐", type:"姐妹", style:"solid" },
+  // ---- 邢岫烟 ----
+  { source:"邢夫人", target:"邢岫烟", type:"姑侄", style:"solid" },
+  // ---- 李纹李绮 ----
+  { source:"李纨",   target:"李纹",   type:"堂姐妹", style:"solid" },
+  { source:"李纨",   target:"李绮",   type:"堂姐妹", style:"solid" },
+  // ---- 甄英莲(香菱) ----
+  { source:"甄士隐", target:"香菱",   type:"父女", style:"solid" },
+  // ---- 贾雨村 ----
+  { source:"贾雨村", target:"娇杏",   type:"夫妻", style:"solid" },
+  { source:"贾雨村", target:"林黛玉", type:"启蒙老师", style:"dotted" },
+  { source:"甄士隐", target:"贾雨村", type:"知遇之恩", style:"dotted" },
+  { source:"贾政",   target:"贾雨村", type:"同僚提携", style:"dotted" },
+  // ---- 主仆 ----
+  { source:"贾母",   target:"鸳鸯",   type:"主仆", style:"dashed" },
+  { source:"贾宝玉", target:"晴雯",   type:"主仆", style:"dashed" },
+  { source:"贾宝玉", target:"袭人",   type:"主仆", style:"dashed" },
+  { source:"贾宝玉", target:"麝月",   type:"主仆", style:"dashed" },
+  { source:"王熙凤", target:"平儿",   type:"主仆", style:"dashed" },
+  { source:"王熙凤", target:"小红",   type:"主仆", style:"dashed" },
+  { source:"贾迎春", target:"司棋",   type:"主仆", style:"dashed" },
+  { source:"王夫人", target:"金钏",   type:"主仆", style:"dashed" },
+  { source:"王夫人", target:"玉钏",   type:"主仆", style:"dashed" },
+  { source:"王夫人", target:"彩霞",   type:"主仆", style:"dashed" },
+  { source:"林黛玉", target:"紫鹃",   type:"主仆", style:"dashed" },
+  { source:"林黛玉", target:"雪雁",   type:"主仆", style:"dashed" },
+  { source:"薛宝钗", target:"莺儿",   type:"主仆", style:"dashed" },
+  // ---- 小厮 ----
+  { source:"贾宝玉", target:"茗烟",   type:"主仆", style:"dashed" },
+  // ---- 刘姥姥 ----
+  { source:"刘姥姥", target:"王熙凤", type:"投亲", style:"dotted" },
+  { source:"刘姥姥", target:"巧姐",   type:"恩人", style:"dotted" },
+  { source:"刘姥姥", target:"贾母",   type:"投缘", style:"dotted" },
+  // ---- 宝玉社交圈 ----
+  { source:"秦钟",   target:"贾宝玉", type:"挚友", style:"dotted" },
+  { source:"秦可卿", target:"秦钟",   type:"姐弟", style:"solid" },
+  { source:"蒋玉菡", target:"贾宝玉", type:"知己", style:"dotted" },
+  { source:"蒋玉菡", target:"袭人",   type:"夫妻", style:"solid" },
+  { source:"柳湘莲", target:"尤三姐", type:"未婚夫妻", style:"dotted" },
+  { source:"柳湘莲", target:"贾宝玉", type:"好友", style:"dotted" },
+  { source:"柳湘莲", target:"薛蟠",   type:"结拜兄弟", style:"dotted" },
+  // ---- 僧道 ----
+  { source:"茫茫大士", target:"贾宝玉",   type:"点化", style:"dotted" },
+  { source:"渺渺真人", target:"贾宝玉",   type:"点化", style:"dotted" },
+  { source:"茫茫大士", target:"渺渺真人", type:"道友", style:"dotted" },
+  { source:"智能儿",   target:"秦钟",     type:"私情", style:"dotted" },
+  // ---- 管家/老仆 ----
+  { source:"林之孝",   target:"小红",   type:"父女", style:"solid" },
+  { source:"林之孝",   target:"贾琏",   type:"管家", style:"dashed" },
+  { source:"周瑞家的", target:"王夫人", type:"陪房", style:"dashed" },
+  { source:"赖大",     target:"贾政",   type:"管家", style:"dashed" },
+  { source:"焦大",     target:"贾珍",   type:"老仆", style:"dashed" },
+  { source:"焦大",     target:"贾演",   type:"救主旧仆", style:"dotted" },
+  // ---- 第一档新增 ----
+  { source:"北静王",   target:"贾宝玉",   type:"好友", style:"dotted" },
+  { source:"贾珍",     target:"贾蔷",     type:"族侄", style:"solid" },
+  { source:"贾蔷",     target:"龄官",     type:"情侣", style:"dotted" },
+  { source:"贾芸",     target:"小红",     type:"夫妻", style:"solid" },
+  { source:"贾宝玉",   target:"贾芸",     type:"义父子", style:"dotted" },
+  { source:"薛蝌",     target:"薛宝琴",   type:"兄妹", style:"solid" },
+  { source:"薛蝌",     target:"邢岫烟",   type:"夫妻", style:"solid" },
+  { source:"警幻仙姑", target:"贾宝玉",   type:"点化", style:"dotted" },
+  { source:"警幻仙姑", target:"茫茫大士", type:"仙界同道", style:"dotted" },
+  // ---- 第二档新增 ----
+  { source:"贾瑞",       target:"王熙凤",     type:"痴恋", style:"dotted" },
+  { source:"贾宝玉",       target:"芳官",     type:"主仆", style:"dashed" },
+  { source:"林黛玉",       target:"藕官",     type:"主仆", style:"dashed" },
+  { source:"藕官",       target:"蕊官",       type:"情深", style:"dotted" },
+  { source:"薛宝钗",       target:"蕊官",     type:"主仆", style:"dashed" },
+  { source:"贾宝玉",       target:"五儿",     type:"主仆", style:"dashed" },
+  { source:"冷子兴",     target:"周瑞家的",   type:"女婿", style:"solid" },
+  { source:"赖嬷嬷",     target:"赖大",       type:"母子", style:"solid" },
+  { source:"赖嬷嬷",     target:"贾母",       type:"老仆", style:"dashed" },
+  { source:"王善保家的", target:"邢夫人",     type:"陪房", style:"dashed" },
+  { source:"王善保家的", target:"司棋",       type:"祖孙", style:"solid" },
+  { source:"贾琏",       target:"兴儿",       type:"主仆", style:"dashed" },
+  { source:"刘姥姥",     target:"板儿",       type:"祖孙", style:"solid" },
+  { source:"板儿",       target:"巧姐",       type:"姻缘", style:"dotted" },
+];
+
+// ============================================================
+// 图谱构建
+// ============================================================
+
+const svg = d3.select("#graph");
+const width = window.innerWidth;
+const height = window.innerHeight;
+svg.attr("viewBox", [0, 0, width, height]);
+
+// 缩放行为
+const g = svg.append("g");
+svg.call(d3.zoom()
+  .scaleExtent([0.25, 4])
+  .on("zoom", (event) => {
+    g.attr("transform", event.transform);
+  }));
+
+// 分类初始中心 — 荣宁二府相邻（同宗），其余家族环布四周
+const catCenters = {
+  rong:  { x: width*0.30, y: height*0.42 },   // 左中（荣国府最大）
+  ning:  { x: width*0.48, y: height*0.32 },   // 荣右侧（宁国府，同宗相邻）
+  wang:  { x: width*0.08, y: height*0.20 },   // 左上角（王家）
+  shi:   { x: width*0.35, y: height*0.14 },   // 顶部（史家，在荣宁上方）
+  xue:   { x: width*0.78, y: height*0.60 },   // 右下角（薛家）
+  lin:   { x: width*0.12, y: height*0.65 },   // 左下角（林家）
+  other: { x: width*0.52, y: height*0.60 },   // 底部（僧道/外围）
+};
+
+// 为节点添加初始坐标（家族内随机散布，大族散布半径更大）
+nodes.forEach(n => {
+  const c = catCenters[n.cat] || catCenters.other;
+  const spread = n.cat === "rong" ? 180 : n.cat === "other" ? 150 : 100;
+  n.x = c.x + (Math.random() - 0.5) * spread * 2;
+  n.y = c.y + (Math.random() - 0.5) * spread * 2;
+});
+
+// 计算每个节点的关联数（度数），度数越高节点越大
+nodes.forEach(n => { n.degree = 0; });
+links.forEach(l => {
+  const sid = typeof l.source === "string" ? l.source : l.source?.id || l.source;
+  const tid = typeof l.target === "string" ? l.target : l.target?.id || l.target;
+  const sn = nodes.find(n => n.id === sid);
+  const tn = nodes.find(n => n.id === tid);
+  if (sn) sn.degree++;
+  if (tn) tn.degree++;
+});
+
+// 节点半径计算（基础 + 关系数加权）
+function nodeRadius(d) {
+  let base;
+  if (d.tb === "正册") base = 13;
+  else if (d.tb === "副册") base = 10;
+  else if (d.tb === "又副册") base = 8;
+  else if (["贾宝玉","贾母","贾政","王熙凤"].includes(d.id)) base = 11;
+  else base = d.gender === "male" ? 9 : 8;
+  // 按度数加权，每 5 条关系 +1px，上限 +6
+  const bonus = Math.min((d.degree || 0) * 0.5, 6);
+  return base + bonus;
+}
+
+// 力模拟
+const simulation = d3.forceSimulation(nodes)
+  .force("link", d3.forceLink(links).id(d => d.id).distance(d => {
+    const distMap = { "夫妻":50, "夫妾":55, "通房":55, "父子":60, "父女":60, "母子":60, "母女":60,
+                      "兄弟":75, "兄妹":75, "姐弟":60, "姐妹":75, "结拜兄弟":75, "叔侄":80, "姑侄":80, "堂姐妹":85,
+                      "主仆":90, "管家":95, "陪房":95, "老仆":100, "救主旧仆":105,
+                      "知己·木石前盟":60, "金玉良缘":60, "知己":60, "挚友":60, "好友":65, "亲密":70, "相知":75,
+                      "未婚夫妻":60, "私情":60, "情侣":60, "情深":60, "姻缘":65,
+                      "点化":90, "道友":70, "仙界同道":75,
+                      "启蒙老师":80, "知遇之恩":80, "同僚提携":85,
+                      "投亲":85, "恩人":75, "投缘":80, "姑祖母":85,
+                      "族侄":80, "义父子":80, "女婿":80, "祖孙":65, "痴恋":70 };
+    return distMap[d.type] || 100;
+  }).strength(0.5))
+  .force("charge", d3.forceManyBody().strength(-320))
+  .force("center", d3.forceCenter(width/2, height/2))
+  .force("collide", d3.forceCollide(d => nodeRadius(d) + 12))
+  .force("x", d3.forceX(d => (catCenters[d.cat] || catCenters.other).x).strength(0.12))
+  .force("y", d3.forceY(d => (catCenters[d.cat] || catCenters.other).y).strength(0.12));
+
+// 预热：跑 400 步让布局充分展开，减少交叉线
+simulation.stop();
+for (let i = 0; i < 400; i++) simulation.tick();
+// 快速冷却，收尾时几乎无感知
+simulation.alphaDecay(0.08);
+
+// ---- 连线 ----
+const linkGroup = g.append("g").attr("class", "links");
+
+// 核心关系常驻显示，次要关系悬停时才显示
+// 所有关系标签默认隐藏，仅在悬停连线或高亮节点时显示
+const linkLabel = linkGroup.selectAll("text")
+  .data(links)
+  .join("text")
+  .attr("class", "link-label")
+  .text(d => d.type)
+  .style("opacity", 0);
+
+// 隐形宽线：14px 宽透明线用作鼠标命中区，解决细线难以瞄准的问题
+const linkHit = linkGroup.selectAll("line.link-hit")
+  .data(links)
+  .join("line")
+  .attr("class", "link-hit")
+  .attr("stroke", "transparent")
+  .attr("stroke-width", 14)
+  .on("mouseenter", function(event, d) {
+    link.filter(ld => ld === d)
+      .attr("stroke", "#8b0000")
+      .attr("opacity", 1);
+    linkLabel.filter(ld => ld === d).style("opacity", 1);
+  })
+  .on("mouseleave", function(event, d) {
+    link.filter(ld => ld === d)
+      .attr("stroke", d.style === "dashed" ? "#b8a590" : d.style === "dotted" ? "#c4a882" : "#b8a590")
+      .attr("opacity", d.style === "dotted" ? 0.55 : d.style === "dashed" ? 0.45 : 0.5);
+    // 若该连线被节点高亮标记，则不隐藏标签
+    const keep = link.filter(ld => ld === d).classed("highlighted");
+    if (!keep) linkLabel.filter(ld => ld === d).style("opacity", 0);
+  });
+
+// 可见线：不响应鼠标事件，由上方隐形线代理
+const link = linkGroup.selectAll("line.link-visible")
+  .data(links)
+  .join("line")
+  .attr("class", "link")
+  .attr("stroke", d => {
+    if (d.style === "dashed") return "#b8a590";
+    if (d.style === "dotted") return "#c4a882";
+    return "#b8a590";
+  })
+  .attr("stroke-width", d => {
+    if (d.type === "夫妻") return 2.2;
+    if (d.type === "知己·木石前盟" || d.type === "金玉良缘") return 2;
+    if (d.style === "dashed") return 1.2;
+    return 1.5;
+  })
+  .attr("stroke-dasharray", d => {
+    if (d.style === "dashed") return "6,3";
+    if (d.style === "dotted") return "3,4";
+    return null;
+  })
+  .attr("opacity", d => {
+    if (d.style === "dotted") return 0.55;
+    if (d.style === "dashed") return 0.45;
+    return 0.5;
+  })
+  .style("pointer-events", "none");
+
+// ---- 节点 ----
+const nodeGroup = g.append("g").attr("class", "nodes");
+
+const node = nodeGroup.selectAll("g")
+  .data(nodes)
+  .join("g")
+  .attr("class", "node")
+  .call(d3.drag()
+    .on("start", (event, d) => {
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+    })
+    .on("drag", (event, d) => {
+      // 限制拖拽范围在画布内
+      d.fx = Math.max(40, Math.min(width - 40, event.x));
+      d.fy = Math.max(40, Math.min(height - 40, event.y));
+    })
+    .on("end", (event, d) => {
+      // 松手即停，不残留任何运动
+      simulation.stop();
+      d.fx = null;
+      d.fy = null;
+    }));
+
+// 节点圆
+node.append("circle")
+  .attr("r", d => nodeRadius(d))
+  .attr("fill", d => {
+    const base = categoryColors[d.cat];
+    // 男性稍深，女性稍亮
+    return d.gender === "male" ? d3.color(base).darker(0.3) : base;
+  })
+  .attr("stroke", d => {
+    if (d.tb === "正册") return "#d4a017";
+    if (d.tb === "副册") return "#a07848";
+    if (d.tb === "又副册") return "#8b5e4b";
+    return d3.color(categoryColors[d.cat]).darker(0.5);
+  })
+  .attr("stroke-width", d => {
+    if (d.tb === "正册") return 3;
+    if (d.tb === "副册") return 2.5;
+    if (d.tb === "又副册") return 2;
+    return 1.5;
+  })
+  .attr("cursor", "pointer")
+  .on("mouseenter", handleMouseEnter)
+  .on("mouseleave", handleMouseLeave)
+  .on("click", handleNodeClick);
+
+// 节点标签
+node.append("text")
+  .attr("class", "node-label")
+  .attr("dy", d => -nodeRadius(d) - 5)
+  .text(d => d.id)
+  .style("font-weight", d => d.tb === "正册" ? "bold" : "normal")
+  .style("font-size", d => {
+    if (d.tb === "正册") return "13px";
+    if (d.tb === "副册") return "11px";
+    return "10px";
+  })
+  .style("fill", d => d.tb === "正册" ? "#8b0000" : "#4a3525");
+
+// 位置更新函数
+function updatePositions() {
+  linkHit
+    .attr("x1", d => d.source.x)
+    .attr("y1", d => d.source.y)
+    .attr("x2", d => d.target.x)
+    .attr("y2", d => d.target.y);
+
+  link
+    .attr("x1", d => d.source.x)
+    .attr("y1", d => d.source.y)
+    .attr("x2", d => d.target.x)
+    .attr("y2", d => d.target.y);
+
+  linkLabel
+    .attr("x", d => (d.source.x + d.target.x) / 2)
+    .attr("y", d => (d.source.y + d.target.y) / 2 - 5);
+
+  node.attr("transform", d => `translate(${d.x},${d.y})`);
+}
+
+simulation.on("tick", updatePositions);
+
+// 所有元素创建完毕，手动定位到预热后的位置
+updatePositions();
+// 极低能量重启，约 0.4 秒收尾，交叉线已在预热中消除
+simulation.alpha(0.02).restart();
+
+// ============================================================
+// 交互处理
+// ============================================================
+const tooltip = d3.select("#tooltip");
+const detailPanel = d3.select("#detailPanel");
+const detailName = d3.select("#detailName");
+const detailInfo = d3.select("#detailInfo");
+const detailRelations = d3.select("#detailRelations");
+
+let selectedNode = null;
+
+function handleMouseEnter(event, d) {
+  tooltip
+    .classed("visible", true)
+    .html(`
+      <div class="tt-name">${d.id}</div>
+      <div class="tt-info">
+        ${d.tb ? '<span style="background:#fdf6ec;padding:1px 6px;border-radius:3px;border:1px solid #d4a017;margin-right:4px;">' + d.tb + '</span>' : ''}
+        ${d.desc}<br>
+        <span style="color:#9b8870;">${categoryNames[d.cat]}${d.gen ? ' · 第'+d.gen+'代' : ''}</span>
+      </div>
+    `);
+}
+
+function handleMouseLeave(event, d) {
+  tooltip.classed("visible", false);
+}
+
+function handleNodeClick(event, d) {
+  event.stopPropagation();
+  simulation.stop(); // 点击即停，消除残存飘动
+
+  // 清除所有节点的悬停预览状态（避免点击后残留高亮边框）
+  node.select("circle")
+    .interrupt()
+    .attr("r", n => nodeRadius(n))
+    .attr("stroke", n => {
+      if (n.tb === "正册") return "#d4a017";
+      if (n.tb === "副册") return "#a07848";
+      if (n.tb === "又副册") return "#8b5e4b";
+      return d3.color(categoryColors[n.cat]).darker(0.5).toString();
+    })
+    .attr("stroke-width", n => {
+      if (n.tb === "正册") return 3;
+      if (n.tb === "副册") return 2.5;
+      if (n.tb === "又副册") return 2;
+      return 1.5;
+    });
+
+  // 清除之前的选中状态
+  if (selectedNode && selectedNode !== d) {
+    resetHighlight();
+  }
+
+  if (selectedNode === d) {
+    // 再次点击取消选中
+    resetHighlight();
+    selectedNode = null;
+    detailPanel.classed("visible", false);
+    return;
+  }
+
+  selectedNode = d;
+
+  // 找到相关节点和边
+  const relatedNodeIds = new Set([d.id]);
+  const relatedLinks = [];
+
+  links.forEach(l => {
+    const sid = typeof l.source === 'object' ? l.source.id : l.source;
+    const tid = typeof l.target === 'object' ? l.target.id : l.target;
+    if (sid === d.id || tid === d.id) {
+      relatedNodeIds.add(sid);
+      relatedNodeIds.add(tid);
+      relatedLinks.push(l);
+    }
+  });
+
+  // 高亮
+  svg.classed("dimmed", true);
+  node.each(function(n) {
+    if (relatedNodeIds.has(n.id)) {
+      d3.select(this).classed("highlighted", true);
+    }
+  });
+  link.each(function(l) {
+    const sid = typeof l.source === 'object' ? l.source.id : l.source;
+    const tid = typeof l.target === 'object' ? l.target.id : l.target;
+    if (sid === d.id || tid === d.id) {
+      d3.select(this).classed("highlighted", true);
+      linkLabel.filter(ld => ld === l).style("opacity", 1);
+    }
+  });
+
+  // 显示详情面板
+  detailPanel.classed("visible", true);
+  detailName.text(d.id);
+  detailInfo.html(`
+    <span>${categoryNames[d.cat]}</span>
+    ${d.gen ? '<span>第' + d.gen + '代</span>' : ''}
+    ${d.tb ? '<span style="border-color:#d4a017;">' + d.tb + '</span>' : ''}
+    <br><small style="color:#9b8870;">${d.desc}</small>
+  `);
+
+  // 列出相关人物
+  const relatedPeople = [];
+  relatedLinks.forEach(l => {
+    const sid = typeof l.source === 'object' ? l.source.id : l.source;
+    const tid = typeof l.target === 'object' ? l.target.id : l.target;
+    const other = sid === d.id ? tid : sid;
+    if (!relatedPeople.find(p => p.id === other)) {
+      relatedPeople.push({ id: other, relation: sid === d.id ? l.type + '→' : '←' + l.type });
+    }
+  });
+
+  detailRelations.html(`
+    <div style="font-weight:600;color:#8b0000;margin-bottom:6px;">关联人物</div>
+    ${relatedPeople.map(p => `
+      <div class="relation-item" data-id="${p.id}">
+        <span style="color:#9b8870;">${p.relation}</span> ${p.id}
+      </div>
+    `).join('')}
+  `);
+
+  // 关联人物悬停预览
+  detailPanel.selectAll(".relation-item")
+    .on("mouseenter", function() {
+      const targetNode = nodes.find(n => n.id === this.dataset.id);
+      if (!targetNode || isNodeHidden(targetNode)) return;
+      node.filter(n => n.id === targetNode.id)
+        .select("circle")
+        .interrupt()
+        .transition().duration(150)
+        .attr("r", d => nodeRadius(d) + 4)
+        .attr("stroke", "#00bcd4")
+        .attr("stroke-width", 3.5);
+    })
+    .on("mouseleave", function() {
+      const targetNode = nodes.find(n => n.id === this.dataset.id);
+      if (!targetNode) return;
+      node.filter(n => n.id === targetNode.id)
+        .select("circle")
+        .interrupt()
+        .transition().duration(150)
+        .attr("r", d => nodeRadius(d))
+        .attr("stroke", d => {
+          if (d.tb === "正册") return "#d4a017";
+          if (d.tb === "副册") return "#a07848";
+          if (d.tb === "又副册") return "#8b5e4b";
+          return d3.color(categoryColors[d.cat]).darker(0.5).toString();
+        })
+        .attr("stroke-width", d => {
+          if (d.tb === "正册") return 3;
+          if (d.tb === "副册") return 2.5;
+          if (d.tb === "又副册") return 2;
+          return 1.5;
+        });
+    });
+
+  // 点击关联人物：高亮该人物并飞向它
+  detailPanel.selectAll(".relation-item").on("click", function(event) {
+    const targetId = this.dataset.id;
+    const targetNode = nodes.find(n => n.id === targetId);
+    if (targetNode) {
+      handleNodeClick(event, targetNode);
+      const transform = d3.zoomIdentity
+        .translate(width/2 - targetNode.x, height/2 - targetNode.y)
+        .scale(2);
+      svg.transition().duration(600).call(
+        d3.zoom().transform, transform
+      );
+    }
+  });
+
+  // 若选中节点被详情面板遮挡，自动平移视图避开
+  const t = d3.zoomTransform(svg.node());
+  const nodeScreenX = d.x * t.k + t.x;
+  const panelZone = width - 300; // 面板约占右侧 280px
+  if (nodeScreenX > panelZone) {
+    svg.transition().duration(300).call(
+      d3.zoom().transform,
+      d3.zoomIdentity.translate(t.x - (nodeScreenX - panelZone + 40), t.y).scale(t.k)
+    );
+  }
+}
+
+function resetHighlight() {
+  svg.classed("dimmed", false);
+  node.classed("highlighted", false);
+  link.classed("highlighted", false);
+  linkLabel.style("opacity", 0);
+}
+
+// 点击空白取消选中
+svg.on("click", () => {
+  if (selectedNode) {
+    resetHighlight();
+    selectedNode = null;
+    detailPanel.classed("visible", false);
+  }
+});
+
+// 关闭详情面板
+d3.select("#closeDetail").on("click", () => {
+  resetHighlight();
+  selectedNode = null;
+  detailPanel.classed("visible", false);
+});
+
+// ============================================================
+// 搜索功能
+// ============================================================
+const searchInput = d3.select("#searchInput");
+const clearBtn = d3.select("#clearBtn");
+
+searchInput.on("input", function() {
+  const query = this.value.trim();
+  if (query) {
+    clearBtn.classed("visible", true);
+    const match = nodes.find(n => n.id.includes(query) || n.short?.includes(query) || n.desc?.includes(query));
+    if (match) {
+      handleNodeClick({ stopPropagation: () => {} }, match);
+      const transform = d3.zoomIdentity
+        .translate(width/2 - match.x, height/2 - match.y)
+        .scale(2.5);
+      svg.transition().duration(600).call(
+        d3.zoom().transform, transform
+      );
+    }
+  } else {
+    clearBtn.classed("visible", false);
+    resetHighlight();
+    selectedNode = null;
+    detailPanel.classed("visible", false);
+  }
+});
+
+clearBtn.on("click", () => {
+  searchInput.property("value", "");
+  clearBtn.classed("visible", false);
+  resetHighlight();
+  selectedNode = null;
+  detailPanel.classed("visible", false);
+});
+
+// ============================================================
+// 鼠标跟随提示框
+// ============================================================
+svg.on("mousemove", (event) => {
+  const tt = document.getElementById("tooltip");
+  if (tt.classList.contains("visible")) {
+    tt.style.left = (event.clientX + 16) + "px";
+    tt.style.top = (event.clientY - 10) + "px";
+  }
+});
+
+// ============================================================
+// 窗口大小调整
+// ============================================================
+window.addEventListener("resize", () => {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  svg.attr("viewBox", [0, 0, w, h]);
+  // 更新中心力
+  simulation.force("center", d3.forceCenter(w/2, h/2));
+  simulation.stop();
+});
+
+// 初始缩放，让图谱适应屏幕
+setTimeout(() => {
+  // 计算所有节点的范围
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  nodes.forEach(n => {
+    if (n.x < minX) minX = n.x;
+    if (n.x > maxX) maxX = n.x;
+    if (n.y < minY) minY = n.y;
+    if (n.y > maxY) maxY = n.y;
+  });
+  const pad = 80;
+  const scale = Math.min(width/(maxX - minX + pad*2), height/(maxY - minY + pad*2), 1.8);
+  const cx = (minX + maxX) / 2;
+  const cy = (minY + maxY) / 2;
+  svg.transition().duration(1000).call(
+    d3.zoom().transform,
+    d3.zoomIdentity.translate(width/2 - cx*scale, height/2 - cy*scale).scale(scale)
+  );
+}, 2000);
+
+// ============================================================
+// 图例交互：点击开关家族，悬停高亮同类节点
+// ============================================================
+const hiddenCats = new Set();
+const hiddenTbs = new Set();
+let legendHoverCat = null;
+
+function isNodeHidden(n) {
+  return hiddenCats.has(n.cat) || (n.tb && hiddenTbs.has(n.tb));
+}
+
+function updateVisibility() {
+  node.style("display", n => isNodeHidden(n) ? "none" : null);
+
+  const linkHidden = l => {
+    const sid = typeof l.source === "object" ? l.source.id : l.source;
+    const tid = typeof l.target === "object" ? l.target.id : l.target;
+    const sn = nodes.find(n => n.id === sid);
+    const tn = nodes.find(n => n.id === tid);
+    return isNodeHidden(sn) || isNodeHidden(tn);
+  };
+  link.style("display", l => linkHidden(l) ? "none" : null);
+  linkHit.style("display", l => linkHidden(l) ? "none" : null);
+  linkLabel.style("display", l => linkHidden(l) ? "none" : null);
+}
+
+// 图例点击：开关家族/十二钗显示
+d3.selectAll(".family-item").on("click", function(event) {
+  event.stopPropagation();
+  const cat = d3.select(this).attr("data-cat");
+  const tb = d3.select(this).attr("data-tb");
+  const dot = d3.select(this).select(".legend-dot");
+
+  if (cat) {
+    if (hiddenCats.has(cat)) { hiddenCats.delete(cat); dot.classed("hidden", false); }
+    else { hiddenCats.add(cat); dot.classed("hidden", true); }
+  } else if (tb) {
+    if (hiddenTbs.has(tb)) { hiddenTbs.delete(tb); dot.classed("hidden", false); }
+    else { hiddenTbs.add(tb); dot.classed("hidden", true); }
+  }
+
+  resetHighlight();
+  selectedNode = null;
+  detailPanel.classed("visible", false);
+  updateVisibility();
+});
+
+// 图例悬停：高亮该家族/十二钗的全部节点
+d3.selectAll(".family-item")
+  .on("mouseenter", function() {
+    const cat = d3.select(this).attr("data-cat");
+    const tb = d3.select(this).attr("data-tb");
+    if (cat && hiddenCats.has(cat)) return;
+    if (tb && hiddenTbs.has(tb)) return;
+    legendHoverCat = cat || tb;
+
+    svg.classed("dimmed", true);
+    node.each(function(n) {
+      const match = cat ? n.cat === cat : (n.tb === tb);
+      if (match && !isNodeHidden(n)) {
+        d3.select(this).classed("highlighted", true);
+      }
+    });
+    link.each(function(l) {
+      const sid = typeof l.source === "object" ? l.source.id : l.source;
+      const tid = typeof l.target === "object" ? l.target.id : l.target;
+      const sn = nodes.find(n => n.id === sid);
+      const tn = nodes.find(n => n.id === tid);
+      const match = cat
+        ? (sn?.cat === cat || tn?.cat === cat)
+        : (sn?.tb === tb || tn?.tb === tb);
+      if (match && !isNodeHidden(sn) && !isNodeHidden(tn)) {
+        d3.select(this).classed("highlighted", true);
+        linkLabel.filter(ld => ld === l).style("opacity", 1);
+      }
+    });
+  })
+  .on("mouseleave", function() {
+    legendHoverCat = null;
+    svg.classed("dimmed", false);
+    node.classed("highlighted", false);
+    link.classed("highlighted", false);
+    linkLabel.style("opacity", 0);
+    // 如果之前有选中节点，恢复其高亮（含标签）
+    if (selectedNode) rehighlightNode(selectedNode);
+  });
+
+// 恢复节点高亮（图例悬停结束后还原选中状态）
+function rehighlightNode(d) {
+  const relatedIds = new Set([d.id]);
+  links.forEach(l => {
+    const sid = typeof l.source === "object" ? l.source.id : l.source;
+    const tid = typeof l.target === "object" ? l.target.id : l.target;
+    if (sid === d.id || tid === d.id) { relatedIds.add(sid); relatedIds.add(tid); }
+  });
+  svg.classed("dimmed", true);
+  node.each(function(n) {
+    if (relatedIds.has(n.id) && !isNodeHidden(n)) {
+      d3.select(this).classed("highlighted", true);
+    }
+  });
+  link.each(function(l) {
+    const sid = typeof l.source === "object" ? l.source.id : l.source;
+    const tid = typeof l.target === "object" ? l.target.id : l.target;
+    if ((sid === d.id || tid === d.id) && !isNodeHidden(nodes.find(n => n.id === sid)) && !isNodeHidden(nodes.find(n => n.id === tid))) {
+      d3.select(this).classed("highlighted", true);
+      linkLabel.filter(ld => ld === l).style("opacity", 1);
+    }
+  });
+}
+// ============================================================
+// 问情：查找两人物之间的所有关系路径
+// ============================================================
+function findAllPaths(fromId, toId) {
+  if (fromId === toId) return [[{ from: fromId, to: toId, relation: "同一个人" }]];
+
+  // 构建邻接表
+  const adj = new Map();
+  links.forEach(l => {
+    const sid = typeof l.source === "object" ? l.source.id : l.source;
+    const tid = typeof l.target === "object" ? l.target.id : l.target;
+    if (!adj.has(sid)) adj.set(sid, []);
+    if (!adj.has(tid)) adj.set(tid, []);
+    adj.get(sid).push({ node: tid, link: l });
+    adj.get(tid).push({ node: sid, link: l });
+  });
+  if (!adj.has(fromId) || !adj.has(toId)) return [];
+
+  // BFS 记录最短距离
+  const dist = new Map();
+  const queue = [fromId];
+  dist.set(fromId, 0);
+  while (queue.length) {
+    const cur = queue.shift();
+    if (cur === toId) continue;
+    for (const { node: next } of (adj.get(cur) || [])) {
+      if (!dist.has(next)) {
+        dist.set(next, dist.get(cur) + 1);
+        queue.push(next);
+      }
+    }
+  }
+  if (!dist.has(toId)) return [];
+
+  const shortest = dist.get(toId);
+  const maxDist = shortest + 3; // 允许比最短多 3 步的备选路径
+
+  // DFS 枚举所有路径（shortest ≤ len ≤ maxDist）
+  const allPaths = [];
+  const visited = new Set();
+
+  function dfs(cur, nodePath, linkPath) {
+    const curLen = nodePath.length - 1;
+    if (curLen > maxDist) return;
+    if (cur === toId && curLen >= shortest) {
+      const steps = [];
+      for (let i = 1; i < nodePath.length; i++) {
+        steps.push({
+          from: nodePath[i - 1],
+          to: nodePath[i],
+          relation: linkPath[i - 1] ? linkPath[i - 1].type : "",
+        });
+      }
+      allPaths.push(steps);
+      if (allPaths.length >= 20) return; // 上限防爆炸
+      return;
+    }
+    visited.add(cur);
+    for (const { node: next, link } of (adj.get(cur) || [])) {
+      if (visited.has(next)) continue;
+      // 剪枝：当前长度 + 1 + next到目标的最短距离 > maxDist 则跳过
+      const remainToTarget = dist.has(next) ? (dist.get(toId) - dist.get(next)) : Infinity;
+      if (curLen + 1 + remainToTarget > maxDist) continue;
+      nodePath.push(next);
+      linkPath.push(link);
+      dfs(next, nodePath, linkPath);
+      linkPath.pop();
+      nodePath.pop();
+      if (allPaths.length >= 20) break;
+    }
+    visited.delete(cur);
+  }
+
+  dfs(fromId, [fromId], []);
+
+  // 按长度排序，去重
+  allPaths.sort((a, b) => a.length - b.length);
+  const seen = new Set();
+  const unique = [];
+  for (const p of allPaths) {
+    const key = p.map(s => s.from + "|" + s.relation + "|" + s.to).join(",");
+    if (!seen.has(key)) {
+      seen.add(key);
+      unique.push(p);
+    }
+  }
+  return unique;
+}
+
+// 问情 UI
+d3.select("#relCalcBtn").on("click", () => {
+  const fromName = d3.select("#relFrom").property("value").trim();
+  const toName = d3.select("#relTo").property("value").trim();
+
+  if (!fromName || !toName) {
+    d3.select("#relResult").classed("visible", true).html('<span style="color:#8b0000;">请输入两个人物名</span>');
+    return;
+  }
+
+  const fromNode = nodes.find(n => n.id === fromName);
+  const toNode = nodes.find(n => n.id === toName);
+
+  if (!fromNode || !toNode) {
+    d3.select("#relResult").classed("visible", true).html(
+      `<span style="color:#8b0000;">未找到：${!fromNode ? fromName : ""} ${!toNode ? toName : ""}</span>`
+    );
+    return;
+  }
+
+  const allPaths = findAllPaths(fromNode.id, toNode.id);
+
+  if (!allPaths.length) {
+    d3.select("#relResult").classed("visible", true).html(
+      `<span style="color:#8b0000;">${fromName} 与 ${toName} 之间未寻到情缘</span>`
+    );
+    resetHighlight();
+    selectedNode = null;
+    detailPanel.classed("visible", false);
+    return;
+  }
+
+  // 显示所有路径
+  const shortest = allPaths[0].length;
+  let html = `<div style="margin-bottom:6px;">${fromName} — ${toName}，寻得 ${allPaths.length} 条情缘</div>`;
+  allPaths.forEach((path, idx) => {
+    const isShortest = path.length === shortest;
+    const tag = isShortest ? '<span style="color:#8b0000;font-weight:600;">[最短]</span> ' : '';
+    const steps = path[0].from + " " + path.map(s =>
+      `<span class="path-rel">—${s.relation}→</span> ${s.to}`
+    ).join(" ");
+    html += `<div style="margin:3px 0;${isShortest ? '' : 'color:#9b8870;'}">${tag}${path.length}步：${steps}</div>`;
+  });
+
+  d3.select("#relResult").classed("visible", true).html(html);
+
+  // 收集所有路径上的节点和连线
+  resetHighlight();
+  selectedNode = null;
+  detailPanel.classed("visible", false);
+
+  const pathNodeIds = new Set();
+  const pathLinkKeys = new Set();
+  allPaths.forEach(path => {
+    path.forEach(step => {
+      pathNodeIds.add(step.from);
+      pathNodeIds.add(step.to);
+    });
+  });
+  allPaths.forEach(path => {
+    path.forEach(step => {
+      links.forEach(l => {
+        const sid = typeof l.source === "object" ? l.source.id : l.source;
+        const tid = typeof l.target === "object" ? l.target.id : l.target;
+        if ((step.from === sid && step.to === tid) || (step.from === tid && step.to === sid)) {
+          const key = [sid, tid].sort().join("|");
+          pathLinkKeys.add(key);
+        }
+      });
+    });
+  });
+
+  svg.classed("dimmed", true);
+  node.each(function(n) {
+    if (pathNodeIds.has(n.id) && !isNodeHidden(n)) {
+      d3.select(this).classed("highlighted", true);
+    }
+  });
+  link.each(function(l) {
+    const sid = typeof l.source === "object" ? l.source.id : l.source;
+    const tid = typeof l.target === "object" ? l.target.id : l.target;
+    const key = [sid, tid].sort().join("|");
+    if (pathLinkKeys.has(key) && !isNodeHidden(nodes.find(n => n.id === sid)) && !isNodeHidden(nodes.find(n => n.id === tid))) {
+      d3.select(this).classed("highlighted", true);
+      linkLabel.filter(ld => ld === l).style("opacity", 1);
+    }
+  });
+
+  // 飞到路径起点
+  const t = d3.zoomTransform(svg.node());
+  svg.transition().duration(400).call(
+    d3.zoom().transform,
+    d3.zoomIdentity.translate(width/2 - fromNode.x * t.k, height/2 - fromNode.y * t.k).scale(t.k)
+  );
+});
+
+// 清除按钮
+d3.select("#relClearBtn").on("click", () => {
+  d3.select("#relFrom").property("value", "");
+  d3.select("#relTo").property("value", "");
+  d3.select("#relResult").classed("visible", false).html("");
+  resetHighlight();
+  svg.classed("dimmed", false);
+  selectedNode = null;
+  detailPanel.classed("visible", false);
+});
+
+// 回车触发
+d3.select("#relTo").on("keydown", (event) => {
+  if (event.key === "Enter") d3.select("#relCalcBtn").node().click();
+});
+d3.select("#relFrom").on("keydown", (event) => {
+  if (event.key === "Enter") d3.select("#relTo").node().focus();
+});
+</script>
+</body>
+</html>
