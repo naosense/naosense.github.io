@@ -1886,6 +1886,7 @@ function showTripDetail(idx) {
     const overlay = $('modalOverlay');
     if (!modal || !overlay) return;
 
+    const tripFee = t.records.reduce((s, r) => s + (r.paid || r.amount || 0), 0);
     let rowsHtml = '';
     t.records.forEach(r => {
         const d = new Date(r.startTime);
@@ -1905,7 +1906,7 @@ function showTripDetail(idx) {
         <div style="margin-bottom:14px">
             <span style="font-size:13px;color:var(--text-dim)">${fmtDate(new Date(t.startTime))} → ${fmtDate(new Date(t.endTime))}</span>
             <h3 style="font-size:18px;font-weight:700;margin:2px 0 2px;color:var(--text)">${dests}</h3>
-            <div style="font-size:13px;color:var(--text-dim)">${t.records.length} 次充电 · ${t.totalKwh.toFixed(0)} kWh</div>
+            <div style="font-size:13px;color:var(--text-dim)">${t.records.length} 次充电 · ${t.totalKwh.toFixed(0)} kWh · ${tripFee.toFixed(0)} 元</div>
         </div>
         <div style="overflow-x:auto;font-size:13px;max-height:360px;overflow-y:auto">
         <table style="width:100%;border-collapse:collapse">
