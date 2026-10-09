@@ -2070,6 +2070,24 @@ function updateHeroStats(ctx) {
     gridHtml += `<div style="display:flex;flex-direction:row-reverse;gap:2px;margin-bottom:5px;min-height:28px">${row}</div>`;
   }
 
+  // City rows: 6 per line, wrap to extra lines with ↵ prefix
+  let cityRowsHtml = '';
+  if (cities.length === 0) {
+    cityRowsHtml = '<div style="margin-top:6px;text-align:right;font-size:12px;color:var(--text-faint);letter-spacing:0.02em">—</div>';
+  } else {
+    const rowTexts = [];
+    for (let i = 0; i < cities.length; i++) {
+      const r = Math.floor(i / 6);
+      if (i % 6 === 0) rowTexts[r] = '';
+      rowTexts[r] += (i % 6 === 0) ? '' : ' · ';
+      rowTexts[r] += (i % 6 === 0 && r > 0) ? '↵ ' : '';
+      rowTexts[r] += cities[i];
+    }
+    cityRowsHtml = rowTexts.map((t, r) =>
+      `<div style="margin-top:${r === 0 ? '6px' : '2px'};text-align:right;font-size:12px;color:var(--text-faint);letter-spacing:0.02em">${t}</div>`
+    ).join('');
+  }
+
   el.style.cssText = 'text-align:right';
   el.innerHTML = `
     <div style="display:flex;flex-direction:row;align-items:stretch;gap:28px;justify-content:flex-end;flex-wrap:wrap">
@@ -2083,7 +2101,7 @@ function updateHeroStats(ctx) {
           <div class="meta-item"><div class="val coral" style="font-size:36px;line-height:1;font-style:italic">${adjustedPaid.toFixed(0)}</div><div class="lbl" style="margin-top:4px">实付(元)</div></div>
           <div class="meta-item"><div class="val" style="font-size:36px;line-height:1;font-style:italic;color:var(--amber)">${window.__trips ? window.__trips.length : 0}</div><div class="lbl" style="margin-top:4px">出行记录</div></div>
         </div>
-        <div style="margin-top:6px;text-align:right;font-size:12px;color:var(--text-faint);letter-spacing:0.02em">${cities.length > 0 ? cities.slice(0, 6).join(' · ') : '—'}</div>${cities.length > 6 ? '<div style="text-align:right;font-size:12px;color:var(--text-faint);letter-spacing:0.02em">↵ ' + cities.slice(6).join(' · ') + '</div>' : ''}
+        ${cityRowsHtml}
         <div style="margin-top:4px;text-align:right;font-size:11px;color:var(--text-faint);font-family:var(--mono)">${year === '全部' ? '全部年份' : year + ' 年'}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-end;gap:0;opacity:0.9;filter:drop-shadow(0 0 8px rgba(0,158,247,0.12))">${gridHtml}</div>
